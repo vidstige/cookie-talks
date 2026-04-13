@@ -44,6 +44,7 @@ class CompositeGlyph:
 
 @dataclass
 class HeadTable:
+    units_per_em: int
     index_to_loc_format: int
 
 
@@ -60,6 +61,7 @@ class LocaTable:
 @dataclass
 class TrueType:
     sf_version: str
+    units_per_em: int
     cmap: dict[str, int]
     glyf: list[Glyph | CompositeGlyph | None]
 
@@ -213,9 +215,9 @@ def parse_cmap(table: Table) -> dict[str, int]:
 
 
 def parse_head(table: Table) -> HeadTable:
-    # indexToLocFormat is at byte offset 50 within the head table
+    units_per_em = struct.unpack_from(">H", table.data, 18)[0]
     index_to_loc_format = struct.unpack_from(">h", table.data, 50)[0]
-    return HeadTable(index_to_loc_format)
+    return HeadTable(units_per_em, index_to_loc_format)
 
 
 def parse_maxp(table: Table) -> MaxpTable:
@@ -265,14 +267,14 @@ def load_truetype(path: Path) -> TrueType:
     maxp = parse_maxp(tables["maxp"])
     loca = parse_loca(tables["loca"], head, maxp)
     glyf = parse_glyf(tables["glyf"], loca)
-    return TrueType(sf_version, cmap=cmap, glyf=glyf)
+    return TrueType(sf_version, units_per_em=head.units_per_em, cmap=cmap, glyf=glyf)
 
 
 def main():
     for arg in sys.argv[1:]:
         path = Path(arg)
         tt = load_truetype(path)
-        print(f"\n{len(tt.glyf)} glyphs loaded")
+        print(f"\nem square: {tt.units_per_em}, {len(tt.glyf)} glyphs")
         for i, g in enumerate(tt.glyf):
             if g is None:
                 print(f"  [{i}] <empty>")
