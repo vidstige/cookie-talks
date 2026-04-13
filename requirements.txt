@@ -1,2 +1,4 @@
 notebook
 nbstripout
+
+matplotlib  # for true type plotting
