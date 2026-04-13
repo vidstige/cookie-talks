@@ -46,6 +46,14 @@ class GlyphTable:
 
 
 @dataclass
+class CmapTable:
+    _mapping: dict[int, int]
+
+    def __getitem__(self, char: str) -> int:
+        return self._mapping[ord(char)]
+
+
+@dataclass
 class HeadTable:
     index_to_loc_format: int
 
@@ -63,6 +71,7 @@ class LocaTable:
 @dataclass
 class TrueType:
     sf_version: str
+    cmap: CmapTable
     glyf: GlyphTable
 
 
@@ -171,6 +180,49 @@ def parse_composite_glyph(data: bytes, offset: int, x_min: int, y_min: int, x_ma
     return CompositeGlyph(x_min, y_min, x_max, y_max, components)
 
 
+def parse_cmap(table: Table) -> CmapTable:
+    num_subtables = struct.unpack_from(">H", table.data, 2)[0]
+
+    # Prefer platform 3 encoding 1 (Windows Unicode BMP), fall back to any format 4
+    subtable_offset = None
+    for i in range(num_subtables):
+        platform_id, encoding_id, offset = struct.unpack_from(">HHI", table.data, 4 + i * 8)
+        if struct.unpack_from(">H", table.data, offset)[0] == 4:
+            subtable_offset = offset
+            if (platform_id, encoding_id) == (3, 1):
+                break  # best match, stop looking
+
+    if subtable_offset is None:
+        return CmapTable({})
+
+    seg_count_x2 = struct.unpack_from(">H", table.data, subtable_offset + 6)[0]
+    seg_count = seg_count_x2 // 2
+
+    base = subtable_offset + 14  # skip format, length, language, segCountX2, searchRange, entrySelector, rangeShift
+    end_codes   = struct.unpack_from(f">{seg_count}H", table.data, base); base += seg_count * 2 + 2  # +2 reserved pad
+    start_codes = struct.unpack_from(f">{seg_count}H", table.data, base); base += seg_count * 2
+    id_deltas   = struct.unpack_from(f">{seg_count}h", table.data, base); base += seg_count * 2
+    range_offsets_base = base
+    id_range_offsets = struct.unpack_from(f">{seg_count}H", table.data, base)
+
+    mapping = {}
+    for i in range(seg_count):
+        start, end = start_codes[i], end_codes[i]
+        if start == 0xFFFF:
+            break
+        for c in range(start, end + 1):
+            if id_range_offsets[i] == 0:
+                glyph_id = (c + id_deltas[i]) & 0xFFFF
+            else:
+                pos = range_offsets_base + i * 2 + id_range_offsets[i] + (c - start) * 2
+                glyph_id = struct.unpack_from(">H", table.data, pos)[0]
+                if glyph_id != 0:
+                    glyph_id = (glyph_id + id_deltas[i]) & 0xFFFF
+            if glyph_id != 0:
+                mapping[c] = glyph_id
+    return CmapTable(mapping)
+
+
 def parse_head(table: Table) -> HeadTable:
     # indexToLocFormat is at byte offset 50 within the head table
     index_to_loc_format = struct.unpack_from(">h", table.data, 50)[0]
@@ -219,16 +271,12 @@ def load_truetype(path: Path) -> TrueType:
     sf_version, num_tables, *_ = struct.unpack_from(">IHHHH", data, 0)
     tables = load_tables(data, num_tables)
 
-    print(f"{'Tag':<8} {'Checksum':>12} {'Size':>10}")
-    print("-" * 34)
-    for tag, table in tables.items():
-        print(f"{tag:<8} 0x{table.checksum:08X} {len(table.data):>10}")
-
+    cmap = parse_cmap(tables["cmap"])
     head = parse_head(tables["head"])
     maxp = parse_maxp(tables["maxp"])
     loca = parse_loca(tables["loca"], head, maxp)
     glyf = parse_glyf(tables["glyf"], loca)
-    return TrueType(sf_version, glyf=glyf)
+    return TrueType(sf_version, cmap=cmap, glyf=glyf)
 
 
 def main():
