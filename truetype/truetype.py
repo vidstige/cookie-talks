@@ -16,7 +16,7 @@ class Contour:
 
 
 @dataclass
-class SimpleGlyph:
+class Glyph:
     x_min: int
     y_min: int
     x_max: int
@@ -61,7 +61,7 @@ class LocaTable:
 class TrueType:
     sf_version: str
     cmap: dict[str, int]
-    glyf: list[SimpleGlyph | CompositeGlyph | None]
+    glyf: list[Glyph | CompositeGlyph | None]
 
 
 @dataclass
@@ -80,7 +80,7 @@ def load_tables(data: bytes, num_tables: int) -> dict[str, Table]:
     return tables
 
 
-def parse_simple_glyph(data: bytes, offset: int, num_contours: int, x_min: int, y_min: int, x_max: int, y_max: int) -> SimpleGlyph:
+def parse_glyph(data: bytes, offset: int, num_contours: int, x_min: int, y_min: int, x_max: int, y_max: int) -> Glyph:
     end_pts = struct.unpack_from(f">{num_contours}H", data, offset)
     offset += num_contours * 2
 
@@ -130,7 +130,7 @@ def parse_simple_glyph(data: bytes, offset: int, num_contours: int, x_min: int, 
         contours.append(Contour(points))
         prev_end = end
 
-    return SimpleGlyph(x_min, y_min, x_max, y_max, contours)
+    return Glyph(x_min, y_min, x_max, y_max, contours)
 
 
 def parse_composite_glyph(data: bytes, offset: int, x_min: int, y_min: int, x_max: int, y_max: int) -> CompositeGlyph:
@@ -233,7 +233,7 @@ def parse_loca(table: Table, head: HeadTable, maxp: MaxpTable) -> LocaTable:
     return LocaTable(offsets)
 
 
-def parse_glyf(table: Table, loca: LocaTable) -> list[SimpleGlyph | CompositeGlyph | None]:
+def parse_glyf(table: Table, loca: LocaTable) -> list[Glyph | CompositeGlyph | None]:
     glyphs = []
     for i in range(len(loca.offsets) - 1):
         start, end = loca.offsets[i], loca.offsets[i + 1]
@@ -246,7 +246,7 @@ def parse_glyf(table: Table, loca: LocaTable) -> list[SimpleGlyph | CompositeGly
         pos += 10
 
         if num_contours >= 0:
-            glyphs.append(parse_simple_glyph(table.data, pos, num_contours, x_min, y_min, x_max, y_max))
+            glyphs.append(parse_glyph(table.data, pos, num_contours, x_min, y_min, x_max, y_max))
         else:
             glyphs.append(parse_composite_glyph(table.data, pos, x_min, y_min, x_max, y_max))
 
@@ -276,7 +276,7 @@ def main():
         for i, g in enumerate(tt.glyf):
             if g is None:
                 print(f"  [{i}] <empty>")
-            elif isinstance(g, SimpleGlyph):
+            elif isinstance(g, Glyph):
                 print(f"  [{i}] Simple  bbox=({g.x_min},{g.y_min},{g.x_max},{g.y_max}) contours={len(g.contours)}")
             elif isinstance(g, CompositeGlyph):
                 refs = [c.glyph_index for c in g.components]
