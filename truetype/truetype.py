@@ -45,13 +45,6 @@ class GlyphTable:
     glyphs: list[SimpleGlyph | CompositeGlyph]
 
 
-@dataclass
-class CmapTable:
-    _mapping: dict[int, int]
-
-    def __getitem__(self, char: str) -> int:
-        return self._mapping[ord(char)]
-
 
 @dataclass
 class HeadTable:
@@ -71,7 +64,7 @@ class LocaTable:
 @dataclass
 class TrueType:
     sf_version: str
-    cmap: CmapTable
+    cmap: dict[str, int]
     glyf: GlyphTable
 
 
@@ -180,7 +173,7 @@ def parse_composite_glyph(data: bytes, offset: int, x_min: int, y_min: int, x_ma
     return CompositeGlyph(x_min, y_min, x_max, y_max, components)
 
 
-def parse_cmap(table: Table) -> CmapTable:
+def parse_cmap(table: Table) -> dict[str, int]:
     num_subtables = struct.unpack_from(">H", table.data, 2)[0]
 
     # Prefer platform 3 encoding 1 (Windows Unicode BMP), fall back to any format 4
@@ -193,7 +186,7 @@ def parse_cmap(table: Table) -> CmapTable:
                 break  # best match, stop looking
 
     if subtable_offset is None:
-        return CmapTable({})
+        return {}
 
     seg_count_x2 = struct.unpack_from(">H", table.data, subtable_offset + 6)[0]
     seg_count = seg_count_x2 // 2
@@ -219,8 +212,8 @@ def parse_cmap(table: Table) -> CmapTable:
                 if glyph_id != 0:
                     glyph_id = (glyph_id + id_deltas[i]) & 0xFFFF
             if glyph_id != 0:
-                mapping[c] = glyph_id
-    return CmapTable(mapping)
+                mapping[chr(c)] = glyph_id
+    return mapping
 
 
 def parse_head(table: Table) -> HeadTable:
