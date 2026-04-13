@@ -40,10 +40,6 @@ class CompositeGlyph:
     components: list[Component]
 
 
-@dataclass
-class GlyphTable:
-    glyphs: list[SimpleGlyph | CompositeGlyph]
-
 
 
 @dataclass
@@ -65,7 +61,7 @@ class LocaTable:
 class TrueType:
     sf_version: str
     cmap: dict[str, int]
-    glyf: GlyphTable
+    glyf: list[SimpleGlyph | CompositeGlyph | None]
 
 
 @dataclass
@@ -237,7 +233,7 @@ def parse_loca(table: Table, head: HeadTable, maxp: MaxpTable) -> LocaTable:
     return LocaTable(offsets)
 
 
-def parse_glyf(table: Table, loca: LocaTable) -> GlyphTable:
+def parse_glyf(table: Table, loca: LocaTable) -> list[SimpleGlyph | CompositeGlyph | None]:
     glyphs = []
     for i in range(len(loca.offsets) - 1):
         start, end = loca.offsets[i], loca.offsets[i + 1]
@@ -254,7 +250,7 @@ def parse_glyf(table: Table, loca: LocaTable) -> GlyphTable:
         else:
             glyphs.append(parse_composite_glyph(table.data, pos, x_min, y_min, x_max, y_max))
 
-    return GlyphTable(glyphs)
+    return glyphs
 
 
 def load_truetype(path: Path) -> TrueType:
@@ -276,8 +272,8 @@ def main():
     for arg in sys.argv[1:]:
         path = Path(arg)
         tt = load_truetype(path)
-        print(f"\n{len(tt.glyf.glyphs)} glyphs loaded")
-        for i, g in enumerate(tt.glyf.glyphs):
+        print(f"\n{len(tt.glyf)} glyphs loaded")
+        for i, g in enumerate(tt.glyf):
             if g is None:
                 print(f"  [{i}] <empty>")
             elif isinstance(g, SimpleGlyph):
