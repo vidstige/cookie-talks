@@ -1,8 +1,8 @@
 # How Stuff Works: AI from scratch — master plan
 
-Five lectures of one hour. Each is standalone and optional; attendance at earlier
-lectures is not assumed. No prerequisites beyond arithmetic and a willingness to look at
-notation.
+Five lectures of one hour. They build on each other and are meant to be taken in order:
+each one uses what the ones before it established. No prerequisites beyond arithmetic and
+a willingness to look at notation.
 
 This document specifies the structure of the series: the slide sequence of each lecture,
 the mathematical arc it follows, and the dependencies between lectures. It does not
@@ -45,31 +45,35 @@ slide: the quiz serves that purpose and gets a response from the room rather tha
 | Slide | |
 |---|---|
 | 1 | Title. Lecture title only. |
-| 2 | The series. Its subject, its five parts, that each is optional and standalone. |
+| 2 | The series. Its subject, its five parts, and where this one sits in them. |
 | 3 | Outline of this lecture. Its sections, in order. |
 | 4–22 | Material. |
 | 23 | Quiz. |
 
-Slide 2 is the same slide in all five decks, with the current lecture marked. Slide 3
+Slide 2 is the same slide in all five decks, with the current lecture marked. It says
+what each lecture needs from the ones before it, in a few words per lecture. Slide 3
 differs per lecture and lists the section headings given below.
 
 ---
 
 # Lecture 1 — Vectors, bases and linear maps
 
-**Arc.** The conventional route. Vectors are introduced as geometric objects, then the
-inner product, which makes norm, angle, orthogonality and projection available from the
-start. Matrices arrive next as arrays with an arithmetic — the matrix–vector product and
-the matrix product — and only then are reinterpreted as linear transformations, at which
-point their columns are recognised as the images of the basis vectors. Span,
-independence, basis and coordinates follow as a vector-space section, which puts change
-of basis and similarity on a footing. Linear systems and spectral decomposition close.
+**Arc.** Vectors come first as geometric objects, then as coordinates in an arbitrary
+basis, then as coordinates in a square one — and the inner product arrives to turn right
+angles into a number. Matrices appear where they are actually needed: a system of linear
+equations, written \(Ax = b\). That gives the matrix–vector product a reason to exist
+before it is given a name, and substituting one system into another gives the matrix
+product, its non-commutativity and the identity. Only then is a matrix reread as a
+transformation of space, at which point its columns are recognised as the images of the
+basis vectors and a whole figure can be pushed through one. Decomposition closes the
+lecture: a change of basis in which the map becomes simple.
 
-**Why this ordering.** The inner product precedes coordinates, so the coordinates of a
-vector in an orthonormal basis can be obtained by projection rather than by solving for
-coefficients. The matrix product precedes the transformation interpretation, so
-composition and non-commutativity are facts about an arithmetic already defined rather
-than promises deferred to a later slide. Both are the standard textbook order.
+**Why this ordering.** A matrix introduced as a transformation has to carry an arithmetic
+nobody asked for. A matrix introduced as the bookkeeping of a linear system has that
+arithmetic forced on it: multiplication is what substituting one system into another does,
+the identity is the system that changes nothing, the inverse is the system run backwards.
+The transformation reading then arrives as a reinterpretation of something already
+familiar, which is the one moment in the lecture worth spending real time on.
 
 | # | Slide |
 |---|---|
@@ -79,45 +83,88 @@ than promises deferred to a later slide. Both are the standard textbook order.
 | | **I. Vectors** |
 | 4 | Vectors as geometric objects |
 | 5 | Addition, scalar multiplication and linear combinations |
-| 6 | The inner product: norm and angle |
-| 7 | Orthogonality and orthogonal projection |
-| | **II. Matrices** |
-| 8 | Matrices and the matrix–vector product |
-| 9 | The matrix product and the transpose |
-| 10 | Matrices as linear transformations |
-| 11 | The columns of a matrix are the images of the basis vectors |
-| 12 | Rotation, scaling, shear, reflection; orthogonal matrices |
-| 13 | Affine maps and homogeneous coordinates |
-| | **III. Span, basis and coordinates** |
-| 14 | Span and linear independence |
-| 15 | Basis and dimension |
-| 16 | Coordinates relative to a basis; orthonormal bases |
-| 17 | Change of basis |
-| 18 | Similar matrices |
-| | **IV. Linear systems** |
-| 19 | Systems of linear equations |
-| 20 | Rank, null space, existence and uniqueness |
-| | **V. Spectral decomposition** |
-| 21 | Eigenvalues, eigenvectors and diagonalization |
-| 22 | The singular value decomposition |
-| 23 | Quiz |
+| 6 | Coordinates in a basis |
+| 7 | Euclidean coordinates |
+| 8 | Orthogonality |
+| 9 | The inner product: norm and angle |
+| 10 | Orthogonal projection |
+| | **II. Linear systems** |
+| 11 | Systems of linear equations |
+| 12 | The same system as \(Ax = b\): the matrix–vector product |
+| 13 | The matrix product and the transpose |
+| 14 | The identity matrix and the inverse |
+| | **III. Basis vectors and transforms** |
+| 15 | Span and linear independence |
+| 16 | Basis and dimension |
+| 17 | Matrices as linear transformations |
+| 18 | The columns of a matrix are the images of the basis vectors |
+| 19 | Rotation, scaling, shear, reflection — with sliders |
+| 20 | Change of basis; orthonormal bases and orthogonal matrices |
+| | **IV. Matrix decomposition** |
+| 21 | Eigenvalues and eigenvectors |
+| 22 | Eigendecomposition |
+| 23 | LU and the SVD, in brief |
+| | **V. Quiz** |
+| 24 | Quiz |
 
-Composition of transformations and the failure of commutativity are remarks on slide 9,
-where the product is defined, not a separate slide. The figure showing one vector with
-its components in two different bases belongs on slide 16, and slide 17 gives the
-relation between the two coordinate vectors.
+This deck runs to 24 slides, one over the nominal 23, and slide 19 is driven by the room
+and will overrun on top of that. Section I is where the extra length is, deliberately; the
+cut candidates below are the release valve.
 
-**Cut candidates, in order:** 18, 12, 14 folded into 15.
+**Coordinates are given twice, and that is the point.** Slide 6 defines coordinates against
+an arbitrary basis: two vectors off a common line, weights that exist and are unique, a
+grid that is not square. Only slide 7 adds right angles and a common step, and it presents
+that as a *choice* rather than as what coordinates are. Slide 8 then says what the choice
+buys — each coordinate readable on its own, by a perpendicular drop rather than a line
+parallel to the other basis vector — and slide 9 turns the right angle into a number.
 
-**Forward dependencies.** Slide 6 (inner product) is reused in lecture 5 for attention
-scores. Slide 7 (projection) is reused in lecture 3 for least squares. Slide 13
-(homogeneous coordinates) is reused in lecture 4 for the bias term. Slide 16 (orthonormal
-bases) is reused in lecture 5 for multi-head projections. Slide 21 (eigenvalues) is
-reused in lecture 3 for the condition number.
+Nothing in slides 4–8 may use length, which is not defined until slide 9. A euclidean basis
+is therefore described on slide 7 as one vector together with its quarter turn, which fixes
+the step without measuring anything, and slide 9 states plainly that the coordinate formula
+for the inner product is reading a euclidean frame.
 
-**Not covered, deliberately:** determinants beyond a remark, Gaussian elimination and the
-LU/QR/Cholesky family, general inner-product spaces and metrics, Gram–Schmidt, complex
-eigenvalues beyond a caveat.
+Composition of transformations and the failure of commutativity are remarks on slide 13,
+where the product is defined, not a separate slide — stated there as a fact about
+substituting one system into another, and collected again on slide 17 once composition has
+a geometric reading. Translation, affine maps and homogeneous coordinates are a remark on
+slide 19: a translation slider is the one control on that slide that cannot be a matrix,
+which is the whole argument for the extra coordinate. Similar matrices are a remark on
+slide 20, and are what slide 22 is about.
+
+**Elimination is deliberately absent.** How a system is actually solved — elimination,
+pivoting, rank, the null space, the conditions for existence and uniqueness — is skipped
+for now. Slide 14 says only that the inverse is what undoes the system, and that not every
+matrix has one. If the material returns, it belongs between slides 12 and 13.
+
+**The logo.** Slide 17 is the first appearance of the Volumental logo, as a point cloud
+pushed through a transformation. It recurs throughout section III and in section IV. It
+must not appear before slide 17 — in particular not on the title slide, whose draw-in
+figure has to be something else — so that its arrival coincides with the reinterpretation
+it illustrates.
+
+**Slide 19 is interactive.** One figure, one matrix, four or five sliders driving its
+entries, and the logo redrawing live. Presets for the named transforms so the shape of each
+matrix can be read off while its effect is on screen. The determinant is worth showing as a
+number that changes — the only place determinants are covered — and a slider configuration
+that collapses the figure to a line is worth reaching deliberately — it is also the only
+account this deck gives of a matrix that cannot be undone; the scaling sliders therefore
+reach zero rather than stopping short of it. Sliders must not advance the deck; see
+Appendix A.
+
+**Cut candidates, in order:** 23, 15 folded into 16, 22. Slides 6, 7 and 8 are not cut
+candidates: they are the sequence the rest of the lecture reads coordinates through.
+
+**Forward dependencies.** Slide 9 (inner product) is reused in lecture 5 for attention
+scores. Slide 10 (projection) is reused in lecture 3 for least squares. Slide 14 (the
+inverse) is reused in lecture 3 for the normal equations. The homogeneous-coordinate remark
+on slide 19 is reused in lecture 4 for the bias term. Slide 20 (orthonormal bases) is
+reused in lecture 5 for multi-head projections. Slide 21 (eigenvalues) is reused in lecture
+3 for the condition number.
+
+**Not covered, deliberately:** elimination and the solution of systems in any form, rank
+and the null space, the QR/Cholesky family, determinants beyond the live number on slide
+19, inner products other than the euclidean one, general metrics, Gram–Schmidt, complex
+eigenvalues beyond a caveat, and every decomposition on slide 23 beyond what it is for.
 
 ---
 
@@ -222,7 +269,8 @@ what has been covered is visible.
 | 23 | Quiz |
 
 Slide 11 uses the eigenvalues of the Hessian; slide 16 uses orthogonal projection. Both
-are re-established in a sentence, since attendance at lecture 1 is not assumed.
+are recalled in a sentence, with a pointer back to the slide in lecture 1 that established
+them.
 
 Slides 20 and 21 are one slide each and are meant to stay that way. Slide 20 follows
 directly from slide 19: every method in this lecture finds a local minimum, so the
@@ -361,8 +409,8 @@ obvious extension if there is appetite.
 **Numerical differentiation.** Floating between lecture 2 (slides 22–23) and the start of
 lecture 3. Decide once both are drafted and time is known.
 
-**Load-bearing slides.** If any of these does not land, later lectures suffer: 1/11 (the
-matrix of a transformation), 1/16 (the inner product), 2/6 (the derivative as linear
+**Load-bearing slides.** If any of these does not land, later lectures suffer: 1/9 (the
+inner product), 1/18 (the matrix of a transformation), 2/6 (the derivative as linear
 approximation), 2/8 (the chain rule), 3/7 (descent direction and line search), 4/5 (a
 composition of linear maps is linear), 5/10 (scores as inner products).
 
@@ -439,7 +487,8 @@ Column grids: `.two` (1fr 1fr), `.two.wide-left` (1.3fr 1fr), `.two.wide-right`
 Components: `.claim`, a 3px solid black left rule for the one sentence per slide worth
 remembering, at most one per slide; `.eq`, a bordered pale panel around display
 mathematics, with `.eq.bare` for none; `pre`, code on `--code-bg` behind a 2px
-`--prussian` left rule.
+`--prussian` left rule; `.controls`, a row of labelled `input[type=range]` under a figure,
+each slider showing its current value in mono beside its label.
 
 ## Mechanics
 
@@ -449,11 +498,14 @@ blocks the script silently and no mathematics renders. Auto-render with `$$…$$
 display and `\(…\)` for inline.
 
 Navigation by arrow keys, space, Enter, PageUp, PageDown, Home, End; click to advance
-except on buttons, links, the notes panel, the overview, and code blocks. `N` toggles
+except on buttons, links, form controls, the notes panel, the overview, and code blocks.
+Arrow keys belong to a focused slider, not to the deck. `N` toggles
 speaker notes, `O` a thumbnail overview, `F` full screen, `Esc` closes panels. The URL
 hash carries the slide number so a single slide can be linked. A print stylesheet emits
 one page per slide for print-to-PDF. One draw-in animation on the title figure only;
-`prefers-reduced-motion` respected.
+`prefers-reduced-motion` respected. Interactive figures are the exception and are not
+animations: nothing moves until the viewer moves a control, and every such figure has a
+state it opens in that reads correctly with nothing touched.
 
 ## Slide markup
 
