@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vectors, bases and linear maps</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<style>
+:root{
+  --paper:#ffffff;
+  --ink:#000000;
+  --ink-2:#3f4750;
+  --ink-3:#767f89;
+  --rule:#dcdfe3;
+  --grid:#eceef1;
+
+  --madder:#a4402c;
+  --prussian:#1c4e73;
+  --verdigris:#2b6f68;
+  --construct:#c3c9cf;
+
+  --code-bg:#f7f7f5;
+  --code-fg:#252a30;
+  --code-comment:#8a9199;
+  --code-key:#1c4e73;
+  --code-lit:#2b6f68;
+
+  --stage-w:1280px;
+  --stage-h:720px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#f2f3f4}
+body{font-family:Spectral,Georgia,serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+
+#viewport{position:fixed;inset:0;display:grid;place-items:center}
+#stage{
+  width:var(--stage-w);height:var(--stage-h);position:relative;
+  transform-origin:center center;background:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:48px 48px;background-position:-1px -1px;
+  box-shadow:0 1px 14px rgba(0,0,0,.13);
+}
+
+.rail{
+  position:absolute;left:80px;right:80px;top:24px;height:26px;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font:12.5px/1 'JetBrains Mono',monospace;color:var(--ink-3);
+  border-bottom:1px solid var(--rule);pointer-events:none;
+}
+.slide{position:absolute;inset:0;padding:62px 80px 70px;display:none;flex-direction:column}
+.slide.on{display:flex}
+.slide.title{justify-content:center}
+
+h1{font-size:68px;font-weight:600;line-height:1.04;letter-spacing:-.02em;margin:0}
+h2{font-size:41px;font-weight:600;line-height:1.13;letter-spacing:-.015em;margin:0}
+h3{font-size:21px;font-weight:500;margin:0 0 6px;letter-spacing:-.01em}
+.sub{font-size:21px;font-style:italic;color:var(--ink-2);margin:8px 0 0;max-width:70ch}
+h2+.sub{margin-top:8px}
+p{font-size:22px;line-height:1.55;max-width:64ch;margin:14px 0 0}
+ul,ol{margin:12px 0 0;padding-left:22px}
+li{font-size:21px;line-height:1.5;max-width:60ch;margin:5px 0}
+li::marker{color:var(--ink-3)}
+em{font-style:italic}
+b,strong{font-weight:600}
+.small{font-size:18px;color:var(--ink-2)}
+.body{margin-top:18px;flex:1;min-height:0}
+
+.claim{
+  border-left:3px solid var(--ink);padding:2px 0 2px 18px;
+  font-size:25px;line-height:1.38;margin:18px 0 0;max-width:56ch;
+}
+.eq{
+  border:1px solid var(--rule);background:#fbfbfa;border-radius:2px;
+  padding:11px 16px;margin:15px 0 0;font-size:20px;
+}
+.eq.bare{border:0;background:none;padding:0}
+.eq .katex-display{margin:.34em 0}
+.eq p:first-child .katex-display{margin-top:0}
+.eq p,.eq .note{font-size:16px;color:var(--ink-2);margin:8px 0 0;max-width:none}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:42px;align-items:start}
+.two.wide-left{grid-template-columns:1.3fr 1fr}
+.two.wide-right{grid-template-columns:1fr 1.3fr}
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:end}
+.panels.three{grid-template-columns:1fr 1fr 1fr;gap:24px}
+
+figure{margin:0}
+figure svg{width:100%;height:auto;display:block;overflow:visible}
+.demo svg{overflow:hidden;touch-action:none;cursor:crosshair}
+figcaption{
+  font:13px/1.45 'JetBrains Mono',monospace;color:var(--ink-3);
+  margin-top:9px;max-width:44ch;
+}
+text{font-family:'JetBrains Mono',monospace;font-size:12px}
+.f-madder{fill:var(--madder)}    .s-madder{stroke:var(--madder)}
+.f-prussian{fill:var(--prussian)} .s-prussian{stroke:var(--prussian)}
+.f-verdigris{fill:var(--verdigris)} .s-verdigris{stroke:var(--verdigris)}
+.f-construct{fill:var(--construct)} .s-construct{stroke:var(--construct)}
+.f-dim{fill:var(--ink-3)}
+.f-ink{fill:var(--ink-2)} .s-ink{stroke:var(--ink)}
+svg .stroke{fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+svg .hair{fill:none;stroke-width:1;stroke-linecap:round}
+svg .dash{fill:none;stroke-width:1.3;stroke-dasharray:4 4;stroke-linecap:round}
+svg .cloud{fill:none;stroke-width:2.4;stroke-linecap:round}
+svg .cloud.ghost{stroke-width:2}
+
+/* interactive figures */
+.demo .controls{
+  display:flex;flex-direction:column;gap:7px;margin-top:12px;
+  font:12.5px/1.2 'JetBrains Mono',monospace;color:var(--ink-2);
+}
+.demo .row{display:flex;align-items:center;gap:10px;min-height:20px}
+.demo .row>label{width:76px;color:var(--ink-3)}
+.demo .row output{width:78px;color:var(--ink)}
+input[type=range]{
+  width:190px;height:16px;accent-color:var(--madder);
+  background:none;cursor:ew-resize;
+}
+.seg{display:flex;gap:0;border:1px solid var(--rule);border-radius:2px;overflow:hidden;width:max-content}
+.seg button{
+  font:12px/1 'JetBrains Mono',monospace;color:var(--ink-2);background:var(--paper);
+  border:0;border-left:1px solid var(--rule);padding:6px 11px;cursor:pointer;
+}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+.mat{
+  display:inline-grid;gap:1px 16px;justify-items:end;
+  font:15px/1.5 'JetBrains Mono',monospace;
+  padding:5px 11px;border-left:2px solid var(--ink);border-right:2px solid var(--ink);
+}
+.mat.m2{grid-template-columns:auto auto}
+.mat.m3{grid-template-columns:auto auto auto;font-size:13.5px}
+.readout{display:flex;align-items:center;gap:16px;margin-top:12px}
+.readout .note{font:12.5px/1.5 'JetBrains Mono',monospace;color:var(--ink-3)}
+.readout .note b{color:var(--ink);font-weight:500}
+.hint{font:12px 'JetBrains Mono',monospace;color:var(--ink-3);margin-top:8px}
+
+/* the series slide */
+.series{list-style:none;padding:0;margin:26px 0 0;max-width:none}
+.series li{
+  display:grid;grid-template-columns:34px 1fr;gap:14px;
+  padding:11px 0;border-top:1px solid var(--rule);max-width:78ch;
+  color:var(--ink-3);font-size:21px;
+}
+.series li:last-child{border-bottom:1px solid var(--rule)}
+.series li b{font-weight:500}
+.series li.here{color:var(--ink)}
+.series li.here .n{color:var(--madder)}
+.series .n{font:13px 'JetBrains Mono',monospace;padding-top:6px}
+.outline{list-style:none;padding:0;margin:24px 0 0}
+.outline li{
+  display:grid;grid-template-columns:44px 1fr;gap:10px;
+  font-size:23px;padding:9px 0;max-width:70ch;
+}
+.outline .n{font:13px 'JetBrains Mono',monospace;color:var(--ink-3);padding-top:9px}
+.outline small{display:block;font-size:16px;color:var(--ink-3);font-family:'JetBrains Mono',monospace}
+.qz{list-style:none;padding:0;margin:20px 0 0;counter-reset:q}
+.qz li{
+  counter-increment:q;display:grid;grid-template-columns:30px 1fr;gap:12px;
+  font-size:21px;padding:10px 0;border-top:1px solid var(--rule);max-width:80ch;
+}
+.qz li::before{content:counter(q) '.';font:13px 'JetBrains Mono',monospace;color:var(--ink-3);padding-top:7px}
+
+/* notes, overview */
+.notes{display:none}
+body.notes-on .slide.on .notes{
+  display:block;position:absolute;left:0;right:0;bottom:0;
+  max-height:38%;overflow:auto;background:#fbfbfa;
+  border-top:1px solid var(--rule);padding:16px 80px 20px;
+}
+.notes h4{
+  font:11.5px 'JetBrains Mono',monospace;color:var(--ink-3);
+  margin:0 0 6px;font-weight:400;
+}
+.notes p{font-size:16.5px;line-height:1.5;color:var(--ink-2);max-width:100ch;margin:6px 0 0}
+#overview{
+  position:fixed;inset:0;background:rgba(255,255,255,.97);z-index:20;
+  display:none;grid-template-columns:repeat(6,1fr);gap:14px;
+  padding:26px;overflow:auto;align-content:start;
+}
+#overview.on{display:grid}
+.thumb{position:relative;cursor:pointer;border:1px solid var(--rule);background:var(--paper)}
+.thumb .wrap{width:100%;aspect-ratio:16/9;overflow:hidden;position:relative}
+.thumb .wrap>.slide{
+  display:flex !important;transform-origin:top left;position:absolute;top:0;left:0;
+  width:var(--stage-w);height:var(--stage-h);
+}
+.thumb .wrap .notes{display:none !important}
+.thumb.on{outline:2px solid var(--madder)}
+.thumb b{
+  position:absolute;right:4px;bottom:2px;
+  font:10px 'JetBrains Mono',monospace;color:var(--ink-3);font-weight:400;
+}
+#help{
+  position:fixed;left:12px;bottom:10px;z-index:30;
+  font:11px 'JetBrains Mono',monospace;color:#9aa2aa;
+}
+
+@media print{
+  html,body{overflow:visible;background:#fff}
+  #viewport{position:static;display:block}
+  #stage{transform:none !important;box-shadow:none;width:var(--stage-w);height:auto}
+  .slide{display:flex !important;position:relative;inset:auto;
+    width:var(--stage-w);height:var(--stage-h);break-after:page}
+  #overview,#help{display:none !important}
+  .notes{display:none !important}
+  @page{size:1280px 720px;margin:0}
+}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+
+<!-- 1 -->
+<section class="slide title" data-where="How Stuff Works: AI from scratch">
+  <div class="two wide-left">
+    <div>
+      <h1>Vectors, bases<br>and linear maps</h1>
+      <p class="sub">How Stuff Works: AI from scratch — lecture one of five</p>
+    </div>
+    <figure>
+      <svg id="fig-title" viewBox="0 0 440 320" role="img"
+           aria-label="A point cloud with two different pairs of basis vectors drawn on it"></svg>
+      <figcaption>The same 512 points, described twice: once in the
+      standard basis, once in a rotated one.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Say what the hour contains: vectors, the inner product, matrices as
+    transformations, bases and coordinates, systems, eigenvalues and the SVD. The
+    figure is the thesis of the lecture — the points are the same in both frames,
+    only the numbers describing them differ.</p>
+    <p>The point cloud is the outline of our own logo, and it comes back on almost
+    every figure in the matrix section. If a demonstration falls flat, move on; the
+    slides stand without them.</p>
+  </aside>
+</section>
+
+<!-- 2 -->
+<section class="slide" data-where="The series">
+  <h2>The series</h2>
+  <p class="sub">What is inside a neural network, derived from arithmetic upward.</p>
+  <div class="body">
+    <ul class="series">
+      <li class="here"><span class="n">01</span><span><b>Vectors, bases and linear
+        maps.</b> Inner products, matrices as transformations, coordinates,
+        eigenvalues.</span></li>
+      <li><span class="n">02</span><span><b>Basic calculus.</b> The derivative as
+        linear approximation, the chain rule, gradient, Jacobian, Hessian.</span></li>
+      <li><span class="n">03</span><span><b>Numerical optimization.</b> Line search,
+        steepest descent, Newton's method, least squares.</span></li>
+      <li><span class="n">04</span><span><b>The multilayer perceptron.</b> Affine
+        layers, nonlinearities, loss functions, backpropagation.</span></li>
+      <li><span class="n">05</span><span><b>The attention mechanism.</b> Queries, keys
+        and values, the softmax, multi-head attention, the transformer.</span></li>
+    </ul>
+    <p class="small">Each lecture is standalone and optional: nothing in a later one
+    assumes you were at an earlier one. Anything reused is restated in a sentence.</p>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Thirty seconds. The only point worth making is the last one: people can come to
+    lecture 4 without lectures 1 to 3, and this slide is where they learn that.</p>
+  </aside>
+</section>
+
+<!-- 3 -->
+<section class="slide" data-where="Outline">
+  <h2>Outline</h2>
+  <p class="sub">Five sections. Geometry first, coordinates second, throughout.</p>
+  <div class="body">
+    <ol class="outline">
+      <li><span class="n">I</span><span>Vectors
+        <small>displacement, linear combination, inner product, projection</small></span></li>
+      <li><span class="n">II</span><span>Matrices
+        <small>the matrix–vector product, the matrix product, linear transformations,
+        rotation and shear, affine maps</small></span></li>
+      <li><span class="n">III</span><span>Span, basis and coordinates
+        <small>independence, dimension, coordinates, change of basis, similarity</small></span></li>
+      <li><span class="n">IV</span><span>Linear systems
+        <small>row and column pictures, rank, null space, existence and uniqueness</small></span></li>
+      <li><span class="n">V</span><span>Spectral decomposition
+        <small>eigenvalues and eigenvectors, diagonalization, the singular value
+        decomposition</small></span></li>
+    </ol>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Point out the shape of the hour: sections I and II are the bulk of it, III is
+    the one that changes how the earlier material looks, IV and V are short. If the
+    room is slow, section III can lose the slide on similar matrices and section V
+    still lands.</p>
+    <p>Keys: arrows or space to advance, <b>N</b> for these notes, <b>O</b> for the
+    overview, <b>F</b> for full screen.</p>
+  </aside>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-where="I. Vectors">
+  <h2>Vectors as geometric objects</h2>
+  <p class="sub">A displacement, before it is a list of numbers.</p>
+  <div class="two wide-left body">
+    <div>
+      <p>A vector is a <em>displacement</em>: a direction together with a length.
+      Two arrows represent the same vector when one is a translation of the other —
+      where an arrow is drawn carries no information.</p>
+      <p>Choose axes and a unit, and every vector acquires a list of numbers, its
+      <em>components</em>: how far along each axis. We write them stacked, and the set
+      of them is \(\mathbb{R}^n\).</p>
+      <div class="eq">
+        $$v=\begin{bmatrix}3\\1\end{bmatrix}\in\mathbb{R}^2,
+           \qquad v=\begin{bmatrix}v_1\\\vdots\\v_n\end{bmatrix}\in\mathbb{R}^n$$
+      </div>
+      <p class="claim">The vector is the object. Its components are a description,
+      and they depend on a choice.</p>
+    </div>
+    <figure>
+      <svg id="fig-vector" viewBox="0 0 380 300" role="img"
+           aria-label="Three arrows of equal length and direction at different positions, one with its components marked"></svg>
+      <figcaption>Three drawings of one vector. The components 3 and 1 are read off
+      the axes, and only exist once the axes do.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Emphasise that the three arrows in the figure are the same vector, and that a
+    point and a vector are different things that get written the same way: a point is
+    where you are, a vector is how you move. In this lecture we mostly identify them
+    by taking the origin as the start of every arrow, which is a convenience, not a
+    fact.</p>
+    <p>If someone asks about column versus row: it is a convention, and it will start
+    mattering on slide 9 when we transpose.</p>
+  </aside>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-where="I. Vectors">
+  <h2>Addition, scalar multiplication and linear combinations</h2>
+  <p class="sub">Two operations, and everything in the lecture is built from them.</p>
+  <div class="two wide-left body">
+    <div>
+      <p>To add, put the tail of \(v\) at the head of \(u\); the sum is the arrow from
+      start to finish. Doing it in the other order gives the other side of a
+      parallelogram and the same result. In components, add entrywise.</p>
+      <p>To multiply by a number \(c\), keep the direction and scale the length by
+      \(c\); a negative \(c\) reverses it. Combining both operations gives a
+      <em>linear combination</em>.</p>
+      <div class="eq">
+        $$u+v=\begin{bmatrix}u_1+v_1\\u_2+v_2\end{bmatrix},\qquad
+           cu=\begin{bmatrix}cu_1\\cu_2\end{bmatrix},\qquad
+           a\,u+b\,v$$
+      </div>
+      <p class="claim">A linear combination is a weighted sum of vectors. Almost
+      every object in this lecture is one.</p>
+    </div>
+    <figure>
+      <svg id="fig-add" viewBox="0 0 380 300" role="img"
+           aria-label="A parallelogram formed by two vectors and their sum, with a scaled copy of one vector"></svg>
+      <figcaption>The parallelogram of \(u+v\), and the scalar multiples
+      \(1.5\,u\) and \(-0.5\,v\) on their own lines through the origin.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Worth doing on the board: \(u=(3,1)\), \(v=(1,2)\), so \(u+v=(4,3)\) — then
+    point at the figure. The scalar multiples of a single vector fill a line through
+    the origin; that observation is the whole of slide 14.</p>
+    <p>Cut if short on time: the second worked sum. The figure carries it.</p>
+  </aside>
+</section>
+
+<!-- 6 -->
+<section class="slide" data-where="I. Vectors">
+  <h2>The inner product: norm and angle</h2>
+  <p class="sub">One number, from which length and angle both follow.</p>
+  <div class="two wide-left body">
+    <div>
+      <p>The inner product multiplies matching components and adds. Its geometric
+      meaning is the second line: length times length times the cosine of the angle
+      between them.</p>
+      <div class="eq">
+        $$u\cdot v=\sum_{i=1}^n u_iv_i,\qquad u\cdot v=\lVert u\rVert\,\lVert v\rVert\cos\theta$$
+        <p class="note">Length is the case \(v=u\): \(\lVert u\rVert=\sqrt{u\cdot u}\),
+        which is Pythagoras. The second equality then gives the angle.</p>
+      </div>
+      <p>With \(u=(3,1)\) and \(v=(1,2)\): \(u\cdot v=3+2=5\),
+      \(\lVert u\rVert=\sqrt{10}\), \(\lVert v\rVert=\sqrt5\), so
+      \(\cos\theta=5/\sqrt{50}=1/\sqrt2\) and \(\theta=45^\circ\).</p>
+      <p class="claim">Length and angle are not extra structure. They are read out of
+      the inner product.</p>
+    </div>
+    <figure>
+      <svg id="fig-inner" viewBox="0 0 340 290" role="img"
+           aria-label="Two vectors from the origin with the angle between them marked as 45 degrees"></svg>
+      <figcaption>\(u\cdot v=5\) is positive, so the angle is acute. Zero would mean
+      perpendicular, negative would mean obtuse.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The sign is the intuition to leave behind: positive means roughly the same
+    direction, zero means perpendicular, negative means roughly opposite. In lecture 5
+    the attention scores are exactly this number — a query dotted with a key — and
+    they mean the same thing there: how much do these two point the same way.</p>
+    <p>Do not prove the equality of the two formulas. Say it is the law of cosines
+    rearranged and continue.</p>
+  </aside>
+</section>
+
+<!-- 7 -->
+<section class="slide" data-where="I. Vectors">
+  <h2>Orthogonality and orthogonal projection</h2>
+  <p class="sub">Splitting a vector into a part along \(v\) and a part across it.</p>
+  <div class="two wide-left body">
+    <div>
+      <p>Two nonzero vectors are <em>orthogonal</em> when \(u\cdot v=0\), since then
+      \(\cos\theta=0\). The <em>projection</em> of \(u\) onto \(v\) is the point on
+      the line through \(v\) closest to \(u\): drop a perpendicular from the head of
+      \(u\) to that line.</p>
+      <div class="eq">
+        $$p=\frac{u\cdot v}{v\cdot v}\,v,\qquad r=u-p,\qquad r\cdot v=0$$
+        <p class="note">The coefficient is the only one that makes the residual
+        orthogonal to \(v\), and \(p\) is the closest point on the line to \(u\).</p>
+      </div>
+      <p>With \(u=(3,1)\), \(v=(1,1)\): \(u\cdot v=4\), \(v\cdot v=2\), so
+      \(p=2v=(2,2)\) and \(r=(1,-1)\). Check: \(r\cdot v=1-1=0\).</p>
+      <p class="claim">Every vector splits, uniquely, into a part along \(v\) and a
+      part orthogonal to \(v\).</p>
+    </div>
+    <figure>
+      <svg id="fig-proj" viewBox="0 0 340 290" role="img"
+           aria-label="A vector projected onto a line, with the residual drawn as a dashed perpendicular"></svg>
+      <figcaption>\(u=p+r\). The dashed residual meets the line at a right angle,
+      which is what makes \(p\) the closest point.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Say the word <em>closest</em> out loud, because that is the form this slide
+    returns in: lecture 3 solves least squares, and the answer is the projection of
+    the data onto the space the model can reach. Also flag slide 16: in a basis of
+    perpendicular unit vectors, coordinates are just projections, one dot product per
+    axis.</p>
+    <p>If time is short, drop the formula's derivation entirely and keep the worked
+    numbers — they are clean by construction.</p>
+  </aside>
+</section>
+
+<!-- 8 -->
+<section class="slide" data-where="II. Matrices">
+  <h2>Matrices and the matrix–vector product</h2>
+  <p class="sub">An array of numbers, and the one operation that gives it meaning.</p>
+  <div class="two wide-left body">
+    <div>
+      <p>An \(m\times n\) matrix is a rectangular array, with entry \(A_{ij}\) in
+      row \(i\) and column \(j\). Multiplying it by a vector of \(n\) entries gives
+      one of \(m\) entries, and there are two ways to read the definition.</p>
+      <div class="eq">
+        $$(Ax)_i=\sum_{j=1}^n A_{ij}x_j
+          \qquad\Longleftrightarrow\qquad
+          Ax=x_1a_1+\dots+x_na_n$$
+        <p class="note">Row \(i\) of \(A\) dotted with \(x\); or the columns
+        \(a_1,\dots,a_n\) of \(A\) combined with the entries of \(x\) as weights.</p>
+      </div>
+      <div class="eq bare">
+        $$\begin{bmatrix}2&1\\1&2\end{bmatrix}
+          \begin{bmatrix}1\\2\end{bmatrix}
+          =\begin{bmatrix}4\\5\end{bmatrix}
+          =1\begin{bmatrix}2\\1\end{bmatrix}+2\begin{bmatrix}1\\2\end{bmatrix}$$
+      </div>
+      <p class="claim">\(Ax\) is a linear combination of the columns of \(A\), with
+      the entries of \(x\) as the weights.</p>
+    </div>
+    <figure>
+      <svg id="fig-cols" viewBox="0 0 340 300" role="img"
+           aria-label="The two columns of a matrix and the combination of them that produces Ax"></svg>
+      <figcaption>The columns \((2,1)\) and \((1,2)\), the doubled second column, and
+      the sum \(Ax=(4,5)\).</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Both readings are needed later, so give both a name: the <em>row picture</em>
+    is a list of dot products, the <em>column picture</em> is a linear combination.
+    Slide 19 solves a system by looking at each in turn, and slide 20 defines rank
+    from the column picture.</p>
+    <p>Shapes: \((m\times n)\) times \((n\times 1)\) gives \((m\times 1)\). The inner
+    numbers have to match and they cancel. That rule is the whole of the next slide.</p>
+  </aside>
+</section>
+
+<!-- 9 -->
+<section class="slide" data-where="II. Matrices">
+  <h2>The matrix product and the transpose</h2>
+  <p class="sub">Rows against columns; and why order matters.</p>
+  <div class="two wide-left body">
+    <div>
+      <p>For \(A\) of shape \(m\times n\) and \(B\) of shape \(n\times p\), the
+      product \(AB\) is \(m\times p\), and entry \((i,j)\) is row \(i\) of \(A\)
+      dotted with column \(j\) of \(B\). Equivalently, column \(j\) of \(AB\) is
+      \(A\) applied to column \(j\) of \(B\).</p>
+      <div class="eq">
+        $$(AB)_{ij}=\sum_{k=1}^n A_{ik}B_{kj}\qquad
+        \begin{bmatrix}2&1\\1&2\end{bmatrix}
+        \begin{bmatrix}1&0&-1\\0&2&1\end{bmatrix}
+        =\begin{bmatrix}2&2&-1\\1&4&1\end{bmatrix}$$
+      </div>
+      <p>The <em>transpose</em> flips the array about its diagonal,
+      \((A^{\mathsf T})_{ij}=A_{ji}\), which turns columns into rows. It reverses
+      products, \((AB)^{\mathsf T}=B^{\mathsf T}A^{\mathsf T}\), and it writes the
+      inner product as a matrix product, \(u\cdot v=u^{\mathsf T}v\).</p>
+      <p class="claim">\(AB\) means: apply \(B\), then \(A\). Which is why
+      \(AB\neq BA\) in general.</p>
+    </div>
+    <div>
+      <div class="panels">
+        <figure>
+          <svg id="fig-rs" viewBox="0 0 250 200" role="img"
+               aria-label="The point cloud scaled and then rotated"></svg>
+          <figcaption>\(RS\): scale first, then rotate.</figcaption>
+        </figure>
+        <figure>
+          <svg id="fig-sr" viewBox="0 0 250 200" role="img"
+               aria-label="The point cloud rotated and then scaled"></svg>
+          <figcaption>\(SR\): rotate first, then scale.</figcaption>
+        </figure>
+      </div>
+      <div class="eq" style="margin-top:20px">
+        $$R=\begin{bmatrix}0&-1\\1&0\end{bmatrix},\quad
+          S=\begin{bmatrix}2&0\\0&1\end{bmatrix}$$
+        $$RS=\begin{bmatrix}0&-1\\2&0\end{bmatrix}\neq
+          \begin{bmatrix}0&-2\\1&0\end{bmatrix}=SR$$
+      </div>
+    </div>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Read the right-hand column out loud: \(R\) is a quarter turn, \(S\) stretches
+    the horizontal axis by two. Stretch then turn gives a shape standing up; turn
+    then stretch gives one lying down. Same two operations, different results, and no
+    algebra needed to see it.</p>
+    <p>The transpose is on this slide only because we need the notation later —
+    orthogonal matrices on slide 12 and symmetric ones on slide 21. Do not dwell.</p>
+  </aside>
+</section>
+
+<!-- 10 -->
+<section class="slide" data-where="II. Matrices">
+  <h2>Matrices as linear transformations</h2>
+  <p class="sub">The array was never the point. The map is.</p>
+  <div class="two wide-left body">
+    <div>
+      <p>A map \(T\) is <em>linear</em> when it respects both operations of slide 5.
+      Every linear map is a matrix product and every matrix product is a linear map:
+      the two notions coincide.</p>
+      <div class="eq">
+        $$T(u+v)=T(u)+T(v),\qquad T(cu)=c\,T(u)$$
+        <p class="note">Together: \(T(au+bv)=aT(u)+bT(v)\).</p>
+      </div>
+      <p>Geometrically that forces a great deal: the origin cannot move, straight
+      lines stay straight, parallel lines stay parallel, and equally spaced points
+      stay equally spaced. A square grid maps to a grid of identical
+      parallelograms.</p>
+      <p class="claim">Grid lines stay straight, parallel and evenly spaced, and the
+      origin stays put. That is all a linear map is allowed to do.</p>
+    </div>
+    <figure>
+      <svg id="fig-linear" viewBox="0 0 400 290" role="img"
+           aria-label="A square grid and its image under a linear map, a grid of parallelograms"></svg>
+      <figcaption>The unit square and the grid, before and after
+      \(A=\bigl[\begin{smallmatrix}1.2&0.8\\0.3&1.1\end{smallmatrix}\bigr]\).
+      Corners stay corners; the origin does not move.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The negative statements are the useful ones: a linear map cannot bend a line,
+    cannot move the origin, and cannot translate. Translation is the subject of slide
+    13, and lecture 4's first real claim — that a stack of linear layers collapses to
+    one — is this slide plus the previous one.</p>
+    <p>Demonstration: ask what shape the unit square becomes. Answer: a
+    parallelogram, spanned by the two columns. That is the next slide.</p>
+  </aside>
+</section>
+
+<!-- 11 -->
+<section class="slide" data-where="II. Matrices">
+  <h2>The columns of a matrix are the images of the basis vectors</h2>
+  <p class="sub">Choose where \(e_1\) and \(e_2\) go, and the matrix is written.</p>
+  <div class="two body">
+    <div>
+      <p>Let \(e_1=(1,0)\) and \(e_2=(0,1)\). By the column picture of slide 8,
+      \(Ae_1\) selects the first column and \(Ae_2\) the second: the columns of
+      \(A\) are where the basis vectors land.</p>
+      <div class="eq">
+        $$A=\begin{bmatrix}|&|\\Ae_1&Ae_2\\|&|\end{bmatrix},\qquad
+          Ax=x_1\,Ae_1+x_2\,Ae_2$$
+      </div>
+      <p>That determines everything: to find the matrix of a transformation, apply
+      it to the basis vectors and write the answers as columns.</p>
+      <p class="claim">A linear map is determined by what it does to a basis. The
+      matrix is that record, nothing more.</p>
+    </div>
+    <figure class="demo" data-demo="basis">
+      <svg id="fig-basis" viewBox="0 0 430 290" role="img"
+           aria-label="Two draggable arrows giving the images of the basis vectors, with the point cloud transformed to match"></svg>
+      <div class="readout">
+        <div class="mat m2" id="mat-basis"></div>
+        <div class="note">det <b id="det-basis"></b><br>area scale factor</div>
+      </div>
+      <p class="hint">Drag either coloured arrowhead. Grey is the original cloud.</p>
+      <figcaption>The two arrows are \(Ae_1\) and \(Ae_2\); everything else in the
+      figure follows.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>This is the load-bearing slide of the lecture. Drag one arrow onto the other
+    and watch the cloud collapse to a line — that is the determinant going to zero,
+    and it is slide 20's rank deficiency seen in advance. Drag one arrow past the
+    other and the determinant changes sign: the plane has been flipped over.</p>
+    <p>Then read the matrix off the two arrows out loud, once, slowly. If the room
+    follows that, the rest of the section is bookkeeping.</p>
+  </aside>
+</section>
+
+<!-- 12 -->
+<section class="slide" data-where="II. Matrices">
+  <h2>Rotation, scaling, shear, reflection; orthogonal matrices</h2>
+  <p class="sub">Four families, and the property that singles out two of them.</p>
+  <div class="two body">
+    <div>
+      <div class="eq bare" style="margin-top:0">
+        $$R_\theta=\begin{bmatrix}\cos\theta&-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}
+          \quad
+          S=\begin{bmatrix}s_1&0\\0&s_2\end{bmatrix}$$
+        $$H_k=\begin{bmatrix}1&k\\0&1\end{bmatrix}
+          \quad
+          F_\varphi=\begin{bmatrix}\cos2\varphi&\sin2\varphi\\\sin2\varphi&-\cos2\varphi\end{bmatrix}$$
+      </div>
+      <p>Each is read off the previous slide: the columns of \(R_\theta\) are
+      \(e_1\) and \(e_2\) turned by \(\theta\), and \(H_k\) slides \(e_2\)
+      sideways while leaving \(e_1\) alone.</p>
+      <p>A matrix is <em>orthogonal</em> when \(Q^{\mathsf T}Q=I\): its columns are
+      unit vectors, pairwise orthogonal. Then
+      \((Qu)\cdot(Qv)=u^{\mathsf T}Q^{\mathsf T}Qv=u\cdot v\), so every length and
+      angle survives. Rotations and reflections are orthogonal; shears and
+      scalings are not.</p>
+      <p class="claim">Orthogonal means rigid: only turning and flipping remain.</p>
+    </div>
+    <figure class="demo" data-demo="transforms">
+      <svg id="fig-transforms" viewBox="0 0 420 250" role="img"
+           aria-label="The point cloud under a rotation, scaling, shear or reflection, adjustable with a slider"></svg>
+      <div class="controls">
+        <div class="seg" id="seg-transforms">
+          <button data-kind="rot" aria-pressed="true">rotation</button
+          ><button data-kind="scale" aria-pressed="false">scaling</button
+          ><button data-kind="shear" aria-pressed="false">shear</button
+          ><button data-kind="flip" aria-pressed="false">reflection</button>
+        </div>
+        <div class="row" id="row-p1"><label id="lab-p1">angle θ</label>
+          <input type="range" id="p1" min="-180" max="180" step="1" value="30">
+          <output id="out-p1"></output></div>
+        <div class="row" id="row-p2"><label id="lab-p2">s₂</label>
+          <input type="range" id="p2" min="0.2" max="1.8" step="0.05" value="1">
+          <output id="out-p2"></output></div>
+      </div>
+      <div class="readout">
+        <div class="mat m2" id="mat-transforms"></div>
+        <div class="note">det <b id="det-transforms"></b><br>
+          QᵀQ = I <b id="orth-transforms"></b></div>
+      </div>
+      <figcaption>Grey is the original cloud, green the images of the basis
+      vectors.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Sweep the rotation slider through a full turn and note that the grey and red
+    clouds stay congruent — nothing is distorted, which is orthogonality. Then switch
+    to shear and sweep: the cloud leans, the horizontal axis is untouched, and the
+    determinant stays at one although lengths clearly changed. Area preserved is not
+    the same as shape preserved.</p>
+    <p>Reflection is worth one moment: sweep \(\varphi\) and watch the determinant sit
+    at \(-1\) throughout. Cut candidate if the room is quick — the slide survives on
+    rotation and shear alone.</p>
+  </aside>
+</section>
+
+<!-- 13 -->
+<section class="slide" data-where="II. Matrices">
+  <h2>Affine maps and homogeneous coordinates</h2>
+  <p class="sub">Translation is not linear. One extra coordinate repairs that.</p>
+  <div class="two body">
+    <div>
+      <p>An <em>affine</em> map is a linear map followed by a translation,
+      \(x\mapsto Ax+t\). It is not linear: it moves the origin to \(t\), and no
+      \(2\times2\) matrix can do that.</p>
+      <p>Append a coordinate equal to \(1\), and composition is matrix
+      multiplication again: the block matrix below sends \((x_1,x_2,1)\) to
+      \((Ax+t,\,1)\).</p>
+      <div class="eq">
+        $$\begin{bmatrix}A&t\\0&1\end{bmatrix}
+          \begin{bmatrix}x\\1\end{bmatrix}
+          =\begin{bmatrix}Ax+t\\1\end{bmatrix}$$
+      </div>
+      <p class="claim">An affine map in \(\mathbb{R}^n\) is a linear map in
+      \(\mathbb{R}^{n+1}\) that fixes the last coordinate.</p>
+    </div>
+    <figure class="demo" data-demo="affine">
+      <svg id="fig-affine" viewBox="0 0 420 250" role="img"
+           aria-label="The point cloud rotated and translated, with the image of the origin marked"></svg>
+      <div class="controls">
+        <div class="row"><label>angle θ</label>
+          <input type="range" id="a1" min="-180" max="180" step="1" value="25">
+          <output id="out-a1"></output></div>
+        <div class="row"><label>t₁</label>
+          <input type="range" id="a2" min="-2" max="2" step="0.05" value="0.8">
+          <output id="out-a2"></output></div>
+        <div class="row"><label>t₂</label>
+          <input type="range" id="a3" min="-1.2" max="1.2" step="0.05" value="0.5">
+          <output id="out-a3"></output></div>
+      </div>
+      <div class="readout">
+        <div class="mat m3" id="mat-affine"></div>
+        <div class="note">the ringed dot is the<br>image of the origin</div>
+      </div>
+      <figcaption>Rotation, then translation. A linear map could not have moved the
+      origin at all.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Move only the translation sliders first and let the room see the origin leave
+    the crossing of the axes; that is the failure of linearity, visibly. Then note
+    that the rotation acts before the translation, so turning the angle swings the
+    cloud about the origin and not about its own centre.</p>
+    <p>Forward reference to pay off in lecture 4: a layer of a neural network computes
+    \(Wx+b\), an affine map, and the trick on this slide is exactly why the bias can
+    be folded into the weight matrix as one extra column.</p>
+  </aside>
+</section>
+
+<!-- 14 -->
+<section class="slide" data-where="III. Span, basis and coordinates">
+  <h2>Span and linear independence</h2>
+  <p class="sub">What a set of vectors can reach, and whether any of them is spare.</p>
+  <div class="two wide-left body">
+    <div>
+      <p>The <em>span</em> of a set of vectors is the set of all their linear
+      combinations: everything reachable by scaling and adding. One nonzero vector
+      spans a line through the origin; two span a plane, unless they lie on the same
+      line.</p>
+      <div class="eq">
+        $$\operatorname{span}\{v_1,\dots,v_k\}=\{c_1v_1+\dots+c_kv_k\;:\;c_i\in\mathbb{R}\}$$
+      </div>
+      <p>They are <em>linearly independent</em> when the only combination equal to
+      zero has all coefficients zero — equivalently, none of them lies in the span of
+      the others. So \((1,2)\) and \((2,4)\) are <em>dependent</em>:
+      \(2(1,2)-(2,4)=0\), and the second adds nothing.</p>
+      <p class="claim">Dependence means redundancy, detected by a combination that
+      vanishes.</p>
+    </div>
+    <div class="panels">
+      <figure>
+        <svg id="fig-span-a" viewBox="0 0 250 230" role="img"
+             aria-label="Two independent vectors with sample combinations filling the plane"></svg>
+        <figcaption>Independent: the combinations fill the plane.</figcaption>
+      </figure>
+      <figure>
+        <svg id="fig-span-b" viewBox="0 0 250 230" role="img"
+             aria-label="Two parallel vectors whose combinations fill only a line"></svg>
+        <figcaption>Dependent: every combination lands on one line.</figcaption>
+      </figure>
+    </div>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The two figures are the slide. In the right-hand one, ask what happens if you
+    want to reach a point off the line: nothing you do with those two vectors gets
+    there. That is the picture behind "no solution" on slide 20.</p>
+    <p>Cut candidate: this slide folds into the next one if time is tight — state
+    span and independence in two sentences on the way to defining a basis.</p>
+  </aside>
+</section>
+
+<!-- 15 -->
+<section class="slide" data-where="III. Span, basis and coordinates">
+  <h2>Basis and dimension</h2>
+  <p class="sub">Enough vectors to reach everything, and not one more.</p>
+  <div class="two wide-left body">
+    <div>
+      <p>A <em>basis</em> of a space is a set of vectors that is both independent and
+      spanning. The two conditions pull in opposite directions and meet exactly where
+      coordinates work:</p>
+      <ul>
+        <li><b>Spanning</b> gives existence — every vector <em>can</em> be written as a
+        combination of the basis.</li>
+        <li><b>Independence</b> gives uniqueness — it can be written that way in only
+        one way.</li>
+      </ul>
+      <p>Every basis of a space has the same number of vectors; that number is the
+      <em>dimension</em>. In \(\mathbb{R}^n\) it is \(n\): any \(n\) independent
+      vectors form a basis, and any \(n+1\) are dependent.</p>
+      <p class="claim">A basis is precisely what is needed for coordinates to exist
+      and to be unique.</p>
+    </div>
+    <figure>
+      <svg id="fig-dim" viewBox="0 0 330 250" role="img"
+           aria-label="Three vectors in the plane, one written as a combination of the other two"></svg>
+      <figcaption>Three vectors in the plane must be dependent: the third is already a
+      combination of the first two.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Uniqueness is the half people skip, and it is the half that matters: if a
+    vector had two different coordinate representations, the word "coordinates" would
+    be meaningless. Prove it in one line if the room is willing — two representations
+    subtract to a vanishing combination, so independence forces the coefficients to
+    agree.</p>
+    <p>Dimension in the wild: a word embedding in lecture 5 lives in \(\mathbb{R}^{768}\)
+    or thereabouts. Nothing changes except that no one draws the picture.</p>
+  </aside>
+</section>
+
+<!-- 16 -->
+<section class="slide" data-where="III. Span, basis and coordinates">
+  <h2>Coordinates relative to a basis; orthonormal bases</h2>
+  <p class="sub">The same vector, two lists of numbers.</p>
+  <div class="two wide-left body">
+    <div>
+      <p>Given a basis \(B=\{b_1,b_2\}\), the <em>coordinates</em> of \(v\) are the
+      unique weights that rebuild it — found by solving a linear system.</p>
+      <div class="eq">
+        $$v=c_1b_1+c_2b_2,\qquad [v]_B=\begin{bmatrix}c_1\\c_2\end{bmatrix}$$
+      </div>
+      <p>Unless the basis is <em>orthonormal</em>: unit vectors, mutually orthogonal.
+      Then dotting with \(q_i\) kills every term but one, and each coordinate is a
+      projection — one dot product per axis.</p>
+      <div class="eq bare">
+        $$c_i=v\cdot q_i,\qquad
+        q_1=\tfrac1{\sqrt2}\begin{bmatrix}1\\1\end{bmatrix},\;
+        q_2=\tfrac1{\sqrt2}\begin{bmatrix}-1\\1\end{bmatrix},\;
+        [v]_Q=\begin{bmatrix}2\sqrt2\\-\sqrt2\end{bmatrix}$$
+      </div>
+      <p class="claim">Coordinates belong to the basis, not to the vector.</p>
+    </div>
+    <figure>
+      <svg id="fig-coords" viewBox="0 0 380 300" role="img"
+           aria-label="One vector with its components in the standard basis and in a rotated orthonormal basis"></svg>
+      <figcaption>\(v=(3,1)\) in the standard basis; the same \(v\) with components
+      \(2\sqrt2\approx2.83\) and \(-\sqrt2\approx-1.41\) in the rotated one.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Check the arithmetic on the board, because it closes the loop with slide 7:
+    \(2\sqrt2\,q_1=(2,2)\) and \(-\sqrt2\,q_2=(1,-1)\), and those add to \((3,1)\).
+    Those are the very two pieces the projection example produced.</p>
+    <p>This is the figure to point at when someone asks why any of this matters: two
+    different pairs of numbers, one vector, and neither pair is more correct.
+    Orthonormal bases return in lecture 5, where each attention head projects into
+    its own low-dimensional frame.</p>
+  </aside>
+</section>
+
+<!-- 17 -->
+<section class="slide" data-where="III. Span, basis and coordinates">
+  <h2>Change of basis</h2>
+  <p class="sub">A matrix that translates between two descriptions.</p>
+  <div class="two wide-left body">
+    <div>
+      <p>Collect the basis vectors as the columns of \(B\). Then \(B\) applied to a
+      coordinate vector rebuilds the vector — the column picture again — and the
+      inverse direction is \(B^{-1}\).</p>
+      <div class="eq">
+        $$v=B\,[v]_B,\qquad [v]_B=B^{-1}v$$
+        <p class="note">\(B\) is invertible exactly because its columns are a
+        basis.</p>
+      </div>
+      <p>For an orthonormal basis the inverse is free: \(Q^{\mathsf T}Q=I\) says
+      \(Q^{-1}=Q^{\mathsf T}\), whose rows dot the vector with each \(q_i\) — the
+      previous slide's projection, as a matrix.</p>
+      <div class="eq bare">
+        $$[v]_Q=Q^{\mathsf T}v=\tfrac1{\sqrt2}\begin{bmatrix}1&1\\-1&1\end{bmatrix}
+          \begin{bmatrix}3\\1\end{bmatrix}
+          =\begin{bmatrix}2\sqrt2\\-\sqrt2\end{bmatrix}$$
+      </div>
+      <p class="claim">\(B\) takes coordinates to vectors; \(B^{-1}\) takes vectors to
+      coordinates.</p>
+    </div>
+    <figure>
+      <svg id="fig-cob" viewBox="0 0 340 280" role="img"
+           aria-label="A vector with dashed coordinate readings against a rotated basis, and the matrices relating the two descriptions"></svg>
+      <figcaption>Reading \(v\) against the rotated frame gives \((2.83,-1.41)\);
+      multiplying by \(Q\) reads it back as \((3,1)\).</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The direction of the arrows is the thing everyone gets backwards, including the
+    lecturer. Say it as a sentence and rely on it: the columns of \(B\) <em>are</em>
+    the new basis written in the old one, so \(B\) must be the map that consumes new
+    coordinates and produces old ones.</p>
+    <p>Verify the transpose identity for the example numerically if asked; it is one
+    multiplication. Then move on, because the next slide is the payoff.</p>
+  </aside>
+</section>
+
+<!-- 18 -->
+<section class="slide" data-where="III. Span, basis and coordinates">
+  <h2>Similar matrices</h2>
+  <p class="sub">One map, two matrices, related by a change of basis.</p>
+  <div class="two wide-left body">
+    <div>
+      <p>Let \(y=Ax\) in the standard basis and let \(B\) hold a new basis. In the
+      new coordinates the same map is \(B^{-1}AB\): read in, apply \(A\), read
+      back.</p>
+      <div class="eq">
+        $$[y]_B=B^{-1}A\,B\,[x]_B,\qquad A'=B^{-1}AB$$
+        <p class="note">\(A\) and \(A'\) are <em>similar</em>: one transformation
+        from two points of view. Trace, determinant, rank and eigenvalues agree.</p>
+      </div>
+      <p>With \(A=\bigl[\begin{smallmatrix}2&1\\1&2\end{smallmatrix}\bigr]\) and
+      \(Q\) the rotated basis of slide 16, the off-diagonal entries vanish:</p>
+      <div class="eq bare">
+        $$Q^{\mathsf T}AQ=\begin{bmatrix}3&0\\0&1\end{bmatrix}$$
+      </div>
+      <p class="claim">In the right basis this map only stretches: by \(3\) along one
+      axis, by \(1\) along the other.</p>
+    </div>
+    <figure>
+      <svg id="fig-similar" viewBox="0 0 420 250" role="img"
+           aria-label="A commuting square: the map A between standard coordinates, and A prime between new coordinates, with B on the vertical arrows"></svg>
+      <figcaption>Both routes from bottom left to top right agree, which is what
+      \(A'=B^{-1}AB\) asserts.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Trace the square with a finger, twice, and say the sentence: going around the
+    outside is the same as going across the middle. Then flag the forward reference
+    explicitly — finding a basis in which a matrix becomes diagonal is the whole of
+    slide 21, and we have just done it once by hand.</p>
+    <p>First cut candidate of the lecture. If it goes, slide 21 has to state
+    diagonalization from scratch instead of recognising it.</p>
+  </aside>
+</section>
+
+<!-- 19 -->
+<section class="slide" data-where="IV. Linear systems">
+  <h2>Systems of linear equations</h2>
+  <p class="sub">The same question asked of rows and of columns.</p>
+  <div class="two wide-left body">
+    <div>
+      <p>A system of \(m\) linear equations in \(n\) unknowns is one matrix equation
+      \(Ax=b\). The two readings of \(Ax\) from slide 8 give two pictures of it, and
+      they answer different questions.</p>
+      <div class="eq">
+        $$\begin{aligned}2x_1+x_2&=5\\x_1+2x_2&=4\end{aligned}
+        \qquad\Longleftrightarrow\qquad
+        \begin{bmatrix}2&1\\1&2\end{bmatrix}
+        \begin{bmatrix}x_1\\x_2\end{bmatrix}=\begin{bmatrix}5\\4\end{bmatrix}$$
+      </div>
+      <ul>
+        <li><b>Row picture.</b> Each equation is a line; a solution is a point on
+        every line at once, so the solution set is their intersection.</li>
+        <li><b>Column picture.</b> Which combination of the columns produces \(b\)?
+        Here \(2(2,1)+1(1,2)=(5,4)\), so \(x=(2,1)\).</li>
+      </ul>
+      <p class="claim">\(Ax=b\) asks whether \(b\) is in the span of the columns of
+      \(A\), and if so, with which weights.</p>
+    </div>
+    <div class="panels">
+      <figure>
+        <svg id="fig-rows" viewBox="0 0 250 240" role="img"
+             aria-label="Two lines crossing at the point 2 comma 1"></svg>
+        <figcaption>Row picture: two lines, one crossing.</figcaption>
+      </figure>
+      <figure>
+        <svg id="fig-colpic" viewBox="0 0 250 240" role="img"
+             aria-label="Two column vectors combined with weights two and one to reach the vector b"></svg>
+        <figcaption>Column picture: \(2a_1+1a_2=b\).</figcaption>
+      </figure>
+    </div>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Say plainly what is not covered: how a system is actually solved. Gaussian
+    elimination and the LU, QR and Cholesky factorizations are the standard machinery,
+    and they are a talk of their own. Here we only need to know what the equation
+    means and when it has an answer.</p>
+    <p>The column picture is the one to insist on, because it generalises: the same
+    sentence describes least squares in lecture 3, where \(b\) is <em>not</em> in the
+    span and the best available combination is taken instead.</p>
+  </aside>
+</section>
+
+<!-- 20 -->
+<section class="slide" data-where="IV. Linear systems">
+  <h2>Rank, null space, existence and uniqueness</h2>
+  <p class="sub">What the map reaches, and what it destroys.</p>
+  <div class="two wide-left body">
+    <div>
+      <p>The <em>column space</em> of \(A\) is the span of its columns — everything
+      \(Ax\) can reach — and its dimension is the <em>rank</em>. The <em>null
+      space</em> is everything sent to zero. The two answer the two questions one can
+      ask of \(Ax=b\):</p>
+      <ul>
+        <li><b>Existence.</b> A solution exists exactly when \(b\) lies in the column
+        space.</li>
+        <li><b>Uniqueness.</b> It is unique exactly when the null space is
+        \(\{0\}\); otherwise adding any null vector gives another solution.</li>
+      </ul>
+      <div class="eq bare">
+        $$A=\begin{bmatrix}1&2\\2&4\end{bmatrix}:\quad
+          \operatorname{rank}=1,\quad
+          \text{col space}=\operatorname{span}\!\begin{bmatrix}1\\2\end{bmatrix},\quad
+          \text{null space}=\operatorname{span}\!\begin{bmatrix}2\\-1\end{bmatrix}$$
+      </div>
+      <p class="claim">Solutions form a particular solution plus the whole null
+      space. Rank counts what survives; the null space is what was lost.</p>
+    </div>
+    <figure>
+      <svg id="fig-rank" viewBox="0 0 400 280" role="img"
+           aria-label="The point cloud collapsed onto a line by a rank one matrix, with the null space direction marked"></svg>
+      <figcaption>A rank-one map flattens the plane onto a line. Every point of the
+      dashed direction, the null space, is sent to the origin.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Tie it back to slide 11's demonstration: dragging the two arrows onto one line
+    is precisely this matrix. Once the cloud is flat, the map cannot be undone —
+    information is gone, not merely hidden.</p>
+    <p>Forward reference: lecture 3's condition number measures how close a matrix is
+    to this situation, and it is why an optimizer can crawl. Nearly singular behaves
+    like singular in floating point.</p>
+  </aside>
+</section>
+
+<!-- 21 -->
+<section class="slide" data-where="V. Spectral decomposition">
+  <h2>Eigenvalues, eigenvectors and diagonalization</h2>
+  <p class="sub">The directions a map does not turn.</p>
+  <div class="two wide-left body">
+    <div>
+      <p>A nonzero \(v\) with \(Av=\lambda v\) is an <em>eigenvector</em>: the map
+      leaves its direction alone and only scales it, by the <em>eigenvalue</em>
+      \(\lambda\), a root of \(\det(A-\lambda I)=0\).</p>
+      <div class="eq">
+        $$A=\begin{bmatrix}2&1\\1&2\end{bmatrix}:\quad
+          \lambda_1=3,\;v_1=\begin{bmatrix}1\\1\end{bmatrix};\qquad
+          \lambda_2=1,\;v_2=\begin{bmatrix}-1\\1\end{bmatrix}$$
+      </div>
+      <p>Put the eigenvectors in the columns of \(B\) and this is slide 18 with the
+      basis chosen well: \(B^{-1}AB=\Lambda\) is diagonal, so \(A=B\Lambda B^{-1}\).
+      Symmetric matrices have orthogonal eigenvectors, giving
+      \(A=Q\Lambda Q^{\mathsf T}\).</p>
+      <p class="small">Two caveats, named rather than developed:
+      \(\bigl[\begin{smallmatrix}1&1\\0&1\end{smallmatrix}\bigr]\) is not
+      diagonalizable, and a rotation has no real eigenvector at all.</p>
+      <p class="claim">Diagonalizing is choosing a basis in which the map only
+      stretches.</p>
+    </div>
+    <figure>
+      <svg id="fig-eigen" viewBox="0 0 400 290" role="img"
+           aria-label="The point cloud under a symmetric matrix, with the two eigendirections drawn, one stretched by three and one unchanged"></svg>
+      <figcaption>Points on the eigendirections stay on them: \((1,1)\) is stretched
+      threefold, \((-1,1)\) is untouched.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Point at the two dashed lines and note that they are the only two directions
+    with that property; everything else in the cloud gets turned as well as stretched.
+    Then say what eigenvalues are for downstream: in lecture 3 the ratio of the
+    largest to the smallest eigenvalue of the Hessian is the condition number, and it
+    predicts the zig-zag of steepest descent.</p>
+    <p>Do not compute the characteristic polynomial unless asked. Determinants are
+    deliberately a remark in this series.</p>
+  </aside>
+</section>
+
+<!-- 22 -->
+<section class="slide" data-where="V. Spectral decomposition">
+  <h2>The singular value decomposition</h2>
+  <p class="sub">Every matrix is a rotation, a scaling along axes, and a rotation.</p>
+  <div class="two body">
+    <div>
+      <p>Eigenvectors need a square matrix and may not exist. The singular value
+      decomposition has no conditions: <em>every</em> matrix factors as</p>
+      <div class="eq">
+        $$A=U\Sigma V^{\mathsf T},\qquad
+          \Sigma=\operatorname{diag}(\sigma_1\!\ge\!\sigma_2\!\ge\!\dots\!\ge\!0)$$
+        <p class="note">with \(U\), \(V\) orthogonal. Read right to left: turn,
+        stretch along the axes by the <em>singular values</em>, turn again.</p>
+      </div>
+      <p>So the unit circle always maps to an ellipse, with semi-axes
+      \(\sigma_i\) along the columns of \(U\). The shear
+      \(\bigl[\begin{smallmatrix}1&1\\0&1\end{smallmatrix}\bigr]\) of slide 21, which
+      had no second eigenvector, factors with \(\sigma_1=1.618\) and
+      \(\sigma_2=0.618\); their product is \(1\), since a shear preserves area.</p>
+      <p class="small">The rank is the number of nonzero \(\sigma_i\), the ratio
+      \(\sigma_1/\sigma_n\) is lecture 3's condition number, and dropping small
+      \(\sigma_i\) gives the best low-rank approximation.</p>
+    </div>
+    <figure class="demo" data-demo="svd">
+      <svg id="fig-svd" viewBox="0 0 420 250" role="img"
+           aria-label="The point cloud carried through the three stages of a singular value decomposition"></svg>
+      <div class="controls">
+        <div class="row"><label>stage</label>
+          <input type="range" id="s1" min="0" max="3" step="0.01" value="0">
+          <output id="out-s1"></output></div>
+      </div>
+      <div class="readout">
+        <div class="mat m2" id="mat-svd"></div>
+        <div class="note">applied so far, of<br>
+          A = <b>[[1, 1], [0, 1]]</b></div>
+      </div>
+      <figcaption>Drag through the three factors. The dashed ellipse is the image of
+      the unit circle.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Drag the slider slowly and name each stage as it happens: turn, stretch, turn.
+    Stop at stage two and point out that the ellipse axes are aligned with the
+    coordinate axes there, and that the last rotation only carries them somewhere
+    else. That is the whole content of the theorem.</p>
+    <p>Worth saying once: this is the decomposition behind low-rank approximation and
+    principal components, and it is the reason people say a matrix "is" a rotation, a
+    scaling and a rotation. If time is gone, show the endpoints only.</p>
+  </aside>
+</section>
+
+<!-- 23 -->
+<section class="slide" data-where="Quiz">
+  <h2>Quiz</h2>
+  <p class="sub">Five questions, answers from the room.</p>
+  <div class="body">
+    <ol class="qz">
+      <li><span>\(u=(2,-1)\) and \(v=(1,2)\). What is \(u\cdot v\), and what is the
+      angle between them?</span></li>
+      <li><span>A linear map sends \(e_1\) to \((0,1)\) and \(e_2\) to \((-1,0)\).
+      Write down its matrix. What map is it?</span></li>
+      <li><span>Do \((1,1)\) and \((2,2)\) form a basis of \(\mathbb{R}^2\)?
+      What do they span?</span></li>
+      <li><span>A \(2\times2\) matrix maps the whole plane onto a line. What are its
+      rank, its determinant, and the dimension of its null space?</span></li>
+      <li><span>\(A=\bigl[\begin{smallmatrix}2&1\\1&2\end{smallmatrix}\bigr]\) has
+      \((1,1)\) as an eigenvector. What is the eigenvalue, and what is the other
+      eigenvector?</span></li>
+    </ol>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p><b>1.</b> \(2-2=0\), so they are orthogonal: \(90^\circ\).
+    <b>2.</b> Columns are the images, so
+    \(\bigl[\begin{smallmatrix}0&-1\\1&0\end{smallmatrix}\bigr]\), a quarter turn
+    counterclockwise — the \(R\) of slide 9.
+    <b>3.</b> No: dependent, since the second is twice the first. They span the line
+    through \((1,1)\), not the plane.
+    <b>4.</b> Rank 1, determinant 0, null space of dimension 1 — rank plus nullity is
+    the number of columns.
+    <b>5.</b> \(A(1,1)=(3,3)\), so \(\lambda=3\); the other is \((-1,1)\) with
+    \(\lambda=1\), orthogonal to the first because \(A\) is symmetric.</p>
+    <p>Ask 1, 2 and 5 of the room if time is short; they cover the three sections that
+    later lectures depend on. Then stop — questions and overrun are what the remaining
+    ten minutes are for.</p>
+  </aside>
+</section>
+
+</div></div>
+<div id="overview" aria-hidden="true"></div>
+<div id="help">← → navigate · N notes · O overview · F full screen</div>
+<script>
+/* The Volumental logo outline, 512 points, centred, in units of about one. */
+const LOGO = [
+  -0.337,-0.079,-0.133,-0.085,-0.808,-0.130,-0.837,0.299,0.737,0.313,0.683,
+  0.158,0.590,0.221,-0.133,-0.449,-0.623,0.207,0.026,-0.153,0.667,-0.341,
+  -0.779,0.274,0.294,0.072,0.292,-0.060,-0.713,0.246,0.670,0.181,-0.133,
+  -0.256,-0.007,-0.500,-0.133,0.295,-0.424,-0.117,-0.333,-0.057,-0.133,
+  -0.335,0.026,0.156,0.726,0.319,0.026,0.338,-0.508,0.009,-0.501,-0.012,
+  -0.743,0.259,0.522,-0.203,-0.355,-0.087,-0.862,-0.151,0.407,0.296,-0.133,
+  -0.387,-0.881,0.250,-0.133,-0.202,-0.562,-0.035,0.705,-0.057,-0.700,0.083,
+  -0.026,0.500,0.310,-0.153,0.666,0.340,-0.838,0.300,0.768,-0.294,0.691,
+  0.137,0.518,-0.200,0.881,0.009,0.310,-0.152,-0.583,0.038,0.794,0.270,0.372,
+  0.264,0.420,0.304,-0.550,0.175,0.026,0.111,0.026,0.489,-0.133,-0.005,
+  -0.133,0.220,-0.609,0.048,0.863,-0.146,-0.821,0.292,-0.133,-0.479,-0.133,
+  -0.491,0.728,-0.318,-0.852,-0.147,-0.881,0.242,0.301,-0.119,-0.450,0.132,
+  0.678,0.337,0.832,0.218,0.290,-0.008,0.436,-0.315,-0.492,-0.147,-0.769,
+  -0.269,-0.333,0.046,0.534,-0.210,-0.881,0.247,0.706,-0.042,0.302,0.122,
+  0.667,-0.187,0.749,0.306,0.026,-0.189,-0.881,-0.311,-0.702,-0.240,0.486,
+  -0.154,-0.809,0.287,-0.097,0.500,-0.133,0.262,0.612,0.218,-0.792,0.118,
+  -0.133,-0.433,0.765,-0.296,-0.133,0.035,-0.133,-0.402,0.870,-0.116,0.399,
+  0.289,-0.133,0.177,-0.881,0.268,0.290,0.003,0.549,-0.216,0.474,-0.117,
+  0.456,0.324,0.881,0.023,0.026,0.294,-0.133,0.043,0.336,0.213,0.302,0.119,
+  -0.333,0.046,-0.693,0.080,-0.133,-0.007,-0.058,0.500,0.340,-0.221,-0.133,
+  0.218,-0.133,0.126,0.026,-0.094,0.761,0.298,0.684,-0.336,-0.613,0.049,
+  0.695,0.121,-0.598,-0.049,-0.333,0.033,0.798,-0.265,-0.133,0.301,-0.133,
+  -0.167,0.560,-0.219,0.685,-0.154,-0.608,0.200,0.311,-0.155,-0.786,-0.121,
+  0.767,0.294,0.630,0.213,-0.133,0.280,0.529,-0.346,-0.521,-0.160,0.525,
+  0.343,0.658,-0.196,-0.775,-0.272,0.722,-0.322,-0.104,-0.500,-0.123,-0.500,
+  -0.549,-0.030,0.026,0.392,-0.779,-0.273,0.018,-0.500,0.026,-0.130,-0.637,
+  -0.064,0.026,-0.238,-0.881,-0.265,0.686,0.335,0.706,0.328,-0.604,-0.051,
+  0.877,0.076,-0.748,0.261,-0.798,-0.282,0.661,0.193,0.521,-0.202,-0.133,
+  0.323,0.026,-0.316,0.026,0.105,0.302,0.119,-0.133,0.070,0.291,-0.034,0.673,
+  -0.339,0.586,-0.350,-0.133,0.218,0.018,-0.500,-0.881,-0.206,0.740,-0.312,
+  0.868,-0.126,0.419,0.304,-0.133,-0.144,-0.881,0.240,-0.333,0.073,-0.793,
+  0.119,-0.881,-0.187,0.026,-0.414,-0.133,0.149,0.293,-0.069,-0.586,-0.189,
+  -0.133,-0.081,0.346,0.230,-0.563,0.030,0.026,0.190,-0.133,-0.391,-0.766,
+  -0.114,-0.435,0.125,-0.045,-0.500,-0.450,0.132,-0.100,-0.500,0.026,0.258,
+  -0.826,-0.294,-0.795,-0.125,0.419,-0.305,-0.065,-0.500,-0.654,-0.071,0.541,
+  -0.213,-0.753,-0.262,0.474,-0.332,0.507,-0.190,0.705,-0.059,0.868,-0.126,
+  -0.133,-0.159,-0.133,0.184,0.343,-0.226,0.772,-0.290,-0.350,0.088,0.409,
+  0.297,-0.133,-0.301,0.579,-0.350,0.520,-0.201,0.752,-0.305,0.861,0.152,
+  -0.565,-0.179,-0.569,0.032,0.357,-0.248,-0.133,0.032,0.326,0.193,-0.743,
+  0.259,0.026,0.430,-0.881,-0.193,0.290,0.008,0.662,-0.192,-0.796,0.282,
+  0.480,0.138,0.366,0.257,-0.584,0.190,0.475,0.120,0.504,-0.341,-0.506,
+  -0.013,0.484,-0.150,-0.501,-0.011,0.363,0.254,-0.741,-0.104,0.026,0.116,
+  0.026,-0.133,0.026,0.172,0.874,-0.096,-0.862,-0.151,0.026,-0.060,0.828,
+  0.226,-0.030,0.500,-0.133,-0.293,0.848,0.188,0.881,-0.003,0.496,0.337,
+  0.023,0.500,0.026,-0.281,0.026,-0.329,0.295,-0.080,0.875,0.087,-0.881,
+  0.292,-0.133,-0.050,0.707,-0.012,-0.133,0.262,-0.133,-0.032,0.302,0.119,
+  0.026,-0.332,-0.574,0.034,0.470,0.093,0.694,0.129,0.842,-0.201,0.465,0.328,
+  0.785,0.278,0.645,-0.345,0.026,0.178,-0.333,-0.021,0.665,-0.189,-0.133,
+  -0.318,-0.133,0.034,-0.870,-0.313,0.660,0.194,0.704,-0.064,0.026,0.078,
+  -0.583,-0.188,0.881,-0.014,-0.561,-0.178,-0.606,-0.052,0.760,0.299,-0.133,
+  0.322,0.722,-0.322,0.026,-0.112,0.464,0.018,-0.404,0.112,0.832,0.218,0.795,
+  -0.269,0.690,-0.142,0.376,0.268,-0.816,0.128,0.729,0.317,0.026,0.436,
+  -0.685,-0.082,0.352,-0.240,0.699,0.104,-0.881,-0.275,-0.540,-0.169,-0.534,
+  -0.024,0.673,0.178,0.572,-0.220,-0.794,0.281,0.838,-0.208,-0.333,-0.025,
+  0.685,0.154,0.679,0.336,0.291,-0.038,0.596,-0.220,0.700,0.102,-0.133,0.331,
+  0.026,-0.143,0.729,-0.318,0.469,0.088,0.305,0.135,0.296,-0.089,-0.715,
+  -0.094,-0.881,-0.284,-0.596,0.195,-0.498,-0.010,-0.723,0.092,0.367,-0.260,
+  0.851,-0.179,-0.133,0.082,-0.037,0.500,0.693,-0.134,-0.658,0.066,0.639,
+  -0.209,0.019,0.500,0.682,0.162,0.668,0.339,-0.133,-0.229,-0.333,0.004,
+  0.026,-0.384,-0.881,-0.232,0.734,0.315,0.026,0.222,0.569,-0.220,-0.389,
+  -0.102,-0.400,-0.107,0.026,-0.351,-0.133,0.118,0.474,-0.332,0.505,-0.187,
+  -0.542,-0.170,-0.611,0.201,-0.004,0.500,-0.374,-0.095,0.818,0.241,0.026,
+  0.193,-0.768,-0.114,0.311,-0.156,0.565,0.348,0.026,-0.279,-0.389,-0.102,
+  0.495,0.173,0.820,0.237,0.621,-0.216,0.294,-0.077,-0.085,-0.500,-0.428,
+  -0.119,0.465,0.035,0.633,0.212,-0.880,0.318,-0.854,0.142,0.026,0.289,0.026,
+  -0.314,0.026,-0.259,-0.133,0.217,0.026,-0.488,-0.852,-0.147,0.026,0.499,
+  -0.795,-0.125,0.689,-0.146,0.026,0.157,0.026,-0.089,-0.025,-0.500,-0.531,
+  0.018,0.656,0.197,-0.711,0.087,0.533,0.345,-0.133,0.374,-0.881,0.317,0.026,
+  0.476,-0.133,0.196,0.026,0.399,-0.833,0.134,0.598,-0.350,-0.090,0.500,
+  0.428,-0.311,0.860,-0.154,0.026,0.333,0.705,-0.329,0.026,0.146,0.026,0.211,
+  -0.877,0.151,0.464,0.327,-0.333,-0.031,0.011,-0.500,-0.019,-0.500,-0.133,
+  0.295,-0.540,0.171,-0.333,-0.069,0.389,-0.282,-0.133,-0.153,-0.492,0.003,
+  -0.507,-0.014,0.026,0.231,-0.599,0.044,0.585,0.348,0.025,0.500,-0.881,
+  -0.163,-0.881,-0.220,-0.571,0.184,0.624,-0.215,0.617,-0.217,0.815,0.245,
+  0.670,-0.340,-0.133,0.259,0.708,-0.328,-0.880,-0.318,0.341,-0.224,-0.881,
+  0.267,-0.350,0.088,-0.881,0.211,-0.133,-0.091,-0.333,0.059,0.827,0.227,
+  0.026,0.340,-0.133,-0.267,-0.055,0.500,-0.624,0.207,-0.589,-0.190,-0.711,
+  0.245,-0.818,0.128,0.387,0.279,0.780,0.283,0.869,0.121,0.319,0.177,-0.486,
+  -0.145,0.026,-0.058,0.394,-0.287,-0.398,0.109,-0.333,0.020,-0.479,-0.142,
+  0.465,0.028,0.520,0.343,-0.742,-0.257,0.698,-0.331,0.026,-0.361,-0.133,
+  0.197,-0.881,0.274,0.026,-0.466,0.026,-0.117,0.688,-0.147,-0.333,0.064,
+  0.495,0.337,-0.881,-0.231,0.026,0.267,-0.756,-0.263,-0.133,-0.021,0.545,
+  -0.348,0.871,-0.111,0.740,-0.312,0.026,0.063,-0.133,0.099,-0.133,0.095,
+  -0.133,-0.477,-0.096,0.500,-0.786,-0.276,0.568,0.220,-0.542,0.022,0.464,
+  0.004,-0.543,0.022,-0.842,0.137,0.630,-0.213,-0.133,0.368,0.748,-0.307,
+  0.026,0.447,-0.753,0.263,-0.459,0.136,0.026,0.069,-0.435,0.125,-0.133,
+  -0.076,-0.133,-0.274,0.312,0.156,0.657,-0.197,0.680,0.165,0.761,-0.298,
+  -0.547,-0.029,0.384,-0.277,-0.133,-0.057,-0.518,0.161,0.026,0.340,0.588,
+  0.221,0.861,0.151,-0.831,0.133,0.867,-0.130,-0.753,0.263,-0.133,-0.391,
+  0.329,0.199,0.855,0.170,0.704,0.069,-0.607,0.200,0.293,0.067,-0.493,0.151,
+  -0.433,0.124,0.498,0.338,-0.660,-0.221,-0.133,-0.167,-0.110,-0.500,0.656,
+  -0.197,-0.133,-0.421,0.026,0.163,-0.712,-0.244,0.783,0.281,-0.133,0.164,
+  -0.678,0.074,
+];
+
+/* --- linear algebra ------------------------------------------------- */
+/* A 2x2 matrix is [a,b,c,d] read across the rows. */
+
+/* Doubled, so the cloud spans a couple of grid cells in the figures. */
+const CLOUD = Array.from({length: LOGO.length / 2},
+  (_, i) => [2 * LOGO[2 * i], 2 * LOGO[2 * i + 1]]);
+
+const I2 = [1, 0, 0, 1];
+const ap = (m, [x, y]) => [m[0] * x + m[1] * y, m[2] * x + m[3] * y];
+const add = ([a, b], [c, d]) => [a + c, b + d];
+const sc = (k, [x, y]) => [k * x, k * y];
+const mm = (p, q) => [
+  p[0] * q[0] + p[1] * q[2], p[0] * q[1] + p[1] * q[3],
+  p[2] * q[0] + p[3] * q[2], p[2] * q[1] + p[3] * q[3]];
+const det = m => m[0] * m[3] - m[1] * m[2];
+const rot = t => [Math.cos(t), -Math.sin(t), Math.sin(t), Math.cos(t)];
+const rad = d => d * Math.PI / 180;
+const affine = (m, t) => pts => pts.map(p => add(ap(m, p), t));
+const under = m => pts => pts.map(p => ap(m, p));
+
+/* --- svg drawing ---------------------------------------------------- */
+/* A view maps world coordinates to svg pixels, with y upward. */
+
+const view = (cx, cy, s) => ({
+  s,
+  to: ([x, y]) => [cx + s * x, cy - s * y],
+  from: ([px, py]) => [(px - cx) / s, (cy - py) / s],
+});
+
+const r2 = x => Math.round(x * 100) / 100;
+const attrs = o => Object.entries(o).map(([k, x]) => `${k}="${x}"`).join(' ');
+const el = (tag, o, inner = '') => `<${tag} ${attrs(o)}>${inner}</${tag}>`;
+
+const seg = (v, a, b, cls) => {
+  const [x1, y1] = v.to(a), [x2, y2] = v.to(b);
+  return el('line', {x1: r2(x1), y1: r2(y1), x2: r2(x2), y2: r2(y2), class: cls});
+};
+const path = (v, pts, cls) => el('path', {class: cls, d: pts
+  .map(p => v.to(p)).map(([x, y], i) => `${i ? 'L' : 'M'}${r2(x)} ${r2(y)}`)
+  .join('') + 'Z'});
+const dots = (v, pts, cls) => el('path', {class: 'cloud ' + cls,
+  d: pts.map(p => v.to(p)).map(([x, y]) => `M${r2(x)} ${r2(y)}h.01`).join('')});
+const dot = (v, p, cls, r = 3.2) => {
+  const [x, y] = v.to(p);
+  return el('circle', {cx: r2(x), cy: r2(y), r, class: cls});
+};
+const ring = (v, p, cls) => {
+  const [x, y] = v.to(p);
+  return el('circle', {cx: r2(x), cy: r2(y), r: 6.5, class: 'stroke ' + cls});
+};
+const text = (v, p, s, cls, dx = 0, dy = 0, anchor = 'middle') => {
+  const [x, y] = v.to(p);
+  return el('text', {x: r2(x + dx), y: r2(y + dy), class: cls,
+    'text-anchor': anchor}, s);
+};
+
+const arrow = (v, a, b, colour, w = 1.7) => {
+  const [x1, y1] = v.to(a), [x2, y2] = v.to(b);
+  const th = Math.atan2(y2 - y1, x2 - x1), L = 8.5, W = 3.3;
+  const bx = x2 - L * Math.cos(th), by = y2 - L * Math.sin(th);
+  const nx = -Math.sin(th) * W, ny = Math.cos(th) * W;
+  return el('line', {x1: r2(x1), y1: r2(y1), x2: r2(bx), y2: r2(by),
+      class: `stroke s-${colour}`, 'stroke-width': w})
+    + el('polygon', {class: `f-${colour}`,
+      points: [[x2, y2], [bx + nx, by + ny], [bx - nx, by - ny]]
+        .map(([x, y]) => `${r2(x)},${r2(y)}`).join(' ')});
+};
+
+/* Axes with integer ticks, drawn to the edges of the given ranges. */
+const axes = (v, [x0, x1], [y0, y1], colour = 'prussian') => {
+  const ticks = (from, to, f) => {
+    const out = [];
+    for (let k = Math.ceil(from); k <= Math.floor(to); k++) if (k) out.push(f(k));
+    return out.join('');
+  };
+  return seg(v, [x0, 0], [x1, 0], `hair s-${colour}`)
+    + seg(v, [0, y0], [0, y1], `hair s-${colour}`)
+    + ticks(x0, x1, k => seg(v, [k, -0.07], [k, 0.07], `hair s-${colour}`))
+    + ticks(y0, y1, k => seg(v, [-0.07, k], [0.07, k], `hair s-${colour}`))
+    + arrow(v, [x1 - 0.3, 0], [x1, 0], colour, 1)
+    + arrow(v, [0, y1 - 0.3], [0, y1], colour, 1);
+};
+
+/* The image of a square grid under x -> Mx + t: still straight lines. */
+const grid = (v, m, t, n, cls = 'hair s-construct') => {
+  const line = (a, b) => seg(v, add(ap(m, a), t), add(ap(m, b), t), cls);
+  const out = [];
+  for (let k = -n; k <= n; k++) {
+    out.push(line([k, -n], [k, n]), line([-n, k], [n, k]));
+  }
+  return out.join('');
+};
+
+/* A window on the drawing, for figures whose grid runs past the frame. */
+const clipped = (id, x, y, w, h, inner) =>
+  el('clipPath', {id}, el('rect', {x, y, width: w, height: h}))
+  + el('g', {'clip-path': `url(#${id})`}, inner);
+
+const circlePts = (n = 72) => Array.from({length: n + 1},
+  (_, i) => [Math.cos(2 * Math.PI * i / n), Math.sin(2 * Math.PI * i / n)]);
+
+/* The scene shared by most figures in the matrix section: the cloud
+   before and after the map, the standard axes, and the image basis. */
+const cloudScene = (v, m, t = [0, 0], o = {}) => [
+  o.grid === false ? '' : grid(v, m, t, o.n || 4),
+  axes(v, o.xr || [-4.2, 4.2], o.yr || [-2.6, 2.6]),
+  o.ghost === false ? '' : dots(v, o.pts || CLOUD, 'ghost s-construct'),
+  dots(v, affine(m, t)(o.pts || CLOUD), 's-madder'),
+  o.basis === false ? '' : arrow(v, t, add(ap(m, [1, 0]), t), 'verdigris')
+    + arrow(v, t, add(ap(m, [0, 1]), t), 'verdigris'),
+].join('');
+
+const fmt = x => (Math.abs(x) < 5e-3 ? 0 : x).toFixed(2);
+const setMat = (id, vals) => {
+  document.getElementById(id).innerHTML =
+    vals.map(x => `<span>${fmt(x)}</span>`).join('');
+};
+const put = (id, markup) => { document.getElementById(id).innerHTML = markup; };
+
+const arc = (v, r, a0, a1, cls) => el('path', {class: cls,
+  d: Array.from({length: 25}, (_, i) => {
+    const a = a0 + (a1 - a0) * i / 24;
+    return v.to([r * Math.cos(a), r * Math.sin(a)]);
+  }).map(([x, y], i) => `${i ? 'L' : 'M'}${r2(x)} ${r2(y)}`).join('')});
+
+const rightAngle = (v, p, d1, d2, k, cls) => {
+  const a = add(p, sc(k, d1)), b = add(p, sc(k, d2));
+  return seg(v, a, add(a, sc(k, d2)), cls) + seg(v, add(a, sc(k, d2)), b, cls);
+};
+
+const DASH_C = 'dash s-construct';
+
+/* --- static figures -------------------------------------------------- */
+
+const figures = {
+  'fig-title': () => {
+    const v = view(215, 160, 62);
+    const q = rot(rad(30));
+    return el('g', {id: 't-cloud'}, dots(v, CLOUD, 's-madder'))
+      + el('g', {id: 't-std'},
+        axes(v, [-2.4, 2.4], [-1.9, 1.9])
+        + arrow(v, [0, 0], [1, 0], 'prussian') + arrow(v, [0, 0], [0, 1], 'prussian')
+        + text(v, [1, 0], 'e₁', 'f-prussian', 4, 16, 'start')
+        + text(v, [0, 1], 'e₂', 'f-prussian', -16, -6))
+      + el('g', {id: 't-rot'},
+        arrow(v, [0, 0], ap(q, [1, 0]), 'verdigris')
+        + arrow(v, [0, 0], ap(q, [0, 1]), 'verdigris')
+        + text(v, ap(q, [1, 0]), 'q₁', 'f-verdigris', 16, -6)
+        + text(v, ap(q, [0, 1]), 'q₂', 'f-verdigris', -16, -4));
+  },
+
+  'fig-vector': () => {
+    const v = view(74, 240, 44);
+    const copy = (a) => arrow(v, a, add(a, [3, 1]), 'madder');
+    return axes(v, [-1.2, 6.6], [-0.9, 4.9])
+      + seg(v, [0, 0], [3, 0], DASH_C) + seg(v, [3, 0], [3, 1], DASH_C)
+      + text(v, [1.5, 0], '3', 'f-dim', 0, 16)
+      + text(v, [3, 0.5], '1', 'f-dim', 12, 4)
+      + copy([0, 0]) + copy([0.7, 2.9]) + copy([3.4, 1.4])
+      + text(v, [1.5, 0.5], 'v', 'f-madder', -6, -8)
+      + text(v, [2.2, 3.4], 'v', 'f-madder', -6, -8)
+      + text(v, [4.9, 1.9], 'v', 'f-madder', -6, -8);
+  },
+
+  'fig-add': () => {
+    const v = view(95, 235, 48);
+    const u = [3, 1], w = [1, 2];
+    return axes(v, [-1.5, 5.8], [-1.3, 4.7])
+      + seg(v, [-0.4, -0.13], [4.9, 1.63], 'hair s-construct')
+      + seg(v, [-0.7, -1.4], [1.3, 2.6], 'hair s-construct')
+      + seg(v, u, add(u, w), DASH_C) + seg(v, w, add(u, w), DASH_C)
+      + arrow(v, [0, 0], u, 'madder') + arrow(v, [0, 0], w, 'prussian')
+      + arrow(v, [0, 0], add(u, w), 'verdigris')
+      + dot(v, sc(1.5, u), 'f-madder') + dot(v, sc(-0.5, w), 'f-prussian')
+      + text(v, u, 'u', 'f-madder', -4, 18)
+      + text(v, w, 'v', 'f-prussian', -14, 4)
+      + text(v, add(u, w), 'u + v', 'f-verdigris', 22, -6)
+      + text(v, sc(1.5, u), '1.5 u', 'f-madder', 4, 18, 'start')
+      + text(v, sc(-0.5, w), '−0.5 v', 'f-prussian', -6, 14, 'end');
+  },
+
+  'fig-inner': () => {
+    const v = view(80, 230, 58);
+    const u = [3, 1], w = [1, 2];
+    return axes(v, [-1.2, 4.3], [-0.9, 3.8])
+      + arc(v, 0.8, Math.atan2(1, 3), Math.atan2(2, 1), 'stroke s-construct')
+      + arrow(v, [0, 0], u, 'madder') + arrow(v, [0, 0], w, 'prussian')
+      + text(v, [1.05, 0.68], '45°', 'f-dim', 10, 4, 'start')
+      + text(v, u, 'u', 'f-madder', 14, 10)
+      + text(v, w, 'v', 'f-prussian', -6, -10);
+  },
+
+  'fig-proj': () => {
+    const v = view(80, 230, 58);
+    const u = [3, 1], w = [1, 1], p = [2, 2], k = 1 / Math.SQRT2;
+    return axes(v, [-1.2, 4.3], [-0.9, 3.8])
+      + seg(v, [-0.5, -0.5], [3.2, 3.2], 'hair s-construct')
+      + rightAngle(v, p, [-k, -k], [k, -k], 0.24, 'hair s-construct')
+      + seg(v, p, u, 'dash s-madder')
+      + arrow(v, [0, 0], p, 'verdigris') + arrow(v, [0, 0], w, 'prussian')
+      + arrow(v, [0, 0], u, 'madder')
+      + text(v, u, 'u', 'f-madder', 12, 6)
+      + text(v, w, 'v', 'f-prussian', -14, 2)
+      + text(v, p, 'p', 'f-verdigris', -6, -10)
+      + text(v, [2.5, 1.5], 'r', 'f-madder', 12, 4);
+  },
+
+  'fig-cols': () => {
+    const v = view(62, 272, 46);
+    const a1 = [2, 1], a2 = [1, 2], b = [4, 5];
+    return axes(v, [-1.1, 5.9], [-0.5, 5.7])
+      + seg(v, a1, b, DASH_C)
+      + arrow(v, [0, 0], a1, 'prussian') + arrow(v, [0, 0], a2, 'prussian')
+      + arrow(v, [0, 0], b, 'madder')
+      + text(v, a1, 'a₁', 'f-prussian', 16, 8)
+      + text(v, a2, 'a₂', 'f-prussian', -14, 2)
+      + text(v, [3, 3], '2 a₂', 'f-dim', 16, 6, 'start')
+      + text(v, b, 'A x = (4, 5)', 'f-madder', -10, -8, 'end');
+  },
+
+  'fig-rs': () => {
+    const v = view(125, 100, 22);
+    return cloudScene(v, mm(rot(rad(90)), [2, 0, 0, 1]), [0, 0],
+      {grid: false, basis: false, xr: [-5.2, 5.2], yr: [-4.1, 4.1]});
+  },
+
+  'fig-sr': () => {
+    const v = view(125, 100, 22);
+    return cloudScene(v, mm([2, 0, 0, 1], rot(rad(90))), [0, 0],
+      {grid: false, basis: false, xr: [-5.2, 5.2], yr: [-4.1, 4.1]});
+  },
+
+  'fig-linear': () => {
+    const A = [1.2, 0.8, 0.3, 1.1];
+    const sq = [[0, 0], [1, 0], [1, 1], [0, 1]];
+    const panel = (v, m, colour, id, x, w) => clipped(id, x, 0, w, 240,
+      grid(v, m, [0, 0], 2)
+      + axes(v, [-1.2, 2.2], [-1, 1.9])
+      + path(v, sq.map(p => ap(m, p)), 'stroke s-madder')
+      + arrow(v, [0, 0], ap(m, [1, 0]), colour)
+      + arrow(v, [0, 0], ap(m, [0, 1]), colour));
+    return panel(view(100, 205, 46), I2, 'prussian', 'clip-l', 0, 192)
+      + panel(view(285, 205, 46), A, 'verdigris', 'clip-r', 193, 207)
+      + el('text', {x: 100, y: 262, class: 'f-ink', 'text-anchor': 'middle'},
+        'e₁, e₂ and the unit square')
+      + el('text', {x: 285, y: 262, class: 'f-ink', 'text-anchor': 'middle'},
+        'Ae₁, Ae₂ and its image');
+  },
+
+  'fig-span-a': () => {
+    const v = view(115, 150, 44);
+    const v1 = [1.4, 0.4], v2 = [0.4, 1.3];
+    const cs = [-1, -0.5, 0, 0.5, 1];
+    const combos = cs.flatMap(a => cs.map(b => add(sc(a, v1), sc(b, v2))));
+    return axes(v, [-2.3, 2.8], [-1.6, 3.1])
+      + combos.map(p => dot(v, p, 'f-construct', 2.4)).join('')
+      + arrow(v, [0, 0], v1, 'madder') + arrow(v, [0, 0], v2, 'madder')
+      + text(v, v1, 'v₁', 'f-madder', 4, 18)
+      + text(v, v2, 'v₂', 'f-madder', -16, 0);
+  },
+
+  'fig-span-b': () => {
+    const v = view(115, 150, 44);
+    const v1 = [1.4, 0.5], v2 = sc(-0.5, v1);
+    const cs = [-1.6, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.6, 2];
+    return axes(v, [-2.3, 2.8], [-1.6, 3.1])
+      + seg(v, sc(-1.7, v1), sc(2.05, v1), 'hair s-verdigris')
+      + cs.map(a => dot(v, sc(a, v1), 'f-construct', 2.4)).join('')
+      + arrow(v, [0, 0], v1, 'madder') + arrow(v, [0, 0], v2, 'madder')
+      + text(v, v1, 'v₁', 'f-madder', 6, 16)
+      + text(v, v2, 'v₂', 'f-madder', -6, 16)
+      + text(v, sc(1.9, v1), 'span', 'f-verdigris', 2, -8, 'start');
+  },
+
+  'fig-dim': () => {
+    const v = view(60, 190, 52);
+    const v1 = [1.3, 0.5], v2 = [0.5, 1.4];
+    const v3 = add(sc(1.5, v1), v2);
+    return axes(v, [-0.9, 4.9], [-0.9, 3.4])
+      + seg(v, [0, 0], sc(1.5, v1), DASH_C) + seg(v, sc(1.5, v1), v3, DASH_C)
+      + arrow(v, [0, 0], v1, 'prussian') + arrow(v, [0, 0], v2, 'prussian')
+      + arrow(v, [0, 0], v3, 'madder')
+      + text(v, v1, 'v₁', 'f-prussian', 8, 16)
+      + text(v, v2, 'v₂', 'f-prussian', -16, 4)
+      + text(v, v3, 'v₃ = 1.5 v₁ + v₂', 'f-madder', -8, -10, 'end')
+      + text(v, sc(1.5, v1), '1.5 v₁', 'f-dim', 4, 16, 'start');
+  },
+
+  'fig-coords': () => {
+    const v = view(90, 215, 55);
+    const k = 1 / Math.SQRT2;
+    const q1 = [k, k], q2 = [-k, k], p = [3, 1];
+    return axes(v, [-1.4, 5], [-1.3, 3.7])
+      + seg(v, [-0.8, -0.8], [2.7, 2.7], 'hair s-construct')
+      + seg(v, [1, -1], [-1.2, 1.2], 'hair s-construct')
+      + seg(v, [0, 0], [3, 0], 'dash s-prussian') + seg(v, [3, 0], p, 'dash s-prussian')
+      + seg(v, [0, 0], [2, 2], 'dash s-verdigris') + seg(v, [2, 2], p, 'dash s-verdigris')
+      + arrow(v, [0, 0], [1, 0], 'prussian') + arrow(v, [0, 0], [0, 1], 'prussian')
+      + arrow(v, [0, 0], q1, 'verdigris') + arrow(v, [0, 0], q2, 'verdigris')
+      + arrow(v, [0, 0], p, 'madder')
+      + text(v, [1.5, 0], '3', 'f-prussian', 0, 17)
+      + text(v, [3, 0.5], '1', 'f-prussian', 12, 4)
+      + text(v, [1, 1], '2√2', 'f-verdigris', -16, -6, 'end')
+      + text(v, [2.5, 1.5], '−√2', 'f-verdigris', 20, 6, 'start')
+      + text(v, q1, 'q₁', 'f-verdigris', 16, 10)
+      + text(v, q2, 'q₂', 'f-verdigris', -14, -4)
+      + text(v, [1, 0], 'e₁', 'f-prussian', 2, -8)
+      + text(v, [0, 1], 'e₂', 'f-prussian', -16, 0)
+      + text(v, p, 'v', 'f-madder', 14, 2);
+  },
+
+  'fig-cob': () => {
+    const v = view(105, 180, 50);
+    const Q = rot(rad(45));
+    const q1 = ap(Q, [1, 0]), q2 = ap(Q, [0, 1]);
+    return clipped('clip-cob', 0, 0, 340, 280, grid(v, Q, [0, 0], 3))
+      + axes(v, [-1.9, 4.5], [-1.8, 3.4])
+      + seg(v, [0, 0], [2, 2], 'dash s-verdigris') + seg(v, [2, 2], [3, 1], 'dash s-verdigris')
+      + arrow(v, [0, 0], q1, 'verdigris') + arrow(v, [0, 0], q2, 'verdigris')
+      + arrow(v, [0, 0], [3, 1], 'madder')
+      + text(v, [1, 1], '2.83', 'f-verdigris', -14, -6, 'end')
+      + text(v, [2.5, 1.5], '−1.41', 'f-verdigris', 22, 8, 'start')
+      + text(v, q1, 'q₁', 'f-verdigris', 16, 10)
+      + text(v, q2, 'q₂', 'f-verdigris', -14, -4)
+      + text(v, [3, 1], 'v', 'f-madder', 14, 2);
+  },
+
+  'fig-similar': () => {
+    const v = view(0, 250, 1);
+    const big = (p, s, cls) => {
+      const [x, y] = v.to(p);
+      return el('text', {x, y: y + 5, class: cls, 'text-anchor': 'middle',
+        'font-size': 16}, s);
+    };
+    return arrow(v, [110, 190], [312, 190], 'ink', 1.4)
+      + arrow(v, [126, 52], [296, 52], 'ink', 1.4)
+      + arrow(v, [76, 74], [76, 168], 'verdigris', 1.4)
+      + arrow(v, [346, 74], [346, 168], 'verdigris', 1.4)
+      + big([76, 190], 'x', 'f-ink') + big([346, 190], 'y', 'f-ink')
+      + big([76, 52], '[x]', 'f-ink') + big([346, 52], '[y]', 'f-ink')
+      + big([211, 208], 'A', 'f-madder') + big([211, 70], 'B⁻¹A B', 'f-madder')
+      + big([54, 121], 'B', 'f-verdigris') + big([324, 121], 'B', 'f-verdigris')
+      + big([92, 45], 'B', 'f-ink') + big([362, 45], 'B', 'f-ink')
+      + big([211, 232], 'standard coordinates', 'f-construct')
+      + big([211, 24], 'coordinates in the basis B', 'f-construct');
+  },
+
+  'fig-rows': () => {
+    const v = view(40, 200, 42);
+    return axes(v, [-0.7, 4.9], [-0.7, 4.6])
+      + seg(v, [0.25, 4.5], [2.6, -0.2], 'stroke s-prussian')
+      + seg(v, [-0.2, 2.1], [4.6, -0.3], 'stroke s-verdigris')
+      + dot(v, [2, 1], 'f-madder', 4)
+      + text(v, [2.1, 3.2], '2x₁ + x₂ = 5', 'f-prussian', 4, 0, 'start')
+      + text(v, [2.5, 1.35], 'x₁ + 2x₂ = 4', 'f-verdigris', 4, 0, 'start')
+      + text(v, [2, 1], '(2, 1)', 'f-madder', 8, 18, 'start');
+  },
+
+  'fig-colpic': () => {
+    const v = view(32, 205, 40);
+    const a1 = [2, 1], a2 = [1, 2], b = [5, 4];
+    return axes(v, [-0.6, 5.3], [-0.6, 5])
+      + seg(v, [0, 0], [4, 2], DASH_C) + seg(v, [4, 2], b, DASH_C)
+      + arrow(v, [0, 0], a1, 'prussian') + arrow(v, [0, 0], a2, 'prussian')
+      + arrow(v, [0, 0], b, 'madder')
+      + text(v, a1, 'a₁', 'f-prussian', 6, 16)
+      + text(v, a2, 'a₂', 'f-prussian', -14, 4)
+      + text(v, [4, 2], '2a₁', 'f-dim', 12, 14, 'start')
+      + text(v, b, 'b', 'f-madder', -4, -8, 'end');
+  },
+
+  'fig-rank': () => {
+    const v = view(200, 140, 56);
+    const A = [1, 2, 2, 4];
+    return clipped('clip-rank', 0, 0, 400, 280,
+      axes(v, [-3.4, 3.4], [-2.3, 2.3])
+      + seg(v, [-3, 1.5], [3, -1.5], DASH_C)
+      + dots(v, CLOUD, 'ghost s-construct')
+      + dots(v, under(A)(CLOUD), 's-madder'))
+      + text(v, [0.85, 1.7], 'column space', 'f-madder', 10, -2, 'start')
+      + text(v, [2, -1], 'null space', 'f-dim', 10, 12, 'start');
+  },
+
+  'fig-eigen': () => {
+    const v = view(200, 145, 30);
+    const A = [2, 1, 1, 2];
+    return axes(v, [-6.2, 6.2], [-4.4, 4.4])
+      + seg(v, [-4, -4], [4, 4], 'dash s-verdigris')
+      + seg(v, [3, -3], [-3, 3], 'dash s-verdigris')
+      + dots(v, CLOUD, 'ghost s-construct')
+      + dots(v, under(A)(CLOUD), 's-madder')
+      + arrow(v, [0, 0], [1, 1], 'verdigris') + arrow(v, [0, 0], [-1, 1], 'verdigris')
+      + text(v, [4, 4], 'λ₁ = 3', 'f-verdigris', -6, -8, 'end')
+      + text(v, [-3, 3], 'λ₂ = 1', 'f-verdigris', 8, -6, 'start')
+      + text(v, [1, 1], 'v₁', 'f-verdigris', 16, 10)
+      + text(v, [-1, 1], 'v₂', 'f-verdigris', -14, -4);
+  },
+};
+
+/* --- interactive figures --------------------------------------------- */
+/* World coordinates from a pointer event, through the svg's own scaling. */
+const pointAt = (svg, v, ev) => {
+  const r = svg.getBoundingClientRect();
+  const k = svg.viewBox.baseVal.width / r.width;
+  return v.from([(ev.clientX - r.left) * k, (ev.clientY - r.top) * k]);
+};
+
+function setupBasis() {
+  const svg = document.getElementById('fig-basis');
+  const v = view(205, 150, 48);
+  const cols = [[1.2, 0.3], [0.4, 1.1]];
+  const clamp = x => Math.max(-1.5, Math.min(1.5, Math.round(x / 0.05) * 0.05));
+  let held = null;
+
+  const draw = () => {
+    const m = [cols[0][0], cols[1][0], cols[0][1], cols[1][1]];
+    svg.innerHTML = cloudScene(v, m, [0, 0],
+        {xr: [-4.1, 4.5], yr: [-2.8, 3.0], n: 3})
+      + dot(v, cols[0], 'f-verdigris', 4.5) + dot(v, cols[1], 'f-verdigris', 4.5)
+      + text(v, cols[0], 'Ae₁', 'f-verdigris', 0, -11)
+      + text(v, cols[1], 'Ae₂', 'f-verdigris', 0, -11);
+    setMat('mat-basis', m);
+    put('det-basis', fmt(det(m)));
+  };
+
+  svg.addEventListener('pointerdown', ev => {
+    const p = pointAt(svg, v, ev);
+    const d = cols.map(c => Math.hypot(c[0] - p[0], c[1] - p[1]));
+    held = d[0] <= d[1] ? 0 : 1;
+    if (d[held] > 0.7) { held = null; return; }
+    svg.setPointerCapture(ev.pointerId);
+    ev.preventDefault();
+  });
+  svg.addEventListener('pointermove', ev => {
+    if (held === null) return;
+    cols[held] = pointAt(svg, v, ev).map(clamp);
+    draw();
+  });
+  svg.addEventListener('pointerup', () => { held = null; });
+  draw();
+}
+
+const KINDS = {
+  rot: {l1: 'angle θ', r1: [-180, 180, 1, 30], u1: '°',
+    m: a => rot(rad(a))},
+  scale: {l1: 's₁', r1: [0.2, 1.8, 0.05, 1.4], u1: '',
+    l2: 's₂', r2: [0.2, 1.8, 0.05, 0.6], u2: '',
+    m: (a, b) => [a, 0, 0, b]},
+  shear: {l1: 'k', r1: [-1.5, 1.5, 0.05, 0.6], u1: '',
+    m: a => [1, a, 0, 1]},
+  flip: {l1: 'axis φ', r1: [-90, 90, 1, 20], u1: '°',
+    m: a => [Math.cos(2 * rad(a)), Math.sin(2 * rad(a)),
+             Math.sin(2 * rad(a)), -Math.cos(2 * rad(a))]},
+};
+
+function setupTransforms() {
+  const svg = document.getElementById('fig-transforms');
+  const v = view(210, 125, 56);
+  const p1 = document.getElementById('p1'), p2 = document.getElementById('p2');
+  const buttons = [...document.querySelectorAll('#seg-transforms button')];
+  let kind = 'rot';
+
+  const isOrthogonal = m => {
+    const g = mm([m[0], m[2], m[1], m[3]], m);
+    return Math.abs(g[0] - 1) + Math.abs(g[3] - 1)
+      + Math.abs(g[1]) + Math.abs(g[2]) < 1e-9;
+  };
+
+  const draw = () => {
+    const k = KINDS[kind];
+    const m = k.m(+p1.value, +p2.value);
+    svg.innerHTML = cloudScene(v, m, [0, 0],
+      {xr: [-3.6, 3.6], yr: [-2.1, 2.1], n: 3});
+    document.getElementById('out-p1').textContent = fmt(+p1.value) + k.u1;
+    document.getElementById('out-p2').textContent = k.l2 ? fmt(+p2.value) : '';
+    setMat('mat-transforms', m);
+    put('det-transforms', fmt(det(m)));
+    put('orth-transforms', isOrthogonal(m) ? 'yes' : 'no');
+  };
+
+  const select = next => {
+    kind = next;
+    const k = KINDS[kind];
+    buttons.forEach(b => b.setAttribute('aria-pressed', b.dataset.kind === kind));
+    [[p1, k.r1, 'lab-p1', k.l1], [p2, k.r2, 'lab-p2', k.l2]].forEach(
+      ([input, r, lab, label]) => {
+        if (!r) return;
+        [input.min, input.max, input.step, input.value] = r;
+        document.getElementById(lab).textContent = label;
+      });
+    document.getElementById('row-p2').style.visibility = k.l2 ? 'visible' : 'hidden';
+    draw();
+  };
+
+  buttons.forEach(b => b.addEventListener('click', () => select(b.dataset.kind)));
+  p1.addEventListener('input', draw);
+  p2.addEventListener('input', draw);
+  select('rot');
+}
+
+function setupAffine() {
+  const svg = document.getElementById('fig-affine');
+  const v = view(210, 125, 38);
+  const ins = ['a1', 'a2', 'a3'].map(id => document.getElementById(id));
+
+  const draw = () => {
+    const [th, tx, ty] = ins.map(i => +i.value);
+    const m = rot(rad(th)), t = [tx, ty];
+    svg.innerHTML = cloudScene(v, m, t, {xr: [-5.3, 5.3], yr: [-3.1, 3.1], n: 5})
+      + ring(v, t, 's-madder') + dot(v, t, 'f-madder', 2.6);
+    ins.forEach((i, k) => {
+      document.getElementById('out-' + i.id).textContent =
+        fmt(+i.value) + (k ? '' : '°');
+    });
+    setMat('mat-affine', [m[0], m[1], tx, m[2], m[3], ty, 0, 0, 1]);
+  };
+
+  ins.forEach(i => i.addEventListener('input', draw));
+  draw();
+}
+
+/* The shear [[1,1],[0,1]] = U S V^T, with both factors rotations. */
+const SVD = {tv: rad(-58.2825), tu: rad(31.7175), s1: 1.6180, s2: 0.6180};
+
+function setupSVD() {
+  const svg = document.getElementById('fig-svd');
+  const v = view(210, 125, 50);
+  const input = document.getElementById('s1');
+  const stage = t => {
+    const f = k => Math.max(0, Math.min(1, t - k));
+    return mm(rot(SVD.tu * f(2)),
+      mm([1 + f(1) * (SVD.s1 - 1), 0, 0, 1 + f(1) * (SVD.s2 - 1)],
+        rot(SVD.tv * f(0))));
+  };
+  const name = t => t < 1 ? 'Vᵀ  turn' : t < 2 ? 'Σ  stretch'
+    : t < 3 ? 'U  turn' : 'A';
+
+  const draw = () => {
+    const t = +input.value, m = stage(t);
+    svg.innerHTML = cloudScene(v, m, [0, 0], {xr: [-4, 4], yr: [-2.4, 2.4]})
+      + path(v, under(m)(circlePts()), DASH_C);
+    document.getElementById('out-s1').textContent = name(t);
+    setMat('mat-svd', m);
+  };
+
+  input.addEventListener('input', draw);
+  draw();
+}
+
+/* --- deck ------------------------------------------------------------- */
+
+const slides = [...document.querySelectorAll('#stage .slide')];
+const stage = document.getElementById('stage');
+const ov = document.getElementById('overview');
+let cur = 0;
+
+const show = i => {
+  cur = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((s, k) => s.classList.toggle('on', k === cur));
+  history.replaceState(null, '', '#' + (cur + 1));
+  [...ov.children].forEach((th, k) => th.classList.toggle('on', k === cur));
+};
+
+const fit = () => {
+  const k = Math.min((innerWidth - 16) / 1280, (innerHeight - 16) / 720);
+  stage.style.transform = `scale(${k})`;
+};
+
+const overview = on => {
+  ov.classList.toggle('on', on);
+  ov.setAttribute('aria-hidden', String(!on));
+  if (!on) { ov.innerHTML = ''; return; }
+  ov.innerHTML = slides.map((s, i) =>
+    `<div class="thumb" data-i="${i}"><div class="wrap"></div><b>${i + 1}</b></div>`)
+    .join('');
+  [...ov.querySelectorAll('.wrap')].forEach((w, i) => {
+    const c = slides[i].cloneNode(true);
+    c.classList.add('on');
+    c.style.transform = `scale(${w.clientWidth / 1280})`;
+    w.appendChild(c);
+  });
+  [...ov.children].forEach((th, k) => th.classList.toggle('on', k === cur));
+};
+
+ov.addEventListener('click', ev => {
+  const th = ev.target.closest('.thumb');
+  if (!th) return;
+  show(+th.dataset.i);
+  overview(false);
+});
+
+stage.addEventListener('click', ev => {
+  if (ev.target.closest('button, a, input, output, .notes, .demo, .mat')) return;
+  show(cur + 1);
+});
+
+addEventListener('keydown', ev => {
+  const onSlider = ev.target.tagName === 'INPUT';
+  const next = ['ArrowRight', 'ArrowDown', ' ', 'Enter', 'PageDown'];
+  const back = ['ArrowLeft', 'ArrowUp', 'PageUp'];
+  if (onSlider && ev.key.startsWith('Arrow')) return;
+  if (next.includes(ev.key)) { show(cur + 1); ev.preventDefault(); }
+  else if (back.includes(ev.key)) { show(cur - 1); ev.preventDefault(); }
+  else if (ev.key === 'Home') show(0);
+  else if (ev.key === 'End') show(slides.length - 1);
+  else if (ev.key === 'n' || ev.key === 'N') document.body.classList.toggle('notes-on');
+  else if (ev.key === 'o' || ev.key === 'O') overview(!ov.classList.contains('on'));
+  else if (ev.key === 'f' || ev.key === 'F') {
+    document.fullscreenElement ? document.exitFullscreen()
+      : document.documentElement.requestFullscreen();
+  } else if (ev.key === 'Escape') {
+    overview(false);
+    document.body.classList.remove('notes-on');
+  }
+});
+
+addEventListener('resize', fit);
+
+slides.forEach((s, i) => s.insertAdjacentHTML('afterbegin',
+  `<div class="rail"><span>${s.dataset.where}</span>` +
+  `<span>${i + 1} / ${slides.length}</span></div>`));
+
+Object.entries(figures).forEach(([id, f]) => {
+  document.getElementById(id).innerHTML = f();
+});
+setupBasis();
+setupTransforms();
+setupAffine();
+setupSVD();
+
+renderMathInElement(document.body, {throwOnError: false, delimiters: [
+  {left: '$$', right: '$$', display: true},
+  {left: '\\(', right: '\\)', display: false}]});
+
+fit();
+show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  ['t-cloud', 't-std', 't-rot'].forEach((id, i) =>
+    document.getElementById(id).animate([{opacity: 0}, {opacity: 1}],
+      {duration: 800, delay: 220 * i, easing: 'ease-out', fill: 'both'}));
+}
+</script>
+</body>
+</html>
