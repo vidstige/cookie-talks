@@ -592,9 +592,10 @@ blocks the script silently and no mathematics renders. Auto-render with `$$…$$
 display and `\(…\)` for inline.
 
 Navigation by arrow keys, space, Enter, PageUp, PageDown, Home, End; click to advance
-except on buttons, links, form controls, the notes panel, the overview, and code blocks.
-Arrow keys belong to a focused slider, not to the deck. `N` toggles
-speaker notes, `O` a thumbnail overview, `F` full screen, `Esc` closes panels. The URL
+except on buttons, links, form controls, the overview, and code blocks.
+Arrow keys belong to a focused slider, not to the deck. `N` opens the speaker notes in a
+separate window, so only the deck goes on the shared screen; arrow keys navigate from
+either window. `O` is a thumbnail overview, `F` full screen, `Esc` closes panels. The URL
 hash carries the slide number so a single slide can be linked. A print stylesheet emits
 one page per slide for print-to-PDF. One draw-in animation on the title figure only;
 `prefers-reduced-motion` respected. Interactive figures are the exception and are not
