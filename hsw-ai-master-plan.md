@@ -21,11 +21,15 @@ The builder is expected to:
 1. Produce one self-contained HTML file per lecture. No build step; it opens by
    double-clicking.
 2. Follow Appendix A exactly. The five decks must read as one series.
-3. Write the mathematical content for each slide listed below, at the level of a first
-   encounter, together with speaker notes on every slide.
-4. Verify anything a slide asserts numerically: figure geometry, worked arithmetic,
+3. Follow *Presentation style* below exactly. It is the rule a first draft is most likely
+   to break, and the most expensive one to repair afterwards.
+4. Write the mathematical content for each slide listed below, at the level of a first
+   encounter, together with speaker notes on every slide. Most of the writing goes in the
+   notes.
+5. Verify anything a slide asserts numerically: figure geometry, worked arithmetic,
    internal slide references.
-5. Not add topics beyond the sequences below without asking.
+6. Not add topics beyond the sequences below without asking — and say which listed topics
+   were dropped, so this document can be brought back in line.
 
 ---
 
@@ -33,12 +37,20 @@ The builder is expected to:
 
 | | |
 |---|---|
-| Material | 45 min, roughly 22 slides at two minutes |
+| Material | 45 min |
 | Quiz | 5 min, at the end |
 | Questions and overrun | 10 min |
 
-Each lecture below runs to 23 slides, the last of which is the quiz. There is no recap
-slide: the quiz serves that purpose and gets a response from the room rather than a nod.
+Budget in *concepts*, not in slides. Lecture 1 as delivered carries about twenty
+concepts across twenty-two material slides, and runs the full 45 minutes. A slide
+holding one short list and one figure costs well under two minutes; a slide with a
+slider the room wants to play with costs four. Count the sliders and the load-bearing
+slides first, then fill the rest in around them.
+
+Slide count is therefore a consequence, not a target. Splitting one crowded slide into
+three plain ones costs no extra time — the same words get said either way — so split
+freely. There is no recap slide: the quiz serves that purpose and gets a response from
+the room rather than a nod.
 
 ## Structure common to every lecture
 
@@ -47,26 +59,57 @@ slide: the quiz serves that purpose and gets a response from the room rather tha
 | 1 | Title. Lecture title only. |
 | 2 | The series. Its subject, its five parts, and where this one sits in them. |
 | 3 | Outline of this lecture. Its sections, in order. |
-| 4–22 | Material. |
-| 23 | Quiz. |
+| 4 … | Material. |
+| | Quiz — a title slide, then one slide per question. |
+| | Questions? |
+| | Thank you, naming what the next lecture does. |
 
 Slide 2 is the same slide in all five decks, with the current lecture marked. It says
 what each lecture needs from the ones before it, in a few words per lecture. Slide 3
 differs per lecture and lists the section headings given below.
 
+The quiz is multiple choice, four questions, four options each, one question per slide
+so the room reads one thing at a time. Answers are hands up rather than paper, and the
+answer with its reasoning lives in that slide's speaker notes — including what each
+wrong option is a trap for. Pick distractors that are plausible mistakes, not filler.
+
+## Presentation style
+
+*The slide is not the script.*
+
+A slide carries, at most, a heading, an optional one-line italic `.sub`, a short list or
+a displayed equation, one `.claim`, and a figure with its caption. Three or four bullets,
+each a fragment rather than a sentence. As a number to steer by: lecture 1 as delivered
+averages 35 words of on-slide text per slide, and the draft that had to be rewritten
+averaged 113.
+
+Everything else is spoken, and everything spoken is written down in the speaker notes:
+the derivation, the worked arithmetic, the caveat, the aside, the demonstration to run,
+the forward reference. Notes run long on purpose — roughly a hundred words a slide — and
+they are the place a sentence goes when it is true, worth saying, and would crowd the
+slide. If prose is on the slide, the audience reads it instead of listening.
+
+Interactive figures carry one idea and one cluster of controls. A segmented control that
+switches a figure between four unrelated transforms is a slide doing four jobs; give
+each its own slide and its own slider. Every such figure needs a resting state that
+reads correctly before anything is touched.
 ---
 
 # Lecture 1 — Vectors, bases and linear maps
 
+**Status: delivered.** The table below is the deck as it stands, not a proposal. Where
+lectures 2–5 still read as plans, this one reads as a record.
+
 **Arc.** Vectors come first as geometric objects, then as coordinates in an arbitrary
-basis, then as coordinates in a square one — and the inner product arrives to turn right
-angles into a number. Matrices appear where they are actually needed: a system of linear
-equations, written \(Ax = b\). That gives the matrix–vector product a reason to exist
-before it is given a name, and substituting one system into another gives the matrix
-product, its non-commutativity and the identity. Only then is a matrix reread as a
-transformation of space, at which point its columns are recognised as the images of the
-basis vectors and a whole figure can be pushed through one. Decomposition closes the
-lecture: a change of basis in which the map becomes simple.
+basis — skewed, unlovely — and only then as coordinates in a square one, presented as a
+choice rather than as what coordinates are. Length and the inner product arrive after
+that, turning right angles into a number. Matrices appear where they are actually needed:
+a system of linear equations, written \(Ax = b\). That gives the matrix–vector product a
+reason to exist before it is given a name, and substituting one system into another gives
+the matrix product, its non-commutativity and the identity. Only then is a matrix reread
+as a transformation of space, at which point its columns are recognised as the images of
+the basis vectors and a whole figure can be pushed through one. Two decompositions close
+the lecture, briefly.
 
 **Why this ordering.** A matrix introduced as a transformation has to carry an arithmetic
 nobody asked for. A matrix introduced as the bookkeeping of a linear system has that
@@ -75,96 +118,141 @@ the identity is the system that changes nothing, the inverse is the system run b
 The transformation reading then arrives as a reinterpretation of something already
 familiar, which is the one moment in the lecture worth spending real time on.
 
-| # | Slide |
-|---|---|
-| 1 | Vectors, bases and linear maps |
-| 2 | The series |
-| 3 | Outline |
-| | **I. Vectors** |
-| 4 | Vectors as geometric objects |
-| 5 | Addition, scalar multiplication and linear combinations |
-| 6 | Coordinates in a basis |
-| 7 | Euclidean coordinates |
-| 8 | Orthogonality |
-| 9 | The inner product: norm and angle |
-| 10 | Orthogonal projection |
-| | **II. Linear systems** |
-| 11 | Systems of linear equations |
-| 12 | The same system as \(Ax = b\): the matrix–vector product |
-| 13 | The matrix product and the transpose |
-| 14 | The identity matrix and the inverse |
-| | **III. Basis vectors and transforms** |
-| 15 | Span and linear independence |
-| 16 | Basis and dimension |
-| 17 | Matrices as linear transformations |
-| 18 | The columns of a matrix are the images of the basis vectors |
-| 19 | Rotation, scaling, shear, reflection — with sliders |
-| 20 | Change of basis; orthonormal bases and orthogonal matrices |
-| | **IV. Matrix decomposition** |
-| 21 | Eigenvalues and eigenvectors |
-| 22 | Eigendecomposition |
-| 23 | LU and the SVD, in brief |
-| | **V. Quiz** |
-| 24 | Quiz |
+| # | Slide | |
+|---|---|---|
+| 1 | Vectors, bases and linear maps | |
+| 2 | The series | |
+| 3 | Outline | |
+| | **I. Vectors** | |
+| 4 | Vectors as geometric objects | |
+| 5 | Addition, scalar multiplication and linear combinations | |
+| 6 | Coordinates in a basis | drag |
+| 7 | Orthogonality | |
+| 8 | Cartesian coordinates | |
+| 9 | The norm | |
+| 10 | The inner product | |
+| 11 | Orthogonal projection | |
+| | **II. Linear systems** | |
+| 12 | Systems of linear equations | |
+| 13 | The matrix product | click |
+| 14 | The transpose | click |
+| 15 | The identity matrix | |
+| 16 | The inverse | |
+| | **III. Basis vectors and transforms** | |
+| 17 | Matrices as linear transformations | |
+| 18 | The columns of a matrix are the images of the basis vectors | drag |
+| 19 | Rotation | slider |
+| 20 | Scaling | slider |
+| 21 | Shear | slider |
+| 22 | Translation is the odd one out | slider |
+| 23 | Combining transforms | slider |
+| | **IV. Matrix decomposition** | |
+| 24 | Eigenvalues and eigenvectors | |
+| 25 | LU | |
+| | **V. Quiz** | |
+| 26 | Quiz | |
+| 27 | What is \(u \cdot v\)? | |
+| 28 | Which picture is *not* a linear map? | |
+| 29 | A map sends \(e_1 \mapsto (0,1)\) and \(e_2 \mapsto (-2,0)\). What is its matrix? | |
+| 30 | What is an eigenvector of a matrix \(A\)? | |
+| 31 | Questions? | |
+| 32 | Thank you | |
 
-This deck runs to 24 slides, one over the nominal 23, and slide 19 is driven by the room
-and will overrun on top of that. Section I is where the extra length is, deliberately; the
-cut candidates below are the release valve.
+Thirty-two slides, nine of them interactive. That is not a slide count anyone should
+copy; it is what twenty concepts look like once no slide holds two of them. The five
+transform slides, 19 to 23, were one slide with a segmented control in the plan and are
+now the part of the hour that works best.
 
-**Coordinates are given twice, and that is the point.** Slide 6 defines coordinates against
-an arbitrary basis: two vectors off a common line, weights that exist and are unique, a
-grid that is not square. Only slide 7 adds right angles and a common step, and it presents
-that as a *choice* rather than as what coordinates are. Slide 8 then says what the choice
-buys — each coordinate readable on its own, by a perpendicular drop rather than a line
-parallel to the other basis vector — and slide 9 turns the right angle into a number.
+**Coordinates are given twice, and that is the point.** Slide 6 defines coordinates
+against an arbitrary basis: two draggable vectors off a common line, weights that exist
+and are unique, a grid that is not square. Slide 7 asks what right angles buy — each
+coordinate readable on its own, by a perpendicular drop rather than by a line parallel to
+the other basis vector — and only slide 8 adds a common step and calls the result
+Cartesian, presenting it as a *choice*. Slides 9 and 10 then turn length and the right
+angle into numbers.
 
-Nothing in slides 4–8 may use length, which is not defined until slide 9. A euclidean basis
-is therefore described on slide 7 as one vector together with its quarter turn, which fixes
-the step without measuring anything, and slide 9 states plainly that the coordinate formula
-for the inner product is reading a euclidean frame.
+The ordering here was corrected during drafting: the plan originally put the square
+frame before orthogonality. Orthogonality first is better, because the square frame is
+then the answer to a question the room has already been asked.
 
-Composition of transformations and the failure of commutativity are remarks on slide 13,
-where the product is defined, not a separate slide — stated there as a fact about
-substituting one system into another, and collected again on slide 17 once composition has
-a geometric reading. Translation, affine maps and homogeneous coordinates are a remark on
-slide 19: a translation slider is the one control on that slide that cannot be a matrix,
-which is the whole argument for the extra coordinate. Similar matrices are a remark on
-slide 20, and are what slide 22 is about.
+Nothing in slides 4–8 may use length, which is not defined until slide 9. A Cartesian
+basis is therefore described on slide 8 as one vector together with its quarter turn,
+which fixes the step without measuring anything, and slide 10 states plainly that the
+coordinate formula for the inner product is reading a Cartesian frame.
+
+**The matrix–vector product has no slide of its own.** It is introduced on slide 12 as
+the notation the system forces — entry \(i\) of \(Ax\) is row \(i\) of \(A\) against
+\(x\), which is the left-hand side of equation \(i\) — with the column reading,
+\(Ax = x_1a_1 + x_2a_2\), named in the notes. A separate slide for it repeated the
+systems slide and was dropped.
 
 **Elimination is deliberately absent.** How a system is actually solved — elimination,
-pivoting, rank, the null space, the conditions for existence and uniqueness — is skipped
-for now. Slide 14 says only that the inverse is what undoes the system, and that not every
-matrix has one. If the material returns, it belongs between slides 12 and 13.
+pivoting, rank, the null space, the conditions for existence and uniqueness — is skipped.
+The inverse slide says only that the inverse undoes the system, that not every matrix has
+one, and that forming it is not how software solves anything; the LU slide says what
+software does instead.
+
+**Span, independence, basis and dimension are absent too.** They were slides 15 and 16 of
+the plan and were cut in drafting: every use they had was already carried by a picture.
+"Two vectors off a common line" does the work of independence on the coordinates slide,
+and dragging one column arrow onto the other does the work of rank deficiency on the
+draggable-arrows slide. Restoring them is the first thing to reconsider if the hour ever
+comes in short.
 
 **The logo.** Slide 17 is the first appearance of the Volumental logo, as a point cloud
 pushed through a transformation. It recurs throughout section III and in section IV. It
-must not appear before slide 17 — in particular not on the title slide, whose draw-in
-figure has to be something else — so that its arrival coincides with the reinterpretation
-it illustrates.
+must not appear before slide 17 — in particular not on the title slide, whose figure is
+one arrow measured against two frames — so that its arrival coincides with the
+reinterpretation it illustrates.
 
-**Slide 19 is interactive.** One figure, one matrix, four or five sliders driving its
-entries, and the logo redrawing live. Presets for the named transforms so the shape of each
-matrix can be read off while its effect is on screen. The determinant is worth showing as a
-number that changes — the only place determinants are covered — and a slider configuration
-that collapses the figure to a line is worth reaching deliberately — it is also the only
-account this deck gives of a matrix that cannot be undone; the scaling sliders therefore
-reach zero rather than stopping short of it. Sliders must not advance the deck; see
-Appendix A.
+**The transforms are one slider each.** Rotation, scaling, shear, translation and the
+composition of two of them get a slide apiece, each with its own figure, its own controls
+and a live matrix readout. An earlier draft put all four behind one segmented control on
+one slide; splitting them is the single largest improvement in the deck. Reflection is a
+remark on the scaling slide — a negative scale — rather than a slide. Scaling sliders
+reach zero, so the figure can be collapsed onto a line deliberately; that collapse is
+this deck's only account of a matrix that cannot be undone, and it is reached again by
+dragging on slide 18. Sliders must not advance the deck; see Appendix A.
 
-**Cut candidates, in order:** 23, 15 folded into 16, 22. Slides 6, 7 and 8 are not cut
+**Determinants are not covered at all.** The plan had a live determinant readout on the
+transforms slide. It was cut: a number nobody can yet interpret is noise, and the two
+things it was there to show — area scaling and the collapse to a line — are both visible
+in the figure. The readouts show the matrix itself, and \(Q^{\mathsf T}Q = I\) on the
+rotation slide.
+
+**Cut candidates — to confirm after the next delivery.** The deck as it stands carries no
+per-slide cut guidance; the plan's rule that every slide says what to drop if time is
+short was not followed, and the honest reason is that the timing is not known yet. On
+paper the order is 25 (LU), 14 (the transpose), 21 (shear). Slides 6, 7 and 8 are not cut
 candidates: they are the sequence the rest of the lecture reads coordinates through.
+Slide 18 is not a cut candidate at any price.
 
-**Forward dependencies.** Slide 9 (inner product) is reused in lecture 5 for attention
-scores. Slide 10 (projection) is reused in lecture 3 for least squares. Slide 14 (the
-inverse) is reused in lecture 3 for the normal equations. The homogeneous-coordinate remark
-on slide 19 is reused in lecture 4 for the bias term. Slide 20 (orthonormal bases) is
-reused in lecture 5 for multi-head projections. Slide 21 (eigenvalues) is reused in lecture
-3 for the condition number.
+**Forward dependencies.** Slide 10 (the inner product) is reused in lecture 5 for
+attention scores. Slide 11 (projection) is reused in lecture 3 for least squares. Slide 16
+(the inverse) is reused in lecture 3 for the normal equations. The homogeneous coordinates
+of slides 22 and 23 are reused in lecture 4 for the bias term. Slide 24 (eigenvalues) is
+reused in lecture 3 for the condition number.
 
-**Not covered, deliberately:** elimination and the solution of systems in any form, rank
-and the null space, the QR/Cholesky family, determinants beyond the live number on slide
-19, inner products other than the euclidean one, general metrics, Gram–Schmidt, complex
-eigenvalues beyond a caveat, and every decomposition on slide 23 beyond what it is for.
+Lecture 5 wanted orthonormal bases for multi-head projections, and this deck no longer
+has a change-of-basis slide to point at. Orthogonality (7), Cartesian coordinates (8) and
+the orthogonality of a rotation (19) are what is available; lecture 5 must build the rest
+itself or accept the gap.
+
+**Not covered, deliberately:** elimination and the solution of systems in any form; span,
+independence, basis and dimension as named concepts; rank and the null space;
+determinants; change of basis and similar matrices; eigendecomposition; the SVD; the
+QR/Cholesky family; inner products other than the Cartesian one; general metrics;
+Gram–Schmidt; complex eigenvalues beyond a caveat.
+
+---
+
+## A note on lectures 2–5
+
+Their tables below were written before lecture 1 was built, at the old granularity: one
+line per topic, several topics to a slide, twenty-three slides to a deck. Read them as
+lists of *concepts in order*, not as slide sequences. Expect each to split into thirty or
+so slides once the presentation-style rules above are applied, and renumber the
+cross-references in this document when it happens.
 
 ---
 
@@ -270,7 +358,7 @@ what has been covered is visible.
 
 Slide 11 uses the eigenvalues of the Hessian; slide 16 uses orthogonal projection. Both
 are recalled in a sentence, with a pointer back to the slide in lecture 1 that established
-them.
+them — by name, "the eigenvalues slide" and "the projection slide", not by number.
 
 Slides 20 and 21 are one slide each and are meant to stay that way. Slide 20 follows
 directly from slide 19: every method in this lecture finds a local minimum, so the
@@ -409,10 +497,12 @@ obvious extension if there is appetite.
 **Numerical differentiation.** Floating between lecture 2 (slides 22–23) and the start of
 lecture 3. Decide once both are drafted and time is known.
 
-**Load-bearing slides.** If any of these does not land, later lectures suffer: 1/9 (the
-inner product), 1/18 (the matrix of a transformation), 2/6 (the derivative as linear
-approximation), 2/8 (the chain rule), 3/7 (descent direction and line search), 4/5 (a
-composition of linear maps is linear), 5/10 (scores as inner products).
+**Load-bearing slides.** If any of these does not land, later lectures suffer: in
+lecture 1, the inner product (10) and the columns of a matrix as the images of the basis
+vectors (18); then 2/6 (the derivative as linear approximation), 2/8 (the chain rule),
+3/7 (descent direction and line search), 4/5 (a composition of linear maps is linear),
+5/10 (scores as inner products). The lecture 2–5 numbers are at the old granularity and
+will move.
 
 ---
 
@@ -464,7 +554,7 @@ labels, captions and the top rail. KaTeX supplies the mathematical typeface.
 | `h2`, all others | 41px / 600, line-height 1.13, tracking −.015em |
 | `.sub` | 21px italic, `--ink-2` |
 | `p` | 22px / 400, line-height 1.55, max-width 64ch |
-| `li` | 21px, line-height 1.5, max-width 60ch |
+| `li` | 23px, line-height 1.5, max-width 52ch |
 | `.eq` | 20px |
 | `.claim` | 25px, line-height 1.38 |
 | `figcaption` | 13px mono, `--ink-3` |
@@ -488,7 +578,11 @@ Components: `.claim`, a 3px solid black left rule for the one sentence per slide
 remembering, at most one per slide; `.eq`, a bordered pale panel around display
 mathematics, with `.eq.bare` for none; `pre`, code on `--code-bg` behind a 2px
 `--prussian` left rule; `.controls`, a row of labelled `input[type=range]` under a figure,
-each slider showing its current value in mono beside its label.
+each slider showing its current value in mono beside its label; `.readout`, a live matrix
+in `.mat` beside a mono `.note`, under an interactive figure; `.hint`, one mono line
+under an interactive figure saying what is draggable; `.mc`, the quiz options, ruled rows
+with a mono letter in the first column; `.series`, the five-lecture list on slide 2, each
+entry a bold title over a mono `small` of its contents.
 
 ## Mechanics
 
@@ -512,17 +606,27 @@ state it opens in that reads correctly with nothing touched.
 ```html
 <section class="slide" data-where="Section name">
   <h2>Heading</h2>
-  <p class="sub">One italic line framing the slide.</p>
+  <p class="sub">One italic line framing the slide. Optional, and often absent.</p>
   <div class="two wide-left">
-    <div><!-- prose, lists, .eq, .claim --></div>
+    <div>
+      <div class="eq">$$\dots$$</div>
+      <ul><li>Three or four fragments</li></ul>
+      <p class="claim">The one sentence worth remembering.</p>
+    </div>
     <figure>
       <svg viewBox="0 0 330 300" role="img" aria-label="…"></svg>
-      <figcaption>Two lines saying what the figure shows.</figcaption>
+      <figcaption>One line saying what the figure shows.</figcaption>
     </figure>
   </div>
-  <aside class="notes"><h4>Speaker notes</h4><p>…</p></aside>
+  <aside class="notes"><h4>Speaker notes</h4><p>…</p><p>…</p><p>…</p></aside>
 </section>
 ```
+
+An interactive figure replaces `<figure>` with `<figure class="demo" data-demo="name">`
+and adds `.controls`, `.readout` and a `.hint` line under the svg.
+
+Note the shape of it: the notes are the longest thing in the section. If they are not,
+the slide is carrying prose that belongs in them.
 
 ## Editorial rules
 
@@ -539,8 +643,20 @@ Forward references are stated explicitly, and paid off explicitly when they arri
 
 Omissions are named in a sentence rather than passed over.
 
-Every slide carries speaker notes: what to emphasise, any demonstration worth doing, and
-what to cut if time is short.
+Headings name one thing. A heading joined by "and" or a semicolon is two slides.
+
+Every slide carries speaker notes: the prose that is not on the slide, what to emphasise,
+any demonstration worth doing, the worked arithmetic to say out loud, and what to cut if
+time is short.
+
+Worked numbers are spoken, not printed. A slide shows the formula; the notes carry the
+example, with the arithmetic done so the lecturer can read it off.
+
+Bullets are fragments, not sentences. A full stop in a bullet is a sign it belongs in the
+notes.
+
+Cross-references name their target rather than numbering it, in both the decks and this
+document.
 
 Avoid: all-caps labels, decorative numbering, new notation introduced before it is
-needed, and more than one `.claim` per slide.
+needed, more than one `.claim` per slide, and any paragraph of prose on a slide.
