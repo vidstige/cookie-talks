@@ -246,71 +246,131 @@ Gram–Schmidt; complex eigenvalues beyond a caveat.
 
 ---
 
-## A note on lectures 2–5
+## A note on lectures 3–5
 
 Their tables below were written before lecture 1 was built, at the old granularity: one
 line per topic, several topics to a slide, twenty-three slides to a deck. Read them as
 lists of *concepts in order*, not as slide sequences. Expect each to split into thirty or
 so slides once the presentation-style rules above are applied, and renumber the
-cross-references in this document when it happens.
+cross-references in this document when it happens. Lecture 2 has been rewritten at the
+new granularity and no longer needs this caveat.
 
 ---
 
 # Lecture 2 — Basic calculus
 
+**Status: plan, revised.** Slimmed against what lectures 3 and 4 actually consume; see
+*What was cut* below. Written at one concept per line, so the table is close to the slide
+sequence rather than a topic list.
+
 **Arc.** The derivative is presented as the coefficient of the best local linear
-approximation, from which the differentiation rules and the chain rule follow. Higher
-derivatives give curvature and the Taylor expansion. The same construction is then
-carried into several variables: partial derivatives, gradient, directional derivative,
-Jacobian, Hessian. The lecture closes on the question of how a derivative is actually
-obtained: by hand, by difference quotient, or automatically.
+approximation, from which a handful of rules and the chain rule follow. The second
+derivative gives curvature and the quadratic approximation, which is as far as expansion
+goes. The same construction is then carried into several variables: partial derivatives,
+gradient, directional derivative, Jacobian, Hessian, and the chain rule as a product of
+Jacobians. The lecture closes on how a derivative is actually obtained: by hand, by
+difference quotient, or automatically — with forward mode worked and its cost stated, so
+that lecture 4 has a reason to want reverse mode.
 
-| # | Slide |
-|---|---|
-| 1 | Basic calculus |
-| 2 | The series |
-| 3 | Outline |
-| | **I. The derivative in one variable** |
-| 4 | Rates of change and the difference quotient |
-| 5 | The limit |
-| 6 | The derivative as best local linear approximation |
-| 7 | Rules: power, sum, product, quotient |
-| 8 | The chain rule |
-| | **II. Local behaviour** |
-| 9 | Stationary points and extrema |
-| 10 | Higher derivatives and curvature |
-| 11 | Taylor polynomials |
-| | **III. Several variables** |
-| 12 | Functions of several variables |
-| 13 | Partial derivatives |
-| 14 | The gradient |
-| 15 | Directional derivatives |
-| 16 | The Jacobian |
-| 17 | The Hessian and the second-order expansion |
-| 18 | The chain rule in several variables |
-| | **IV. Obtaining derivatives** |
-| 19 | Symbolic, numerical and automatic differentiation |
-| 20 | Forward-mode automatic differentiation |
-| 21 | The cost of forward mode |
-| 22 | Numerical differentiation: the difference quotient in practice † |
-| 23 | Step size: truncation against cancellation † |
-| 24 | Quiz |
+| # | Slide | |
+|---|---|---|
+| 1 | Basic calculus | |
+| 2 | The series | |
+| 3 | Outline | |
+| | **I. The derivative in one variable** | |
+| 4 | Rates of change and the difference quotient | |
+| 5 | The derivative as best local linear approximation | slider |
+| 6 | Differentiation rules | |
+| 7 | The chain rule | slider |
+| | **II. Local behaviour** | |
+| 8 | Stationary points | |
+| 9 | The second derivative | |
+| 10 | The quadratic approximation | slider |
+| | **III. Several variables** | |
+| 11 | Functions of several variables | |
+| 12 | Partial derivatives | |
+| 13 | The gradient | drag |
+| 14 | Directional derivatives | slider |
+| 15 | The Jacobian | |
+| 16 | The Hessian | |
+| 17 | The chain rule in several variables | |
+| | **IV. Obtaining derivatives** | |
+| 18 | By hand, by difference quotient, by program | |
+| 19 | Numerical differentiation and the step size | slider |
+| 20 | Forward-mode automatic differentiation | |
+| 21 | The cost of forward mode | |
+| | **V. Quiz** | |
+| 22 | Quiz | |
+| 23–26 | Four questions | |
+| 27 | Questions? | |
+| 28 | Thank you | |
 
-**† Floating block.** Slides 22–23 sit here or at the front of lecture 3, whichever has
-time left after the rest is written. They are self-contained and do not affect the
-numbering of anything before them. If they move, slide 19 keeps a forward reference to
-them.
+Eighteen material slides, six of them interactive, against twenty-two in lecture 1. The
+budget is deliberately below lecture 1's: three of the slides — 5, 7 and 13 — are
+load-bearing for the rest of the series and should get the time the cut material frees.
 
-**Coordination note.** Slide 9 states the condition f′ = 0 at stationary points as a fact
-about local behaviour. Lecture 3 does not restate it as a definition; it arrives at the
-same condition as the thing an algorithm searches for.
+**What each later lecture takes from here.** Lecture 3 needs the gradient (13) and the
+directional derivative (14) for descent directions and line search; the stationary-point
+condition (8) as the thing an algorithm searches for; the second derivative (9), the
+quadratic approximation (10) and the Hessian (16) for Newton's method and for
+conditioning; the Jacobian (15) and the chain rule (7) for Gauss–Newton. Lecture 4 needs
+the chain rule in several variables (17) — that is the whole of backpropagation — and the
+cost of forward mode (21) as the reason reverse mode exists. Lecture 5 needs nothing
+beyond what lecture 4 already uses. Every slide in the table is on that list or is the
+step immediately before one that is.
 
-**Forward dependencies.** Slide 8 (chain rule) is the whole of backpropagation in
-lecture 4. Slide 14 (gradient) and slide 17 (Hessian) are the objects lecture 3
+**The limit has no slide of its own.** Slide 4 writes the difference quotient and says
+"as \(h\) shrinks"; slide 5 shows it on a slider. That is the whole treatment. No
+epsilon-delta argument, no discussion of when the limit fails to exist beyond a remark
+that a corner has no tangent.
+
+**The rules are one slide.** Sum, scalar multiple, power and exponential, in a short
+table, because those are the ones the later lectures differentiate. Product and quotient
+rules are named in the notes as existing and are not used anywhere in the series; sine and
+cosine likewise. The chain rule gets its own slide because it is the one that matters.
+
+**Expansion stops at degree two.** Taylor polynomials as a topic were cut. What lecture 3
+needs is the quadratic model \(f(x+h)\approx f(x)+f'(x)h+\tfrac12 f''(x)h^2\), and that is
+slide 10, presented as "the linear approximation, plus curvature". The general series, its
+remainder and its convergence are not mentioned. Slide 16 does the same in several
+variables with the Hessian, and that is the second-order expansion lecture 3 uses.
+
+**The chain rule in several variables is Jacobians multiplied.** Slide 17 says the
+derivative of a composition is the matrix product of the Jacobians, which is the matrix
+product from lecture 1 read as "rates compose". Backpropagation in lecture 4 is this slide
+evaluated in a particular order; say so.
+
+**Obtaining derivatives stays here, and closes the deck.** Slide 18 names the three
+routes. Slide 19 revisits the difference quotient with a finite \(h\) and shows the
+trade-off between truncation and cancellation on a slider — that is the floating block
+of the earlier plan, collapsed to one slide and settled here rather than in lecture 3.
+Slide 20 carries (value, derivative) pairs through the rules of slide 6 and the chain
+rule of slide 7, so that forward mode is seen to be the chain rule made mechanical.
+Slide 21 states the cost: one pass per input, which a function of a million parameters
+and one output cannot afford. Reverse mode is named as the fix and left for lecture 4.
+
+**Coordination note.** Slide 8 states the condition \(f' = 0\) at stationary points as a
+fact about local behaviour. Lecture 3 does not restate it as a definition; it arrives at
+the same condition as the thing an algorithm searches for.
+
+**Cut candidates, in order:** 21 (say the cost in a sentence on slide 20), 19, 12
+(define partials on the gradient slide). Slides 5, 7 and 13 are not cut candidates.
+
+**Forward dependencies.** Slide 5 (linear approximation) is the picture lecture 3 uses
+for every descent step. Slide 7 (chain rule) is the whole of backpropagation in
+lecture 4. Slide 13 (gradient) and slide 16 (Hessian) are the objects lecture 3
 manipulates. Slide 21 (cost of forward mode) is the reason lecture 4 needs reverse mode.
 
-**Not covered, deliberately:** integration, series convergence, multivariable integration,
-differential equations, any epsilon-delta argument.
+**What was cut, and why.** The limit as a slide (folded into 4 and 5); product and
+quotient rules (named, not taught; unused later); higher derivatives beyond the second
+and Taylor polynomials as a topic (replaced by the quadratic approximation, which is all
+lecture 3 needs); the second-order expansion as a slide separate from the Hessian
+(merged into 16). Restoring Taylor polynomials is the first thing to reconsider if the
+hour comes in short, since they are the natural continuation of slide 10.
+
+**Not covered, deliberately:** integration; series, convergence and the Taylor remainder;
+multivariable integration; differential equations; any epsilon-delta argument; implicit
+differentiation; reverse-mode differentiation (lecture 4).
 
 ---
 
@@ -494,15 +554,16 @@ probability the series never develops. The current decision is to acknowledge th
 the slide and continue. A sixth lecture on probability, expectation and likelihood is the
 obvious extension if there is appetite.
 
-**Numerical differentiation.** Floating between lecture 2 (slides 22–23) and the start of
-lecture 3. Decide once both are drafted and time is known.
+**Numerical differentiation.** Settled: it is one slide at the end of lecture 2, together
+with forward-mode automatic differentiation, so that lecture 3 may assume derivatives are
+available and lecture 4 only has to add reverse mode.
 
 **Load-bearing slides.** If any of these does not land, later lectures suffer: in
 lecture 1, the inner product (10) and the columns of a matrix as the images of the basis
-vectors (18); then 2/6 (the derivative as linear approximation), 2/8 (the chain rule),
-3/7 (descent direction and line search), 4/5 (a composition of linear maps is linear),
-5/10 (scores as inner products). The lecture 2–5 numbers are at the old granularity and
-will move.
+vectors (18); then 2/5 (the derivative as linear approximation), 2/7 (the chain rule),
+2/13 (the gradient), 3/7 (descent direction and line search), 4/5 (a composition of
+linear maps is linear), 5/10 (scores as inner products). The lecture 3–5 numbers are at
+the old granularity and will move.
 
 ---
 

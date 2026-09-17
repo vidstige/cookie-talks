@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Basic calculus</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<style>
+:root{
+  --paper:#ffffff;
+  --ink:#000000;
+  --ink-2:#3f4750;
+  --ink-3:#767f89;
+  --rule:#dcdfe3;
+  --grid:#eceef1;
+
+  --madder:#a4402c;
+  --prussian:#1c4e73;
+  --verdigris:#2b6f68;
+  --construct:#c3c9cf;
+
+  --code-bg:#f7f7f5;
+  --code-fg:#252a30;
+  --code-comment:#8a9199;
+  --code-key:#1c4e73;
+  --code-lit:#2b6f68;
+
+  --stage-w:1280px;
+  --stage-h:720px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#f2f3f4}
+body{font-family:Spectral,Georgia,serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+
+#viewport{position:fixed;inset:0;display:grid;place-items:center}
+#stage{
+  width:var(--stage-w);height:var(--stage-h);position:relative;
+  transform-origin:center center;background:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:48px 48px;background-position:-1px -1px;
+  box-shadow:0 1px 14px rgba(0,0,0,.13);
+}
+
+.rail{
+  position:absolute;left:80px;right:80px;top:24px;height:26px;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font:12.5px/1 'JetBrains Mono',monospace;color:var(--ink-3);
+  border-bottom:1px solid var(--rule);pointer-events:none;
+}
+.slide{position:absolute;inset:0;padding:62px 80px 70px;display:none;flex-direction:column}
+.slide.on{display:flex}
+.slide.title{justify-content:center}
+
+h1{font-size:68px;font-weight:600;line-height:1.04;letter-spacing:-.02em;margin:0}
+h2{font-size:41px;font-weight:600;line-height:1.13;letter-spacing:-.015em;margin:0}
+h3{font-size:21px;font-weight:500;margin:0 0 6px;letter-spacing:-.01em}
+.sub{font-size:21px;font-style:italic;color:var(--ink-2);margin:8px 0 0;max-width:70ch}
+h2+.sub{margin-top:8px}
+p{font-size:22px;line-height:1.55;max-width:64ch;margin:14px 0 0}
+ul,ol{margin:16px 0 0;padding-left:22px}
+li{font-size:23px;line-height:1.5;max-width:52ch;margin:11px 0}
+li::marker{color:var(--ink-3)}
+em{font-style:italic}
+b,strong{font-weight:600}
+.small{font-size:18px;color:var(--ink-2)}
+.body{margin-top:18px;flex:1;min-height:0}
+
+.claim{
+  border-left:3px solid var(--ink);padding:2px 0 2px 18px;
+  font-size:25px;line-height:1.38;margin:18px 0 0;max-width:56ch;
+}
+.eq{
+  border:1px solid var(--rule);background:#fbfbfa;border-radius:2px;
+  padding:11px 16px;margin:15px 0 0;font-size:20px;
+}
+.eq.bare{border:0;background:none;padding:0}
+.eq .katex-display{margin:.34em 0}
+.eq p:first-child .katex-display{margin-top:0}
+.eq p,.eq .note{font-size:16px;color:var(--ink-2);margin:8px 0 0;max-width:none}
+
+pre{
+  font:17px/1.5 'JetBrains Mono',monospace;color:var(--code-fg);
+  background:var(--code-bg);border-left:2px solid var(--prussian);
+  padding:10px 14px;margin:12px 0 0;white-space:pre;overflow:hidden;
+}
+pre .c{color:var(--code-comment);font-style:italic}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:42px;align-items:start}
+.two.wide-left{grid-template-columns:1.3fr 1fr}
+.two.wide-right{grid-template-columns:1fr 1.3fr}
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:end}
+.panels.three{grid-template-columns:1fr 1fr 1fr;gap:24px}
+
+figure{margin:0}
+figure svg{width:100%;height:auto;display:block;overflow:visible}
+.demo svg{overflow:hidden;touch-action:none;cursor:crosshair}
+figcaption{
+  font:13px/1.45 'JetBrains Mono',monospace;color:var(--ink-3);
+  margin-top:9px;max-width:44ch;
+}
+text{font-family:'JetBrains Mono',monospace;font-size:12px}
+.f-madder{fill:var(--madder)}    .s-madder{stroke:var(--madder)}
+.f-prussian{fill:var(--prussian)} .s-prussian{stroke:var(--prussian)}
+.f-verdigris{fill:var(--verdigris)} .s-verdigris{stroke:var(--verdigris)}
+.f-construct{fill:var(--construct)} .s-construct{stroke:var(--construct)}
+.f-dim{fill:var(--ink-3)}
+.f-ink{fill:var(--ink-2)} .s-ink{stroke:var(--ink)}
+svg .stroke{fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+svg .hair{fill:none;stroke-width:1;stroke-linecap:round}
+svg .dash{fill:none;stroke-width:1.3;stroke-dasharray:4 4;stroke-linecap:round}
+svg .cloud{fill:none;stroke-width:2.4;stroke-linecap:round}
+svg .cloud.ghost{stroke-width:2}
+
+/* interactive figures */
+.demo .controls{
+  display:flex;flex-direction:column;gap:7px;margin-top:12px;
+  font:12.5px/1.2 'JetBrains Mono',monospace;color:var(--ink-2);
+}
+.demo .row{display:flex;align-items:center;gap:10px;min-height:20px}
+.demo .row>label{width:76px;color:var(--ink-3)}
+.demo .row output{width:78px;color:var(--ink)}
+input[type=range]{
+  width:190px;height:16px;accent-color:var(--madder);
+  background:none;cursor:ew-resize;
+}
+.seg{display:flex;gap:0;border:1px solid var(--rule);border-radius:2px;overflow:hidden;width:max-content}
+.seg button{
+  font:12px/1 'JetBrains Mono',monospace;color:var(--ink-2);background:var(--paper);
+  border:0;border-left:1px solid var(--rule);padding:6px 11px;cursor:pointer;
+}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+.mat{
+  display:inline-grid;gap:1px 16px;justify-items:end;
+  font:15px/1.5 'JetBrains Mono',monospace;
+  padding:5px 11px;border-left:2px solid var(--ink);border-right:2px solid var(--ink);
+}
+.mat.m2{grid-template-columns:auto auto}
+.mat.m3{grid-template-columns:auto auto auto;font-size:13.5px}
+.readout{display:flex;align-items:center;gap:16px;margin-top:12px}
+.readout .note{font:12.5px/1.5 'JetBrains Mono',monospace;color:var(--ink-3)}
+.readout .note b{color:var(--ink);font-weight:500}
+.hint{font:12px 'JetBrains Mono',monospace;color:var(--ink-3);margin-top:8px}
+
+/* the series slide */
+.series{list-style:none;padding:0;margin:26px 0 0;max-width:none}
+.series li{
+  display:grid;grid-template-columns:34px 1fr;gap:14px;
+  padding:8px 0;border-top:1px solid var(--rule);max-width:80ch;
+  color:var(--ink-3);font-size:20px;
+}
+.series li:last-child{border-bottom:1px solid var(--rule)}
+.series li b{font-weight:500}
+.series li.here{color:var(--ink)}
+.series li.here .n{color:var(--madder)}
+.series .n{font:13px 'JetBrains Mono',monospace;padding-top:6px}
+.outline{list-style:none;padding:0;margin:24px 0 0}
+.outline li{
+  display:grid;grid-template-columns:44px 1fr;gap:10px;
+  font-size:23px;padding:9px 0;max-width:70ch;
+}
+.outline .n{font:13px 'JetBrains Mono',monospace;color:var(--ink-3);padding-top:9px}
+.outline small{display:block;font-size:16px;color:var(--ink-3);font-family:'JetBrains Mono',monospace}
+.mc{list-style:none;padding:0;margin:26px 0 0}
+.mc li{
+  display:grid;grid-template-columns:30px 1fr;gap:14px;align-items:baseline;
+  font-size:24px;padding:11px 0;border-top:1px solid var(--rule);max-width:64ch;
+}
+.mc li:last-child{border-bottom:1px solid var(--rule)}
+.mc .k{font:14px 'JetBrains Mono',monospace;color:var(--ink-3)}
+
+/* notes, overview */
+/* Notes live in the separate speaker window; they never show on the deck. */
+.notes{display:none}
+#overview{
+  position:fixed;inset:0;background:rgba(255,255,255,.97);z-index:20;
+  display:none;grid-template-columns:repeat(6,1fr);gap:14px;
+  padding:26px;overflow:auto;align-content:start;
+}
+#overview.on{display:grid}
+.thumb{position:relative;cursor:pointer;border:1px solid var(--rule);background:var(--paper)}
+.thumb .wrap{width:100%;aspect-ratio:16/9;overflow:hidden;position:relative}
+.thumb .wrap>.slide{
+  display:flex !important;transform-origin:top left;position:absolute;top:0;left:0;
+  width:var(--stage-w);height:var(--stage-h);
+}
+.thumb.on{outline:2px solid var(--madder)}
+.thumb b{
+  position:absolute;right:4px;bottom:2px;
+  font:10px 'JetBrains Mono',monospace;color:var(--ink-3);font-weight:400;
+}
+#help{
+  position:fixed;left:12px;bottom:10px;z-index:30;
+  font:11px 'JetBrains Mono',monospace;color:#9aa2aa;
+}
+
+@media print{
+  html,body{overflow:visible;background:#fff}
+  #viewport{position:static;display:block}
+  #stage{transform:none !important;box-shadow:none;width:var(--stage-w);height:auto}
+  .slide{display:flex !important;position:relative;inset:auto;
+    width:var(--stage-w);height:var(--stage-h);break-after:page}
+  #overview,#help{display:none !important}
+  @page{size:1280px 720px;margin:0}
+}
+.series small{
+  display:block;font:11.5px/1.4 'JetBrains Mono',monospace;
+  color:var(--ink-3);margin-top:2px;
+}
+.series li.here small{color:var(--madder)}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+
+<!-- 1 -->
+<section class="slide title" data-where="How Stuff Works: AI from scratch">
+  <div class="two wide-left">
+    <div>
+      <h1>Basic calculus</h1>
+      <p class="sub">How Stuff Works: AI from scratch — lecture two of five</p>
+    </div>
+    <figure>
+      <svg id="fig-title" viewBox="0 0 430 320" role="img"
+           aria-label="A curve with its tangent line at one point, and a magnified window in which the two are indistinguishable"></svg>
+      <figcaption>A curve and a line. Up close, nobody can tell them apart.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The hour in one sentence: a smooth function, looked at closely enough, is a
+    linear map — and last week was about linear maps. The derivative is the slope of
+    that line; in several variables it is the matrix of that map. Everything else in
+    the lecture is bookkeeping around that one idea.</p>
+    <p>The figure is the thesis. The small window is the curve magnified six times.
+    In it the curve and its tangent line lie on top of each other. The linear
+    approximation slide gives this picture a slider.</p>
+  </aside>
+</section>
+
+<!-- 2 -->
+<section class="slide" data-where="The series">
+  <h2>The series</h2>
+  <div class="body">
+    <ul class="series">
+      <li><span class="n">01</span><span><b>Vectors, bases and linear maps.</b>
+        <small>arrows, coordinates, Ax = b, transformations, eigenvalues</small></span></li>
+      <li class="here"><span class="n">02</span><span><b>Basic calculus.</b>
+        <small>derivatives, the chain rule, gradient, Jacobian, Hessian</small></span></li>
+      <li><span class="n">03</span><span><b>Numerical optimization.</b>
+        <small>line search, steepest descent, Newton, least squares</small></span></li>
+      <li><span class="n">04</span><span><b>The multilayer perceptron.</b>
+        <small>affine layers, nonlinearities, backpropagation</small></span></li>
+      <li><span class="n">05</span><span><b>The attention mechanism.</b>
+        <small>queries, keys and values, the softmax, the transformer</small></span></li>
+    </ul>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Thirty seconds. Last time: vectors, matrices, and a matrix as a map of the
+    plane. Today: the derivative, which turns out to be such a map applied one small
+    patch at a time. Next time uses today's gradient and Hessian to find minima;
+    lecture 4 uses today's chain rule to train a network. Taken in order.</p>
+  </aside>
+</section>
+
+<!-- 3 -->
+<section class="slide" data-where="Outline">
+  <h2>Outline</h2>
+  <div class="body">
+    <ol class="outline">
+      <li><span class="n">I</span><span>The derivative in one variable
+        <small>the difference quotient, the linear approximation, the rules, the
+        chain rule</small></span></li>
+      <li><span class="n">II</span><span>Local behaviour
+        <small>stationary points, the second derivative, the quadratic
+        approximation</small></span></li>
+      <li><span class="n">III</span><span>Several variables
+        <small>partial derivatives, the gradient, directional derivatives, the
+        Jacobian, the Hessian</small></span></li>
+      <li><span class="n">IV</span><span>Obtaining derivatives
+        <small>by hand, by difference quotient, by program</small></span></li>
+      <li><span class="n">V</span><span>Quiz</span></li>
+    </ol>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Section I is one idea seen four ways. II is short: what the first two
+    derivatives say about the shape of a curve near a point. III does I again with a
+    vector going in, and is where the objects the optimization lecture needs are
+    built. IV is practical: none of this is worth much if a program cannot compute
+    it.</p>
+    <p>Keys: ← → or PageUp/PageDown to navigate, <b>N</b> for the notes window,
+    <b>O</b> for the overview, <b>F</b> for full screen.</p>
+  </aside>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-where="I. The derivative">
+  <h2>Rates of change and the difference quotient</h2>
+  <p class="sub">How much \(f\) changes, per unit of \(x\).</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$\frac{f(x+h)-f(x)}{h}$$
+        <p class="note">Rise over run, between \(x\) and \(x+h\).</p>
+      </div>
+      <ul>
+        <li>An average rate over one interval</li>
+        <li>The slope of the line through two points on the curve</li>
+        <li>Depends on \(h\) — until \(h\) is small</li>
+      </ul>
+    </div>
+    <figure>
+      <svg id="fig-quotient" viewBox="0 0 400 300" role="img"
+           aria-label="A curve with a secant line through two of its points, the horizontal and vertical legs of the slope triangle marked"></svg>
+      <figcaption>The secant through \(x\) and \(x+h\). Its slope is the difference
+      quotient.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Speed is the example everyone has: distance travelled divided by time taken
+    is an average speed, and the shorter the interval the closer it gets to what the
+    speedometer says. The difference quotient is that, for any function.</p>
+    <p>Do one by hand, out loud, with \(f(x)=x^2\): \((x+h)^2 - x^2 = 2xh + h^2\),
+    divide by \(h\), and the quotient is \(2x + h\). At \(x=1\): \(h=1\) gives 3,
+    \(h=0.1\) gives 2.1, \(h=0.01\) gives 2.01. The \(h\) in the answer is the part
+    that depends on the interval; it shrinks with the interval and leaves \(2x\).</p>
+    <p>"As \(h\) shrinks" is the whole of the limit in this lecture. No epsilon, no
+    delta. The next slide puts it on a slider. If asked when it fails: a corner, like
+    \(|x|\) at zero, has a different slope from each side, and no tangent.</p>
+  </aside>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-where="I. The derivative">
+  <h2>The derivative as best local linear approximation</h2>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$f(x+h)\approx f(x)+f'(x)\,h$$
+        <p class="note">\(f'(x)\) is the slope the secants settle on as \(h\to0\).</p>
+      </div>
+      <ul>
+        <li>Of all lines through \((x, f(x))\), the one that fits best nearby</li>
+        <li>The error shrinks faster than \(h\)</li>
+      </ul>
+      <p class="claim">Zoom in far enough and a smooth curve is a line. The
+      derivative is its slope.</p>
+    </div>
+    <figure class="demo" data-demo="secant">
+      <svg id="fig-secant" viewBox="0 0 400 300" role="img"
+           aria-label="A curve with a movable secant through a point and a second point a distance h away, alongside the tangent at the first point"></svg>
+      <div class="controls">
+        <div class="row"><label for="sec-x">x</label>
+          <input id="sec-x" type="range" min="-2" max="2.2" step="0.1" value="1.4">
+          <output id="out-sec-x"></output></div>
+        <div class="row"><label for="sec-h">h</label>
+          <input id="sec-h" type="range" min="0.01" max="2" step="0.01" value="1.5">
+          <output id="out-sec-h"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-secant"></div></div>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The load-bearing slide of the hour. Pull \(h\) down slowly and narrate: the
+    blue secant swings, and the number beside it settles. Somewhere around
+    \(h=0.1\) it stops visibly moving. The green line it settles on is the tangent,
+    and its slope is \(f'(x)\). Then move \(x\) and do it again somewhere the curve
+    bends the other way.</p>
+    <p>Read the approximation as a recipe: to predict \(f\) a little way from where
+    you are, take the value you have and add slope times step. That is a linear
+    function of \(h\), which is why the next lecture can do anything at all — it
+    replaces the function it cannot see with the line it can.</p>
+    <p>"Error shrinks faster than \(h\)" is the precise sense of <em>best</em>. Halve
+    the step and the error drops by about four, not two. The quadratic-approximation
+    slide says exactly what that error is.</p>
+    <p>Notation, said once: \(f'(x)\), \(\frac{df}{dx}\) and \(\frac{d}{dx}f\) all
+    mean this number. The lecture uses the prime.</p>
+  </aside>
+</section>
+
+<!-- 6 -->
+<section class="slide" data-where="I. The derivative">
+  <h2>Differentiation rules</h2>
+  <p class="sub">The ones this series uses.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$\begin{aligned}
+        (f+g)' &= f'+g' &\qquad (c\,f)' &= c\,f'\\
+        (x^n)' &= n\,x^{n-1} &\qquad (e^x)' &= e^x
+        \end{aligned}$$
+      </div>
+      <ul>
+        <li>Each is the linear approximation, worked out once</li>
+        <li>Together they differentiate every polynomial</li>
+      </ul>
+    </div>
+    <figure>
+      <svg id="fig-rules" viewBox="0 0 400 300" role="img"
+           aria-label="The parabola x squared and its derivative, the line 2x, on shared axes"></svg>
+      <figcaption>\(f(x)=x^2\) and \(f'(x)=2x\). Where \(f\) is flat, \(f'\) is zero.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Not a slide to dwell on. The sum rule and constant rule say differentiation
+    is itself linear, in last week's sense: it respects addition and scaling. Point
+    at the figure for the power rule — the slope of the parabola at each \(x\) is the
+    height of the line, and the two cross zero together.</p>
+    <p>The power rule was done on the previous slide for \(n=2\): the quotient was
+    \(2x+h\), and the \(h\) fell away. For general \(n\), expand \((x+h)^n\); the
+    term linear in \(h\) is \(n x^{n-1} h\), and every other term carries at least
+    \(h^2\). The exponential is the function that is its own slope — accept it as a
+    fact today.</p>
+    <p>Product and quotient rules exist and are in every textbook. Nothing in the
+    next three lectures differentiates a product of two unknown functions, so they are
+    not taught here. Sine and cosine likewise. What the series does differentiate,
+    constantly, is a function of a function — the next slide.</p>
+  </aside>
+</section>
+
+<!-- 7 -->
+<section class="slide" data-where="I. The derivative">
+  <h2>The chain rule</h2>
+  <p class="sub">The derivative of a function of a function.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$\bigl(f(g(x))\bigr)' = f'\bigl(g(x)\bigr)\cdot g'(x)$$
+        <p class="note">Outer rate, at the inner value, times inner rate.</p>
+      </div>
+      <ul>
+        <li>\(x\) moves \(u=g(x)\) at rate \(g'\)</li>
+        <li>\(u\) moves \(y=f(u)\) at rate \(f'\)</li>
+      </ul>
+      <p class="claim">Rates compose by multiplying.</p>
+    </div>
+    <figure class="demo" data-demo="chain">
+      <svg id="fig-chain" viewBox="0 0 400 230" role="img"
+           aria-label="Three number lines for x, u equals g of x, and y equals f of u, with a small step in x carried through to steps in u and y"></svg>
+      <div class="controls">
+        <div class="row"><label for="ch-x">x</label>
+          <input id="ch-x" type="range" min="0.2" max="1.9" step="0.05" value="1">
+          <output id="out-ch-x"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-chain"></div></div>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The second load-bearing slide, and the one lecture 4 stands on entirely. The
+    figure is \(g(x)=x^2\), \(f(u)=\sin u\), so \(y=\sin(x^2)\). A small step in
+    \(x\) (red, top line) lands as a step in \(u\) that is \(g'(x)=2x\) times as long,
+    and that lands as a step in \(y\) that is \(f'(u)=\cos u\) times as long again.
+    Two stretches in a row: multiply.</p>
+    <p>Read the numbers off the slider at \(x=1\): \(u=1\), \(g'=2\),
+    \(f'=\cos 1\approx0.54\), so \(dy/dx\approx1.08\). Slide \(x\) toward \(1.25\):
+    \(u=1.5625\), \(\cos u\) is small, and the bottom step almost vanishes though the
+    middle one is wider than before. Around \(x=1.77\), \(u\approx\pi\) and the
+    bottom step reverses.</p>
+    <p>The trap, worth naming: \(f'\) is evaluated at \(g(x)\), not at \(x\). It is
+    the rate of the outer function at the value it actually receives.</p>
+    <p>Forward reference, said plainly: a neural network is a chain of a dozen
+    functions, and its derivative is a dozen factors multiplied. Lecture 4 is about
+    the order to multiply them in.</p>
+  </aside>
+</section>
+
+<!-- 8 -->
+<section class="slide" data-where="II. Local behaviour">
+  <h2>Stationary points</h2>
+  <p class="sub">Where the tangent is flat.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq bare">$$f'(x)=0$$</div>
+      <ul>
+        <li>Every smooth minimum or maximum is one</li>
+        <li>Not every one is a minimum or maximum</li>
+        <li>What an optimizer looks for</li>
+      </ul>
+    </div>
+    <figure>
+      <svg id="fig-stationary" viewBox="0 0 400 300" role="img"
+           aria-label="A cubic curve with horizontal tangent segments at its local maximum and local minimum"></svg>
+      <figcaption>Two stationary points: a local maximum and a local minimum.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>If the slope at a smooth minimum were nonzero, the linear approximation
+    would say: step a little against the slope and go lower. So it cannot be a
+    minimum. That is the entire argument, and it runs the same way for a maximum.</p>
+    <p>The converse fails. \(x^3\) is flat at zero and keeps rising; a flat tangent
+    alone does not say which of the three cases you are in. The next slide says how
+    to tell.</p>
+    <p>The figure is \(f(x)=\tfrac14(x^3-3x)+1\), so \(f'(x)=\tfrac34(x^2-1)\),
+    zero at \(x=\pm1\). Values: \(f(-1)=1.5\), \(f(1)=0.5\).</p>
+    <p>The third bullet is the coordination point with lecture 3: it will not
+    define a minimum by this condition, it will build algorithms and find that this
+    is where they stop. "Local" is the word to plant now — these are the lowest
+    points nearby, and nothing here says anything about the whole line.</p>
+  </aside>
+</section>
+
+<!-- 9 -->
+<section class="slide" data-where="II. Local behaviour">
+  <h2>The second derivative</h2>
+  <p class="sub">The rate at which the slope changes.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq bare">$$f''=(f')'$$</div>
+      <ul>
+        <li>\(f''>0\): slope increasing, curve bends upward</li>
+        <li>\(f''<0\): slope decreasing, curve bends downward</li>
+        <li>At a stationary point: \(f''>0\) means a minimum, \(f''<0\) a maximum</li>
+      </ul>
+    </div>
+    <figure>
+      <svg id="fig-second" viewBox="0 0 400 300" role="img"
+           aria-label="The same cubic, its downward-bending left half and upward-bending right half labelled, the stationary points marked as maximum and minimum"></svg>
+      <figcaption>Left of zero \(f''<0\); right of zero \(f''>0\).</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Differentiate again. For the running curve, \(f'=\tfrac34(x^2-1)\), so
+    \(f''=\tfrac32 x\): negative on the left, positive on the right, zero at the
+    origin where the bend changes direction.</p>
+    <p>At \(x=-1\), \(f''=-1.5\): the slope is falling through zero, from positive to
+    negative, which is what a hilltop is. At \(x=1\), \(f''=1.5\): the slope rises
+    through zero, a valley floor. That is the second-derivative test, and it is
+    nothing more than reading which way the slope is going.</p>
+    <p>Say the word <em>curvature</em> once. The larger \(|f''|\), the tighter the
+    bend, the sooner the tangent line stops being a good approximation. The next
+    slide fixes that.</p>
+    <p>If \(f''=0\) at a stationary point the test is silent — \(x^3\) again. Name it
+    and move on.</p>
+  </aside>
+</section>
+
+<!-- 10 -->
+<section class="slide" data-where="II. Local behaviour">
+  <h2>The quadratic approximation</h2>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$f(x+h)\approx f(x)+f'(x)\,h+\tfrac12 f''(x)\,h^2$$
+        <p class="note">The tangent line, plus the curvature.</p>
+      </div>
+      <ul>
+        <li>Error now shrinks like \(h^3\)</li>
+        <li>A parabola: the simplest thing with a minimum</li>
+      </ul>
+      <p class="claim">Add curvature to the line and the fit survives a step
+      further out.</p>
+    </div>
+    <figure class="demo" data-demo="quad">
+      <svg id="fig-quad" viewBox="0 0 400 300" role="img"
+           aria-label="A curve with, at a movable point, its tangent line and its best-fitting parabola"></svg>
+      <div class="controls">
+        <div class="row"><label for="qd-x">x</label>
+          <input id="qd-x" type="range" min="-2" max="2.2" step="0.1" value="1.6">
+          <output id="out-qd-x"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-quad"></div></div>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Blue is the tangent from the linear-approximation slide; green is the same
+    thing with one more term. Slide \(x\) about. Near the point the two are
+    indistinguishable from the curve. A step away, the line has left and the parabola
+    is still there. Where the curve is nearly straight, near \(x=0\), the parabola
+    flattens into the line; where it bends hard, the parabola bends with it.</p>
+    <p>The half is not decoration. Differentiate the right-hand side twice in \(h\)
+    and you get \(f''(x)\), as you must. The linear term was already \(f'(x)h\), and
+    the quadratic term is chosen so the second derivatives agree too.</p>
+    <p>This is as far as the lecture expands. Taylor's theorem continues the pattern
+    — \(\tfrac16 f''' h^3\) and on — and the series does not need it. What lecture 3
+    needs is exactly this: Newton's method replaces \(f\) by this parabola and jumps
+    to the parabola's minimum. Where the green curve bottoms out is where Newton
+    would step to.</p>
+  </aside>
+</section>
+
+<!-- 11 -->
+<section class="slide" data-where="III. Several variables">
+  <h2>Functions of several variables</h2>
+  <p class="sub">A vector in, a number out.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq bare">$$f:\mathbb R^n\to\mathbb R,\qquad f(x,y)=x^2+2y^2$$</div>
+      <ul>
+        <li>A surface over the plane, or</li>
+        <li>Its contour lines: where \(f\) is constant</li>
+        <li>Close contours mean steep ground</li>
+      </ul>
+    </div>
+    <figure>
+      <svg id="fig-contours" viewBox="0 0 400 300" role="img"
+           aria-label="Concentric ellipses, the contour lines of x squared plus two y squared, with one point marked and its value"></svg>
+      <figcaption>Contours of \(f(x,y)=x^2+2y^2\). The point is at height
+      \(f(1.5,0.8)=3.53\).</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Everything in section I had one number going in. From here a vector goes in
+    and a number comes out — a loss, a cost, a height. The picture is a landscape,
+    and the lecture draws it from above, as a map with contour lines, because that is
+    the picture that survives into more than two dimensions in the mind's eye.</p>
+    <p>The running example is a bowl, stretched: \(x^2+2y^2\). The contours are
+    ellipses, twice as tight in \(y\) as in \(x\), because \(y\) is charged double.
+    Walking in \(y\) climbs faster. This same bowl is the example lecture 3 uses for
+    steepest descent, so it is worth getting familiar with.</p>
+    <p>The point at \((1.5, 0.8)\): \(2.25 + 2\cdot0.64 = 3.53\). Every figure in this
+    section stands at that point.</p>
+  </aside>
+</section>
+
+<!-- 12 -->
+<section class="slide" data-where="III. Several variables">
+  <h2>Partial derivatives</h2>
+  <p class="sub">Vary one input, hold the others still.</p>
+  <div class="two body">
+    <div>
+      <div class="eq">
+        $$\frac{\partial f}{\partial x}=\lim_{h\to0}\frac{f(x+h,\,y)-f(x,\,y)}{h}$$
+        <p class="note">An ordinary derivative along one axis.</p>
+      </div>
+      <ul>
+        <li>One per input</li>
+        <li>For \(x^2+2y^2\): \(\;\partial f/\partial x=2x,\quad\partial f/\partial y=4y\)</li>
+      </ul>
+    </div>
+    <div class="panels">
+      <figure>
+        <svg id="fig-slices-a" viewBox="0 0 250 190" role="img"
+             aria-label="The contour map with a horizontal and a vertical line through the point, the two slices along which the partial derivatives are taken"></svg>
+        <figcaption>Two slices through the point.</figcaption>
+      </figure>
+      <figure>
+        <svg id="fig-slices-b" viewBox="0 0 250 190" role="img"
+             aria-label="The two slices drawn as ordinary curves, each with its tangent at the point"></svg>
+        <figcaption>Each slice is a one-variable curve.</figcaption>
+      </figure>
+    </div>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Cut the landscape with a vertical plane along the \(x\) direction. The cut is
+    an ordinary curve, and it has an ordinary slope: that is \(\partial f/\partial x\).
+    Cut along \(y\) and get the other one. The curly \(\partial\) is a reminder that
+    something is being held fixed; the arithmetic is section I with \(y\) treated
+    as a constant.</p>
+    <p>At \((1.5, 0.8)\): the \(x\)-slice is \(x^2+1.28\), slope \(2x=3\). The
+    \(y\)-slice is \(2.25+2y^2\), slope \(4y=3.2\). The right-hand panel shows both
+    slices with their tangents; the \(y\) one is the steeper.</p>
+    <p>Two numbers, one for each axis. The next slide puts them together into one
+    arrow — and then says that the arrow, not the pair of numbers, is the real
+    object, which is exactly the move last week made with vectors and coordinates.</p>
+  </aside>
+</section>
+
+<!-- 13 -->
+<section class="slide" data-where="III. Several variables">
+  <h2>The gradient</h2>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$\nabla f=\begin{pmatrix}\partial f/\partial x\\ \partial f/\partial y\end{pmatrix}$$
+        <p class="note">Its direction: steepest ascent. Its length: how steep.</p>
+      </div>
+      <ul>
+        <li>Perpendicular to the contour through the point</li>
+        <li>\(f(x+h)\approx f(x)+\nabla f\cdot h\) — the linear approximation again</li>
+      </ul>
+      <p class="claim">The gradient points straight uphill.</p>
+    </div>
+    <figure class="demo" data-demo="grad">
+      <svg id="fig-grad" viewBox="0 0 400 300" role="img"
+           aria-label="The contour map with a draggable point, the gradient arrow at that point, and the tangent to the contour there"></svg>
+      <div class="readout"><div class="note" id="note-grad"></div></div>
+      <p class="hint">Drag the point. The arrow stays perpendicular to the contour.</p>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The third load-bearing slide, and the object lecture 3 is built from. Drag the
+    point around and say what does not change: the red arrow always crosses the
+    contour at a right angle, always points to higher ground, and gets longer where
+    the contours crowd together.</p>
+    <p>Definition first, geometrically: among all directions to step, one climbs
+    fastest, and the gradient is the arrow in that direction whose length is that
+    fastest rate. Coordinates second: in a Cartesian frame, its components are the
+    partial derivatives. That is a theorem, not a definition, and the reason is the
+    linear approximation. Near the point, \(f\) is a plane, \(f(x)+\nabla f\cdot h\).
+    Along the contour that plane is flat, so the contour direction has zero inner
+    product with \(\nabla f\) — perpendicular, in last week's sense. And the inner
+    product is largest when \(h\) points along \(\nabla f\).</p>
+    <p>Drag to \((1.5, 0.8)\): \(\nabla f=(3, 3.2)\), length \(\sqrt{9+10.24}\approx4.39\).
+    Note it does not point at the origin, where the minimum is: it points at the
+    steepest way up <em>here</em>. The bowl is not round, and that gap between
+    "steepest" and "toward the bottom" is the zig-zag lecture 3 spends a slide on.</p>
+    <p>The arrow is drawn at a third of its true length so it fits the figure.</p>
+  </aside>
+</section>
+
+<!-- 14 -->
+<section class="slide" data-where="III. Several variables">
+  <h2>Directional derivatives</h2>
+  <p class="sub">The rate of climb in a chosen direction.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$D_d f=\nabla f\cdot d,\qquad \lVert d\rVert=1$$
+      </div>
+      <ul>
+        <li>Largest along \(\nabla f\), zero along the contour</li>
+        <li>Negative: that way is downhill</li>
+      </ul>
+      <p class="claim">Every direction's slope is one inner product with the gradient.</p>
+    </div>
+    <figure class="demo" data-demo="dir">
+      <svg id="fig-dir" viewBox="0 0 400 300" role="img"
+           aria-label="The contour map at a fixed point, with the gradient arrow and a unit direction arrow at an adjustable angle"></svg>
+      <div class="controls">
+        <div class="row"><label for="dir-a">angle</label>
+          <input id="dir-a" type="range" min="0" max="360" step="1" value="60">
+          <output id="out-dir-a"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-dir"></div></div>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The gradient is one arrow, but you may want to walk any way you please. The
+    slope in that direction is the inner product of the direction with the gradient —
+    the inner-product slide from last week, doing its first real job. Turn the blue
+    arrow with the slider and watch the number.</p>
+    <p>At \(46.8^\circ\) it is aligned with \(\nabla f\) and reads \(4.39\), the full
+    length. Ninety degrees off, at about \(137^\circ\) or \(317^\circ\), it reads zero:
+    that is walking along the contour, neither up nor down. Past that it goes
+    negative, and at \(227^\circ\), straight against the gradient, it reads
+    \(-4.39\): the fastest way down.</p>
+    <p>The formula is the linear approximation with \(h=t\,d\): \(f(x+td)\approx f(x)
+    + t\,\nabla f\cdot d\), so the rate per unit \(t\) is \(\nabla f\cdot d\). With
+    \(\lVert d\rVert=1\) this is \(\lVert\nabla f\rVert\cos\theta\).</p>
+    <p>Forward reference to plant: lecture 3 calls any \(d\) with a negative reading a
+    <em>descent direction</em>, and every method in that lecture is "pick one, step
+    along it".</p>
+  </aside>
+</section>
+
+<!-- 15 -->
+<section class="slide" data-where="III. Several variables">
+  <h2>The Jacobian</h2>
+  <p class="sub">A vector in, a vector out.</p>
+  <div class="two body">
+    <div>
+      <div class="eq">
+        $$J_{ij}=\frac{\partial f_i}{\partial x_j},\qquad f(x+h)\approx f(x)+J\,h$$
+        <p class="note">Row \(i\) is the gradient of output \(i\). Column \(j\) is
+        where a step in \(x_j\) goes.</p>
+      </div>
+      <p class="claim">Locally, every smooth map is a linear map: its Jacobian.</p>
+    </div>
+    <div class="panels">
+      <figure>
+        <svg id="fig-jac-a" viewBox="0 0 250 220" role="img"
+             aria-label="A square grid with a small square marked around one point"></svg>
+        <figcaption>Before: a small square at \(p\).</figcaption>
+      </figure>
+      <figure>
+        <svg id="fig-jac-b" viewBox="0 0 250 220" role="img"
+             aria-label="The same grid bent by a nonlinear map; the small square has become very nearly a parallelogram, drawn against the exact parallelogram given by the Jacobian"></svg>
+        <figcaption>After: the grid bends, but the small square is the
+        parallelogram \(J\) makes.</figcaption>
+      </figure>
+    </div>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Last week a matrix was a map of the plane and its columns were where the
+    basis vectors went. A nonlinear map bends the grid — the right-hand panel. But
+    look at the small square: it has come out as a parallelogram, to the eye. A
+    linear map did that, and the linear map is the Jacobian, the matrix of all the
+    partial derivatives at that point. Its columns are where small steps along each
+    axis land.</p>
+    <p>The figure's map is \((x,y)\mapsto(x+\tfrac14y^2,\;y+\tfrac14x^2)\). At
+    \(p=(1,1)\): \(\partial f_1/\partial x=1\), \(\partial f_1/\partial y=y/2=0.5\),
+    \(\partial f_2/\partial x=x/2=0.5\), \(\partial f_2/\partial y=1\). So \(J\) is the
+    two-by-two with ones on the diagonal and halves off it — a shear both ways. The
+    dashed green parallelogram is \(J\) applied to the square; the red curve is the
+    true image. They differ by less than the line width.</p>
+    <p>Shapes: \(f:\mathbb R^n\to\mathbb R^m\) gives an \(m\times n\) Jacobian. A
+    single output makes it one row, the gradient lying down. Lecture 3 uses the
+    Jacobian of a residual vector for Gauss–Newton; lecture 4 has one per layer.</p>
+  </aside>
+</section>
+
+<!-- 16 -->
+<section class="slide" data-where="III. Several variables">
+  <h2>The Hessian</h2>
+  <p class="sub">All the second derivatives, in a matrix.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$H_{ij}=\frac{\partial^2 f}{\partial x_i\,\partial x_j},\qquad
+        f(x+h)\approx f(x)+\nabla f\cdot h+\tfrac12\,h^{\mathsf T}H\,h$$
+      </div>
+      <ul>
+        <li>Symmetric: the order of the two derivatives does not matter</li>
+        <li>For \(x^2+2y^2\): \(H=\bigl[\begin{smallmatrix}2&0\\0&4\end{smallmatrix}\bigr]\), everywhere</li>
+      </ul>
+      <p class="claim">The Hessian is the curvature of the bowl, in every direction at
+      once.</p>
+    </div>
+    <figure>
+      <svg id="fig-hess" viewBox="0 0 400 300" role="img"
+           aria-label="The elliptical contours with the two axis directions marked and labelled by their curvatures, two and four"></svg>
+      <figcaption>Curvature 2 along \(x\), 4 along \(y\). The tighter direction is the
+      steeper bend.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The quadratic-approximation slide, with a vector \(h\). The linear term is the
+    gradient against the step, as on the gradient slide; the new term is a quadratic
+    form: step, Hessian, step. For a direction \(d\) of length one, \(d^{\mathsf T}Hd\)
+    is the second derivative of \(f\) along \(d\) — the curvature of the slice in that
+    direction.</p>
+    <p>For the bowl: \(\partial^2 f/\partial x^2=2\), \(\partial^2 f/\partial y^2=4\),
+    the mixed one zero. Along \(x\) the curvature is 2, along \(y\) it is 4, and the
+    contours are correspondingly squashed. Those two numbers are the eigenvalues of
+    \(H\), from last week's eigenvalues slide, and the two arrows are its
+    eigenvectors. For a general bowl they would not lie along the axes, but they
+    would still be the tight and loose directions.</p>
+    <p>Because this \(f\) is itself quadratic, the approximation here is exact — worth
+    saying, since it is the reason a figure of the model would just redraw the
+    figure of the function.</p>
+    <p>Two forward references. Newton's method in lecture 3 minimizes this quadratic
+    directly, which needs the Hessian. And the ratio of the largest to the smallest
+    eigenvalue — here 2 — is the <em>condition number</em>, which decides how badly
+    steepest descent zig-zags.</p>
+  </aside>
+</section>
+
+<!-- 17 -->
+<section class="slide" data-where="III. Several variables">
+  <h2>The chain rule in several variables</h2>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$J_{f\circ g}(x)=J_f\bigl(g(x)\bigr)\;J_g(x)$$
+        <p class="note">Outer Jacobian, at the inner value, times inner Jacobian.</p>
+      </div>
+      <ul>
+        <li>Same rule, with matrices in place of numbers</li>
+        <li>The shapes must agree — and they do</li>
+      </ul>
+      <p class="claim">Rates compose by matrix multiplication.</p>
+    </div>
+    <figure>
+      <svg id="fig-chain2" viewBox="0 0 400 240" role="img"
+           aria-label="Three matrix blocks: a four-by-three Jacobian times a three-by-two Jacobian equals a four-by-two Jacobian, with the spaces they map between named above"></svg>
+      <figcaption>\(g:\mathbb R^2\to\mathbb R^3\), \(f:\mathbb R^3\to\mathbb R^4\). The
+      Jacobian of \(f\circ g\) is \(4\times2\).</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Chain rule, second time. A small step \(h\) in \(x\) becomes \(J_g h\) in the
+    middle space, by the Jacobian slide. That step becomes \(J_f(J_g h)\) in the last
+    space. Two linear maps applied in turn are one linear map, their product — the
+    matrix-product slide from last week — so the Jacobian of the composition is the
+    product of the Jacobians. In one variable the matrices are \(1\times1\) and this
+    is the chain rule of section I.</p>
+    <p>The shapes on the figure: \(J_g\) is \(3\times2\), \(J_f\) is \(4\times3\),
+    and \(4\times3\) times \(3\times2\) is \(4\times2\), which is what a map from
+    \(\mathbb R^2\) to \(\mathbb R^4\) must have. Order matters: \(J_gJ_f\) does not
+    even have compatible shapes.</p>
+    <p>This slide is backpropagation, stated. A network is \(f_L\circ\dots\circ f_1\),
+    its derivative is \(J_L\cdots J_1\), and lecture 4 is about the fact that a
+    product of matrices can be evaluated left-to-right or right-to-left, and that the
+    cost differs enormously. Section IV starts on why.</p>
+  </aside>
+</section>
+
+<!-- 18 -->
+<section class="slide" data-where="IV. Obtaining derivatives">
+  <h2>By hand, by difference quotient, by program</h2>
+  <p class="sub">Three ways to get the number \(f'(x)\).</p>
+  <div class="body">
+    <div class="panels three" style="align-items:start">
+      <div>
+        <h3>Symbolic</h3>
+        <pre>d/dx sin(x²)
+  = cos(x²) · 2x</pre>
+        <p class="small">Exact. Done once, by a person or a computer algebra
+        system.</p>
+      </div>
+      <div>
+        <h3>Numerical</h3>
+        <pre>(f(x + h) − f(x)) / h</pre>
+        <p class="small">Any \(f\) you can evaluate. Approximate, and the choice of
+        \(h\) matters.</p>
+      </div>
+      <div>
+        <h3>Automatic</h3>
+        <pre>x = (2, 1)
+u = x·x
+y = sin(u)</pre>
+        <p class="small">Exact, to rounding. The program computes \(f'\) alongside
+        \(f\).</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Everything so far says what a derivative <em>is</em>. A program needs the
+    number. Three ways.</p>
+    <p>Symbolic is what section I did: apply the rules, get a formula, type it in.
+    Exact, but somebody has to do it for every function, and for a function of a
+    million parameters written as code nobody will.</p>
+    <p>Numerical is the difference quotient with a finite \(h\), and it works on any
+    black box you can call. It is approximate, and the next slide is about how
+    approximate.</p>
+    <p>Automatic differentiation is the one most people have not met. The program
+    that computes \(f\) is run as written, but every number carries its derivative
+    along with it, and every operation updates both by the rules of section I. No
+    formula is ever produced and nothing is approximated. Two slides on it follow.</p>
+  </aside>
+</section>
+
+<!-- 19 -->
+<section class="slide" data-where="IV. Obtaining derivatives">
+  <h2>Numerical differentiation and the step size</h2>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$\text{error}\;\approx\;\underbrace{\tfrac{h}{2}\,|f''|}_{\text{truncation}}
+        \;+\;\underbrace{\frac{\varepsilon\,|f|}{h}}_{\text{cancellation}}$$
+      </div>
+      <ul>
+        <li>Large \(h\): the secant is not the tangent</li>
+        <li>Small \(h\): \(f(x+h)-f(x)\) loses its digits</li>
+        <li>Best near \(h\approx\sqrt{\varepsilon}\approx10^{-8}\)</li>
+      </ul>
+    </div>
+    <figure class="demo" data-demo="step">
+      <svg id="fig-step" viewBox="0 0 400 280" role="img"
+           aria-label="Log-log plot of the error of the forward and central difference quotients for the exponential at one, against the step size, with the current step marked"></svg>
+      <div class="controls">
+        <div class="row"><label for="st-h">log₁₀ h</label>
+          <input id="st-h" type="range" min="-16" max="-1" step="0.25" value="-3">
+          <output id="out-st-h"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-step"></div></div>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The plot is computed live, in double precision, for \(f(x)=e^x\) at \(x=1\),
+    where the true derivative is \(e\). Red is the plain forward difference; green is
+    the central difference \((f(x+h)-f(x-h))/2h\). Both axes are logarithmic.</p>
+    <p>Slide \(h\) from the right. At \(h=10^{-1}\) the error is about \(0.14\): the
+    secant is visibly not the tangent, and the quadratic-approximation slide says the
+    error is about \(\tfrac{h}{2}f''\), which here is \(1.36h\). Each decade down in
+    \(h\) buys a decade of accuracy, as it should — until about \(10^{-8}\). Then it
+    turns round.</p>
+    <p>What went wrong is subtraction. \(f(x+h)\) and \(f(x)\) agree in their leading
+    digits, the difference keeps only the trailing ones, and dividing by a tiny \(h\)
+    magnifies whatever rounding noise was in them: about \(\varepsilon|f|/h\) with
+    \(\varepsilon\approx2\cdot10^{-16}\). By \(h=10^{-16}\), \(x+h\) rounds to \(x\)
+    and the quotient is exactly zero. The two errors balance near
+    \(\sqrt{\varepsilon}\), and the best you get is about eight digits of sixteen.</p>
+    <p>Central difference cancels the \(h\) term; its truncation error is
+    \(\tfrac{h^2}{6}f'''\), so it reaches about \(10^{-11}\) near \(h=10^{-5}\).
+    Better, still not exact, and two evaluations instead of one.</p>
+  </aside>
+</section>
+
+<!-- 20 -->
+<section class="slide" data-where="IV. Obtaining derivatives">
+  <h2>Forward-mode automatic differentiation</h2>
+  <p class="sub">Every number carries its derivative.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$\begin{aligned}
+        (u,u')+(v,v') &= (u+v,\;u'+v')\\
+        (u,u')^n &= (u^n,\;n\,u^{n-1}u')\\
+        g\bigl((u,u')\bigr) &= \bigl(g(u),\;g'(u)\,u'\bigr)
+        \end{aligned}$$
+      </div>
+      <p class="claim">Forward mode is the chain rule, applied one operation at a
+      time.</p>
+    </div>
+    <div>
+      <pre>x = (2,      1)        <span class="c"># seed: dx/dx = 1</span>
+u = x²  = (4,      2·2·1)  <span class="c"># = (4, 4)</span>
+y = sin(u) = (sin 4, cos 4 · 4)
+         = (−0.757, −2.614)</pre>
+      <p class="small">The derivative of \(\sin(x^2)\) at \(x=2\) is
+      \(4\cos4\approx-2.614\). The program never saw that formula.</p>
+    </div>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Replace every number in the program by a pair: its value and its derivative
+    with respect to the input. Then overload every operation so it computes both
+    halves of the pair, using the rules of section I. The sum rule gives the first
+    line; the power rule the second; the third is the chain rule and covers every
+    built-in function. Nothing new is being said — the rules are just being executed
+    by the machine as it goes.</p>
+    <p>Walk the trace. Seed the input with derivative 1, because \(dx/dx=1\). Squaring
+    gives value 4 and derivative \(2\cdot2\cdot1=4\). Sine gives value \(\sin4\approx
+    -0.757\) and derivative \(\cos4\cdot4\approx-0.654\cdot4=-2.614\). Check against
+    the symbolic answer from two slides ago: \(2x\cos(x^2)\) at 2 is \(4\cos4\). Same
+    number, to rounding, with no formula in sight.</p>
+    <p>A real implementation adds a rule per primitive — products, quotients,
+    division, comparisons — and the whole thing is a page of code. These pairs are
+    called dual numbers if anyone asks.</p>
+  </aside>
+</section>
+
+<!-- 21 -->
+<section class="slide" data-where="IV. Obtaining derivatives">
+  <h2>The cost of forward mode</h2>
+  <div class="two wide-left body">
+    <div>
+      <ul>
+        <li>One seed per pass: the derivative with respect to <em>one</em> input</li>
+        <li>A gradient of \(f:\mathbb R^n\to\mathbb R\) needs \(n\) passes</li>
+        <li>A network: millions of inputs, one output</li>
+      </ul>
+      <p class="claim">Many inputs, one output: forward mode pays once per input.
+      Reverse mode pays once per output.</p>
+    </div>
+    <figure>
+      <svg id="fig-cost" viewBox="0 0 400 210" role="img"
+           aria-label="Six inputs feeding one function box feeding one output; one input is seeded and highlighted, the rest are zero"></svg>
+      <figcaption>One pass follows one seed through the whole computation.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Look at what the seed did on the last slide: it chose which input the
+    derivative was with respect to. To get \(\partial f/\partial x_1\) seed \(x_1\)
+    with 1 and everything else with 0; run. To get \(\partial f/\partial x_2\), run
+    again. A gradient with \(n\) components is \(n\) runs of the program, each as
+    expensive as evaluating \(f\) itself.</p>
+    <p>In terms of the last section: one forward pass computes \(Jd\) for one
+    direction \(d\), a single column of the Jacobian. For a map with many inputs and
+    few outputs the Jacobian is wide and short — one row, for a loss — and building
+    it a column at a time is the wrong way round.</p>
+    <p>The alternative is to propagate derivatives backward from the output, and get
+    a whole row of \(J\) per pass: for a scalar loss, the entire gradient in one run,
+    at a small constant multiple of the cost of \(f\). That is reverse mode, and it is
+    what backpropagation is. It is the first thing lecture 4's training half builds.
+    Nothing more on it today.</p>
+    <p>Cut candidate: if short, say the first bullet on the previous slide and skip
+    this one.</p>
+  </aside>
+</section>
+
+<!-- 22 -->
+<section class="slide title" data-where="V. Quiz">
+  <h2>Quiz</h2>
+  <p class="sub">Four questions, hands up.</p>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Multiple choice, answered from the room. Read each one out, count hands for
+    each letter, then say the answer. If time is short, ask 1 and 3: the linear
+    approximation and the gradient are what lecture 3 leans on hardest.</p>
+  </aside>
+</section>
+
+<!-- 23 -->
+<section class="slide" data-where="V. Quiz">
+  <h2>The tangent to \(f(x)=x^3\) at \(x=1\) predicts \(f(1.1)\) as</h2>
+  <div class="body">
+    <div>
+      <ol class="mc">
+      <li><span class="k">A</span><span>\(1.3\)</span></li>
+      <li><span class="k">B</span><span>\(1.331\)</span></li>
+      <li><span class="k">C</span><span>\(1.03\)</span></li>
+      <li><span class="k">D</span><span>\(3.3\)</span></li>
+      </ol>
+    </div>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p><b>Answer: A.</b> \(f(1)=1\), \(f'(x)=3x^2\) so \(f'(1)=3\), and
+    \(1+3\cdot0.1=1.3\). B is the exact value \(1.1^3\) — the tangent under-predicts,
+    by \(0.031\), and that gap is the \(\tfrac12f''h^2\) term: \(f''(1)=6\),
+    \(3\cdot0.01=0.03\), nearly all of it. C forgot to multiply by the slope; D
+    forgot to add the value at the point.</p>
+  </aside>
+</section>
+
+<!-- 24 -->
+<section class="slide" data-where="V. Quiz">
+  <h2>What is the derivative of \(\sin(x^2)\)?</h2>
+  <div class="body">
+    <div>
+      <ol class="mc">
+      <li><span class="k">A</span><span>\(\cos(x^2)\)</span></li>
+      <li><span class="k">B</span><span>\(2x\cos(x^2)\)</span></li>
+      <li><span class="k">C</span><span>\(2x\cos(2x)\)</span></li>
+      <li><span class="k">D</span><span>\(\cos(x^2)\cdot\sin(2x)\)</span></li>
+      </ol>
+    </div>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p><b>Answer: B.</b> Outer rate \(\cos\) at the inner value \(x^2\), times the
+    inner rate \(2x\). A forgot the inner rate. C evaluated the outer rate at the
+    wrong place — at \(g'(x)\) instead of \(g(x)\) — which is the trap the chain-rule
+    slide named. D differentiated both and multiplied, which is not a rule.</p>
+  </aside>
+</section>
+
+<!-- 25 -->
+<section class="slide" data-where="V. Quiz">
+  <h2>At a point on a contour line of \(f\), the gradient \(\nabla f\) is</h2>
+  <div class="body">
+    <div>
+      <ol class="mc">
+      <li><span class="k">A</span><span>Along the contour</span></li>
+      <li><span class="k">B</span><span>Perpendicular to the contour, pointing uphill</span></li>
+      <li><span class="k">C</span><span>Perpendicular to the contour, pointing downhill</span></li>
+      <li><span class="k">D</span><span>Pointing at the minimum of \(f\)</span></li>
+      </ol>
+    </div>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p><b>Answer: B.</b> Along the contour \(f\) does not change, so the directional
+    derivative there is zero, so the gradient has zero inner product with the contour
+    direction. It points up because that is how it is defined; down is minus the
+    gradient, which lecture 3 will walk along. D is the good trap: it is true only
+    when the contours are circles. On the stretched bowl the arrow at \((1.5, 0.8)\)
+    pointed well away from the origin, and if the room picked D, go back to the
+    gradient slide and drag.</p>
+  </aside>
+</section>
+
+<!-- 26 -->
+<section class="slide" data-where="V. Quiz">
+  <h2>\(g:\mathbb R^3\to\mathbb R^2\) and \(f:\mathbb R^2\to\mathbb R^4\). The Jacobian of \(f\circ g\) is</h2>
+  <div class="body">
+    <div>
+      <ol class="mc">
+      <li><span class="k">A</span><span>\(4\times3\)</span></li>
+      <li><span class="k">B</span><span>\(3\times4\)</span></li>
+      <li><span class="k">C</span><span>\(2\times2\)</span></li>
+      <li><span class="k">D</span><span>\(4\times2\)</span></li>
+      </ol>
+    </div>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p><b>Answer: A.</b> \(f\circ g\) takes three numbers in and gives four out, so
+    its Jacobian has four rows and three columns. As a product: \(J_f\) is
+    \(4\times2\), \(J_g\) is \(2\times3\), and \(J_fJ_g\) is \(4\times3\). B has the
+    shape transposed — inputs and outputs swapped. C is the middle space's
+    dimension, which cancels. D is \(J_f\) alone; whoever picks it forgot the inner
+    map.</p>
+    <p>Follow-up if quick: how many forward-mode passes to build it? Three, one per
+    input. How many reverse-mode passes? Four. Lecture 4 starts there.</p>
+  </aside>
+</section>
+
+<!-- 27 -->
+<section class="slide title" data-where="Questions">
+  <h2>Questions?</h2>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Open the floor. If nothing comes, offer the two figures people usually want
+    to poke at: the secant slider, and dragging the gradient around the bowl.</p>
+    <p>Things deliberately left out, if asked: integration entirely; Taylor series
+    beyond the quadratic term; product and quotient rules; what a limit is, formally;
+    reverse-mode differentiation, which is lecture 4's first job.</p>
+  </aside>
+</section>
+
+<!-- 28 -->
+<section class="slide title" data-where="Thank you">
+  <div>
+    <h1>Thank you</h1>
+    <p class="sub">Next: numerical optimization — descent directions, line search,
+    Newton's method and least squares.</p>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Point forward: lecture 3 takes today's gradient and Hessian and builds
+    algorithms that walk downhill with them, starting with methods that need no
+    derivative at all and ending with least squares.</p>
+  </aside>
+</section>
+</div></div>
+<div id="overview" aria-hidden="true"></div>
+<div id="help">← → navigate · N notes window · O overview · F full screen</div>
+<script>
+/* --- vectors ---------------------------------------------------------- */
+const ap = (m, [x, y]) => [m[0] * x + m[1] * y, m[2] * x + m[3] * y];
+const add = ([a, b], [c, d]) => [a + c, b + d];
+const sc = (k, [x, y]) => [k * x, k * y];
+const norm = ([x, y]) => Math.hypot(x, y);
+const unit = p => sc(1 / norm(p), p);
+
+/* --- svg drawing ------------------------------------------------------ */
+/* A view maps world coordinates to svg pixels, with y upward. `sy` lets a
+   plot use different scales on the two axes. */
+const view = (cx, cy, s, sy = s) => ({
+  s,
+  to: ([x, y]) => [cx + s * x, cy - sy * y],
+  from: ([px, py]) => [(px - cx) / s, (cy - py) / sy],
+});
+
+const r2 = x => Math.round(x * 100) / 100;
+const attrs = o => Object.entries(o).map(([k, x]) => `${k}="${x}"`).join(' ');
+const el = (tag, o, inner = '') => `<${tag} ${attrs(o)}>${inner}</${tag}>`;
+
+const seg = (v, a, b, cls, w) => {
+  const [x1, y1] = v.to(a), [x2, y2] = v.to(b);
+  const o = {x1: r2(x1), y1: r2(y1), x2: r2(x2), y2: r2(y2), class: cls};
+  if (w) o['stroke-width'] = w;
+  return el('line', o);
+};
+const pathD = (v, pts) => pts.map(p => v.to(p))
+  .map(([x, y], i) => `${i ? 'L' : 'M'}${r2(x)} ${r2(y)}`).join('');
+const poly = (v, pts, cls) => el('path', {class: cls, d: pathD(v, pts)});
+const loop = (v, pts, cls) => el('path', {class: cls, d: pathD(v, pts) + 'Z'});
+const dot = (v, p, cls, r = 3.2) => {
+  const [x, y] = v.to(p);
+  return el('circle', {cx: r2(x), cy: r2(y), r, class: cls});
+};
+const text = (v, p, s, cls, dx = 0, dy = 0, anchor = 'middle') => {
+  const [x, y] = v.to(p);
+  return el('text', {x: r2(x + dx), y: r2(y + dy), class: cls,
+    'text-anchor': anchor}, s);
+};
+
+/* `dashed` keeps the arrowhead solid and dashes only the shaft. */
+const arrow = (v, a, b, colour, w = 1.7, dashed = false) => {
+  const [x1, y1] = v.to(a), [x2, y2] = v.to(b);
+  const th = Math.atan2(y2 - y1, x2 - x1), L = 8.5, W = 3.3;
+  const bx = x2 - L * Math.cos(th), by = y2 - L * Math.sin(th);
+  const nx = -Math.sin(th) * W, ny = Math.cos(th) * W;
+  return el('line', {x1: r2(x1), y1: r2(y1), x2: r2(bx), y2: r2(by),
+      class: `${dashed ? 'dash' : 'stroke'} s-${colour}`, 'stroke-width': w})
+    + el('polygon', {class: `f-${colour}`,
+      points: [[x2, y2], [bx + nx, by + ny], [bx - nx, by - ny]]
+        .map(([x, y]) => `${r2(x)},${r2(y)}`).join(' ')});
+};
+
+/* Axes with integer ticks, drawn to the edges of the given ranges. */
+const axes = (v, [x0, x1], [y0, y1], colour = 'prussian') => {
+  const ticks = (from, to, f) => {
+    const out = [];
+    for (let k = Math.ceil(from); k <= Math.floor(to); k++) if (k) out.push(f(k));
+    return out.join('');
+  };
+  const tx = 0.07, ty = 0.07 * v.s / (v.to([0, 0])[1] - v.to([0, 1])[1]);
+  return seg(v, [x0, 0], [x1, 0], `hair s-${colour}`)
+    + seg(v, [0, y0], [0, y1], `hair s-${colour}`)
+    + ticks(x0, x1, k => seg(v, [k, -ty], [k, ty], `hair s-${colour}`))
+    + ticks(y0, y1, k => seg(v, [-tx, k], [tx, k], `hair s-${colour}`))
+    + arrow(v, [x1 - 0.3, 0], [x1, 0], colour, 1)
+    + arrow(v, [0, y1 - 0.3 * ty / 0.07], [0, y1], colour, 1);
+};
+
+/* A window on the drawing, for lines and parabolas that run off it. */
+const clipped = (id, x, y, w, h, inner) =>
+  el('clipPath', {id}, el('rect', {x, y, width: w, height: h}))
+  + el('g', {'clip-path': `url(#${id})`}, inner);
+
+const rightAngle = (v, p, d1, d2, k, cls) => {
+  const a = add(p, sc(k, d1)), b = add(p, sc(k, d2));
+  return seg(v, a, add(a, sc(k, d2)), cls) + seg(v, add(a, sc(k, d2)), b, cls);
+};
+
+const samples = (f, x0, x1, n = 96) => Array.from({length: n + 1},
+  (_, i) => { const x = x0 + (x1 - x0) * i / n; return [x, f(x)]; });
+const graph = (v, f, x0, x1, cls, n) => poly(v, samples(f, x0, x1, n), cls);
+
+const fmt = x => (Math.abs(x) < 5e-3 ? 0 : x).toFixed(2);
+const put = (id, markup) => { document.getElementById(id).innerHTML = markup; };
+
+/* Cubic used through sections I and II: f' = 3(x²-1)/4, f'' = 3x/2. */
+const F = x => (x ** 3 - 3 * x) / 4 + 1;
+const dF = x => (3 * x * x - 3) / 4;
+const d2F = x => 1.5 * x;
+const PLOT = () => view(200, 205, 55);
+const PLOT_X = [-2.9, 2.9], PLOT_Y = [-1.6, 3.6];
+const CURVE = v => graph(v, F, -2.6, 2.6, 'stroke s-madder');
+const lineAt = (v, x0, y0, m, cls) =>
+  seg(v, [-3, y0 + (-3 - x0) * m], [3.2, y0 + (3.2 - x0) * m], cls);
+
+/* The bowl used through section III, with its gradient. */
+const G = ([x, y]) => x * x + 2 * y * y;
+const gradG = ([x, y]) => [2 * x, 4 * y];
+const P = [1.5, 0.8];
+const LEVELS = [0.5, 1, 2, 3, 5, 7, 10];
+const CV = () => view(200, 150, 55);
+const CV_X = [-3.6, 3.6], CV_Y = [-2.7, 2.7];
+const ellipse = c => Array.from({length: 73}, (_, i) => {
+  const t = i * Math.PI / 36;
+  return [Math.sqrt(c) * Math.cos(t), Math.sqrt(c / 2) * Math.sin(t)];
+});
+const contours = (v, cls = 'hair s-prussian') =>
+  LEVELS.map(c => loop(v, ellipse(c), cls)).join('');
+const bowl = v => axes(v, CV_X, CV_Y, 'construct') + contours(v);
+
+/* --- static figures --------------------------------------------------- */
+
+const figures = {
+  'fig-title': () => {
+    const v = view(200, 220, 55), x0 = 1.8, y0 = F(x0), m = dF(x0);
+    const z = 6, [px, py] = v.to([x0, y0]);
+    const inset = view(335 - z * 55 * x0, 75 + z * 55 * y0, z * 55);
+    return el('g', {id: 't-curve'},
+        axes(v, PLOT_X, PLOT_Y) + CURVE(v))
+      + el('g', {id: 't-tan'},
+        clipped('clip-title', 0, 0, 430, 320, lineAt(v, x0, y0, m, 'stroke s-prussian'))
+        + dot(v, [x0, y0], 'f-madder', 3.6))
+      + el('g', {id: 't-zoom'},
+        el('circle', {cx: r2(px), cy: r2(py), r: 10, class: 'hair s-verdigris'})
+        + el('line', {x1: r2(px + 7), y1: r2(py - 7), x2: 275, y2: 135,
+          class: 'hair s-verdigris'})
+        + el('rect', {x: 275, y: 15, width: 120, height: 120, class: 'hair s-verdigris',
+          style: 'fill:#fff'})
+        + clipped('clip-inset', 275, 15, 120, 120,
+          graph(inset, F, x0 - 0.2, x0 + 0.2, 'stroke s-madder')
+          + lineAt(inset, x0, y0, m, 'stroke s-prussian')
+          + dot(inset, [x0, y0], 'f-madder', 3.6))
+        + el('text', {x: 335, y: 150, class: 'f-verdigris', 'text-anchor': 'middle'},
+          '×6'));
+  },
+
+  'fig-quotient': () => {
+    const v = PLOT(), x = 1, h = 1, a = [x, F(x)], b = [x + h, F(x + h)];
+    return axes(v, PLOT_X, PLOT_Y) + CURVE(v)
+      + clipped('clip-q', 0, 0, 400, 300,
+        lineAt(v, x, F(x), (F(x + h) - F(x)) / h, 'stroke s-prussian'))
+      + seg(v, a, [b[0], a[1]], 'dash s-prussian')
+      + seg(v, [b[0], a[1]], b, 'dash s-prussian')
+      + dot(v, a, 'f-madder', 3.6) + dot(v, b, 'f-madder', 3.6)
+      + text(v, [x + h / 2, F(x)], 'h', 'f-prussian', 0, 17)
+      + text(v, [x + h, (F(x) + F(x + h)) / 2], 'f(x+h) − f(x)', 'f-prussian', 8, 4, 'start')
+      + text(v, a, 'x', 'f-madder', 0, -10) + text(v, b, 'x + h', 'f-madder', 0, -10);
+  },
+
+  'fig-rules': () => {
+    const v = view(200, 150, 36);
+    return axes(v, [-2.6, 2.6], [-3.9, 4]) + clipped('clip-r', 0, 0, 400, 300,
+        graph(v, x => x * x, -2.2, 2.2, 'stroke s-madder')
+        + graph(v, x => 2 * x, -2.1, 2.1, 'stroke s-prussian'))
+      + text(v, [-1.6, 2.56], 'x²', 'f-madder', -14, 0)
+      + text(v, [1.6, 3.2], '2x', 'f-prussian', 14, 0)
+      + dot(v, [0, 0], 'f-verdigris', 3.6);
+  },
+
+  'fig-stationary': () => {
+    const v = PLOT();
+    const flat = x => seg(v, [x - 0.7, F(x)], [x + 0.7, F(x)], 'stroke s-verdigris')
+      + dot(v, [x, F(x)], 'f-verdigris', 3.6);
+    return axes(v, PLOT_X, PLOT_Y) + CURVE(v) + flat(-1) + flat(1)
+      + text(v, [-1, F(-1)], "f' = 0", 'f-verdigris', 0, -11)
+      + text(v, [1, F(1)], "f' = 0", 'f-verdigris', 0, 20);
+  },
+
+  'fig-second': () => {
+    const v = PLOT();
+    return axes(v, PLOT_X, PLOT_Y) + CURVE(v)
+      + dot(v, [-1, F(-1)], 'f-verdigris', 3.6) + dot(v, [1, F(1)], 'f-verdigris', 3.6)
+      + dot(v, [0, F(0)], 'f-prussian', 3.2)
+      + text(v, [-1, F(-1)], "max   f'' < 0", 'f-verdigris', 0, -11)
+      + text(v, [1, F(1)], "min   f'' > 0", 'f-verdigris', 0, 20)
+      + text(v, [0, 1], "f'' = 0", 'f-prussian', 10, 4, 'start')
+      + text(v, [-1.5, -0.7], 'bends down', 'f-dim', 0, 0)
+      + text(v, [1.75, 2.7], 'bends up', 'f-dim', 0, 0);
+  },
+
+  'fig-contours': () => {
+    const v = CV();
+    const tag = c => text(v, [Math.sqrt(c) * 0.72, Math.sqrt(c / 2) * 0.72], c,
+      'f-prussian', 4, -3, 'start');
+    return bowl(v) + tag(1) + tag(3) + tag(5) + tag(10)
+      + dot(v, P, 'f-madder', 3.8)
+      + text(v, P, '3.53', 'f-madder', 8, 14, 'start');
+  },
+
+  'fig-slices-a': () => {
+    const v = view(125, 95, 31);
+    return axes(v, [-3.9, 3.9], [-2.9, 2.9], 'construct') + contours(v)
+      + seg(v, [-3.7, P[1]], [3.7, P[1]], 'dash s-madder')
+      + seg(v, [P[0], -2.7], [P[0], 2.7], 'dash s-verdigris')
+      + dot(v, P, 'f-ink', 3.4)
+      + text(v, [3.4, P[1]], 'vary x', 'f-madder', 0, -7)
+      + text(v, [P[0], 2.5], 'vary y', 'f-verdigris', 8, 4, 'start');
+  },
+
+  /* Both slices plotted against the displacement t from the point. */
+  'fig-slices-b': () => {
+    const v = view(125, 172, 52, 12), f0 = G(P);
+    const along = ([a, b]) => t => G([P[0] + a * t, P[1] + b * t]);
+    return axes(v, [-1.7, 1.7], [-0.4, 12.4], 'construct')
+      + graph(v, along([1, 0]), -1.6, 1.3, 'stroke s-madder')
+      + graph(v, along([0, 1]), -1.6, 1.3, 'stroke s-verdigris')
+      + seg(v, [-0.9, f0 - 2.7], [0.9, f0 + 2.7], 'dash s-madder')
+      + seg(v, [-0.9, f0 - 2.88], [0.9, f0 + 2.88], 'dash s-verdigris')
+      + dot(v, [0, f0], 'f-ink', 3.4)
+      + text(v, [1.3, along([1, 0])(1.3)], 'slope 3', 'f-madder', 7, 4, 'start')
+      + text(v, [1.3, along([0, 1])(1.3)], 'slope 3.2', 'f-verdigris', 7, 4, 'start')
+      + text(v, [1.7, 0], 't', 'f-dim', 0, 14);
+  },
+
+  'fig-hess': () => {
+    const v = CV();
+    return bowl(v)
+      + arrow(v, [0, 0], [1, 0], 'verdigris', 2) + arrow(v, [0, 0], [0, 2], 'verdigris', 2)
+      + text(v, [1, 0], 'curvature 2', 'f-verdigris', 6, 16, 'start')
+      + text(v, [0, 2], 'curvature 4', 'f-verdigris', 8, -4, 'start');
+  },
+
+  'fig-jac-a': () => {
+    const v = view(125, 120, 40), p = [1, 1], k = 0.4;
+    const lines = [];
+    for (let i = -2; i <= 2; i++) lines.push(
+      seg(v, [i, -2], [i, 2], 'hair s-construct'), seg(v, [-2, i], [2, i], 'hair s-construct'));
+    const sq = [[-k, -k], [k, -k], [k, k], [-k, k]].map(d => add(p, d));
+    return lines.join('') + loop(v, sq, 'stroke s-madder') + dot(v, p, 'f-madder', 3.4)
+      + text(v, p, 'p', 'f-madder', -11, 6);
+  },
+
+  /* Grid and small square pushed through a nonlinear map; the Jacobian at p
+     is [[1, .5], [.5, 1]], drawn as the dashed parallelogram. */
+  'fig-jac-b': () => {
+    const v = view(108, 138, 40), p = [1, 1], k = 0.4;
+    const Phi = ([x, y]) => [x + 0.25 * y * y, y + 0.25 * x * x];
+    const J = [1, 0.5, 0.5, 1];
+    const bent = (a, b) => poly(v, Array.from({length: 25},
+      (_, i) => Phi(add(a, sc(i / 24, add(b, sc(-1, a)))))), 'hair s-construct');
+    const lines = [];
+    for (let i = -2; i <= 2; i++) lines.push(bent([i, -2], [i, 2]), bent([-2, i], [2, i]));
+    const corners = [[-k, -k], [k, -k], [k, k], [-k, k]];
+    const edges = corners.map((c, i) => {
+      const d = corners[(i + 1) % 4];
+      return Array.from({length: 12}, (_, j) => Phi(add(p, add(c, sc(j / 12, add(d, sc(-1, c)))))));
+    }).flat();
+    const para = corners.map(c => add(Phi(p), ap(J, c)));
+    return lines.join('') + loop(v, edges, 'stroke s-madder')
+      + loop(v, para, 'dash s-verdigris') + dot(v, Phi(p), 'f-madder', 3.4)
+      + text(v, Phi(p), 'f(p)', 'f-madder', -18, 6);
+  },
+
+  'fig-chain2': () => {
+    const u = 22;
+    const block = (x, rows, cols, colour, label) => {
+      const y = 122 - rows * u / 2, cells = [];
+      for (let i = 0; i < rows; i++) for (let j = 0; j < cols; j++) cells.push(
+        el('rect', {x: x + j * u, y: y + i * u, width: u, height: u,
+          class: `f-${colour}`, opacity: 0.28}));
+      const bar = bx => el('line', {x1: bx, y1: y, x2: bx, y2: y + rows * u,
+        class: 'stroke s-ink', 'stroke-width': 2});
+      return cells.join('') + bar(x) + bar(x + cols * u)
+        + el('text', {x: x + cols * u / 2, y: 190, class: `f-${colour}`,
+          'text-anchor': 'middle'}, label)
+        + el('text', {x: x + cols * u / 2, y: 206, class: 'f-dim',
+          'text-anchor': 'middle'}, `${rows} × ${cols}`);
+    };
+    const op = (x, s) => el('text', {x, y: 127, class: 'f-ink', 'text-anchor': 'middle',
+      'font-size': 16}, s);
+    return el('text', {x: 200, y: 30, class: 'f-dim', 'text-anchor': 'middle'},
+        'ℝ²  →g→  ℝ³  →f→  ℝ⁴')
+      + block(50, 4, 3, 'madder', 'J_f') + op(135, '·')
+      + block(153, 3, 2, 'prussian', 'J_g') + op(222, '=')
+      + block(246, 4, 2, 'verdigris', 'J_f∘g');
+  },
+
+  'fig-cost': () => {
+    const ins = [0, 1, 2, 3, 4, 5].map(i => [60, 35 + i * 28]);
+    const box = el('rect', {x: 170, y: 55, width: 60, height: 100, class: 'f-construct',
+      opacity: 0.5}) + el('text', {x: 200, y: 110, class: 'f-ink', 'text-anchor': 'middle',
+      'font-size': 16}, 'f');
+    const wires = ins.map(([x, y], i) => el('line', {x1: x, y1: y, x2: 170, y2: 70 + i * 14,
+      class: i === 1 ? 'stroke s-madder' : 'hair s-construct'})).join('');
+    const nodes = ins.map(([x, y], i) => el('circle', {cx: x, cy: y, r: 4,
+      class: i === 1 ? 'f-madder' : 'f-construct'})
+      + el('text', {x: x - 12, y: y + 4, class: i === 1 ? 'f-madder' : 'f-dim',
+        'text-anchor': 'end'}, i === 1 ? "x₂' = 1" : `x${'₁₂₃₄₅₆'[i]}' = 0`)).join('');
+    return wires + nodes + box
+      + el('line', {x1: 230, y1: 105, x2: 340, y2: 105, class: 'stroke s-madder'})
+      + el('circle', {cx: 340, cy: 105, r: 4, class: 'f-madder'})
+      + el('text', {x: 352, y: 109, class: 'f-madder', 'text-anchor': 'start'}, '∂f/∂x₂');
+  },
+};
+
+/* --- interactive figures ---------------------------------------------- */
+const pointAt = (svg, v, ev) => {
+  const r = svg.getBoundingClientRect();
+  const k = svg.viewBox.baseVal.width / r.width;
+  return v.from([(ev.clientX - r.left) * k, (ev.clientY - r.top) * k]);
+};
+
+/* Bind sliders to a draw function and echo their values. */
+const sliders = (ids, units, draw) => {
+  const inputs = ids.map(i => document.getElementById(i));
+  const go = () => {
+    const xs = inputs.map(i => +i.value);
+    inputs.forEach((_, k) => {
+      document.getElementById('out-' + ids[k]).textContent = fmt(xs[k]) + units[k];
+    });
+    draw(...xs);
+  };
+  inputs.forEach(i => i.addEventListener('input', go));
+  go();
+};
+
+function setupSecant() {
+  const svg = document.getElementById('fig-secant'), v = PLOT();
+  sliders(['sec-x', 'sec-h'], ['', ''], (x, h) => {
+    const a = [x, F(x)], b = [x + h, F(x + h)], q = (F(x + h) - F(x)) / h;
+    svg.innerHTML = axes(v, PLOT_X, PLOT_Y) + CURVE(v)
+      + clipped('clip-sec', 0, 0, 400, 300,
+        lineAt(v, x, F(x), dF(x), 'dash s-verdigris')
+        + lineAt(v, x, F(x), q, 'stroke s-prussian'))
+      + seg(v, a, [b[0], a[1]], 'dash s-prussian') + seg(v, [b[0], a[1]], b, 'dash s-prussian')
+      + dot(v, a, 'f-madder', 3.6) + dot(v, b, 'f-prussian', 3.4);
+    put('note-secant', `(f(x+h) − f(x)) / h = <b>${fmt(q)}</b><br>f'(x) = <b>${fmt(dF(x))}</b>`);
+  });
+}
+
+/* Three number lines: a step δ in x becomes g'δ in u, then f'g'δ in y. */
+function setupChain() {
+  const svg = document.getElementById('fig-chain');
+  const g = x => x * x, dg = x => 2 * x, f = Math.sin, df = Math.cos, d = 0.12;
+  const line = (y, lo, hi, label) => ({
+    y, at: t => 40 + 300 * (t - lo) / (hi - lo),
+    draw() {
+      return el('line', {x1: 40, y1: y, x2: 340, y2: y, class: 'hair s-construct'})
+        + el('text', {x: 40, y: y - 12, class: 'f-dim', 'text-anchor': 'start'}, label)
+        + el('text', {x: 40, y: y + 16, class: 'f-dim', 'text-anchor': 'middle'}, lo)
+        + el('text', {x: 340, y: y + 16, class: 'f-dim', 'text-anchor': 'middle'}, hi);
+    },
+  });
+  const X = line(50, 0, 2, 'x'), U = line(125, 0, 4, 'u = x²'), Y = line(200, -1, 1, 'y = sin u');
+  const step = (L, a, b, colour) => el('line', {x1: r2(L.at(a)), y1: L.y, x2: r2(L.at(b)),
+      y2: L.y, class: `stroke s-${colour}`, 'stroke-width': 5, 'stroke-linecap': 'butt'})
+    + el('circle', {cx: r2(L.at(a)), cy: L.y, r: 3.4, class: `f-${colour}`});
+  const link = (A, a, B, b) => el('line', {x1: r2(A.at(a)), y1: A.y + 4, x2: r2(B.at(b)),
+    y2: B.y - 4, class: 'dash s-construct'});
+  sliders(['ch-x'], [''], x => {
+    const u = g(x), y = f(u);
+    svg.innerHTML = X.draw() + U.draw() + Y.draw()
+      + link(X, x, U, u) + link(X, x + d, U, g(x + d))
+      + link(U, u, Y, y) + link(U, g(x + d), Y, f(g(x + d)))
+      + step(X, x, x + d, 'madder') + step(U, u, g(x + d), 'prussian')
+      + step(Y, y, f(g(x + d)), 'verdigris')
+      + el('text', {x: r2(X.at(x + d)) + 8, y: X.y + 4, class: 'f-madder',
+        'text-anchor': 'start'}, 'δ')
+      + el('text', {x: r2(U.at(Math.max(u, g(x + d)))) + 8, y: U.y + 4, class: 'f-prussian',
+        'text-anchor': 'start'}, `≈ ${fmt(dg(x))} δ`)
+      + el('text', {x: r2(Y.at(Math.max(y, f(g(x + d))))) + 8, y: Y.y + 4,
+        class: 'f-verdigris', 'text-anchor': 'start'}, `≈ ${fmt(df(u) * dg(x))} δ`);
+    put('note-chain', `g'(x) = 2x = <b>${fmt(dg(x))}</b> · f'(u) = cos u = <b>${fmt(df(u))}</b>` +
+      `<br>dy/dx = <b>${fmt(df(u) * dg(x))}</b>`);
+  });
+}
+
+function setupQuad() {
+  const svg = document.getElementById('fig-quad'), v = PLOT();
+  sliders(['qd-x'], [''], x => {
+    const y = F(x), m = dF(x), c = d2F(x);
+    const quad = t => y + m * (t - x) + c * (t - x) ** 2 / 2;
+    svg.innerHTML = axes(v, PLOT_X, PLOT_Y) + CURVE(v)
+      + clipped('clip-qd', 0, 0, 400, 300,
+        lineAt(v, x, y, m, 'stroke s-prussian')
+        + graph(v, quad, -2.9, 2.9, 'stroke s-verdigris'))
+      + dot(v, [x, y], 'f-madder', 3.6);
+    put('note-quad', `f'(x) = <b>${fmt(m)}</b>   f''(x) = <b>${fmt(c)}</b>`);
+  });
+}
+
+/* The gradient arrow is drawn at GRAD_K of its length so it fits the bowl. */
+const GRAD_K = 0.3;
+const gradScene = (v, p) => {
+  const g = gradG(p), t = unit([-g[1], g[0]]), gu = unit(g);
+  return bowl(v)
+    + seg(v, add(p, sc(-1.2, t)), add(p, sc(1.2, t)), 'dash s-construct')
+    + rightAngle(v, p, t, gu, 0.22, 'hair s-construct')
+    + arrow(v, p, add(p, sc(GRAD_K, g)), 'madder', 2)
+    + text(v, add(p, sc(GRAD_K, g)), '∇f', 'f-madder', 10, -6, 'start');
+};
+
+function setupGrad() {
+  const svg = document.getElementById('fig-grad'), v = CV();
+  let p = P.slice(), held = false;
+  const draw = () => {
+    const g = gradG(p);
+    svg.innerHTML = gradScene(v, p) + dot(v, p, 'f-madder', 4.5);
+    put('note-grad', `∇f = (2x, 4y) = (<b>${fmt(g[0])}</b>, <b>${fmt(g[1])}</b>)` +
+      `<br>‖∇f‖ = <b>${fmt(norm(g))}</b>   f = <b>${fmt(G(p))}</b>`);
+  };
+  svg.addEventListener('pointerdown', ev => {
+    const q = pointAt(svg, v, ev);
+    if (norm(add(q, sc(-1, p))) > 0.6) return;
+    held = true;
+    svg.setPointerCapture(ev.pointerId);
+    ev.preventDefault();
+  });
+  svg.addEventListener('pointermove', ev => {
+    if (!held) return;
+    const [x, y] = pointAt(svg, v, ev);
+    p = [Math.max(-3.2, Math.min(3.2, x)), Math.max(-2.3, Math.min(2.3, y))];
+    draw();
+  });
+  svg.addEventListener('pointerup', () => { held = false; });
+  draw();
+}
+
+function setupDir() {
+  const svg = document.getElementById('fig-dir'), v = CV(), g = gradG(P);
+  sliders(['dir-a'], ['°'], a => {
+    const t = a * Math.PI / 180, d = [Math.cos(t), Math.sin(t)];
+    const D = g[0] * d[0] + g[1] * d[1];
+    svg.innerHTML = gradScene(v, P) + arrow(v, P, add(P, d), 'prussian', 2)
+      + dot(v, P, 'f-ink', 3.4)
+      + text(v, add(P, d), 'd', 'f-prussian', 10 * d[0], -10 * d[1] + 4);
+    const word = Math.abs(D) < 0.05 ? 'level — along the contour'
+      : D > 0 ? 'uphill' : 'downhill';
+    put('note-dir', `∇f · d = <b>${fmt(D)}</b>   ${word}` +
+      `<br>‖∇f‖ cos θ, ‖∇f‖ = ${fmt(norm(g))}`);
+  });
+}
+
+/* Error of the difference quotients for exp at 1, in actual doubles. */
+function setupStep() {
+  const svg = document.getElementById('fig-step');
+  const e = Math.E, x = 1;
+  const fwd = h => (Math.exp(x + h) - Math.exp(x)) / h;
+  const cen = h => (Math.exp(x + h) - Math.exp(x - h)) / (2 * h);
+  const v = view(50 + 16 * 22, 250 - 18 * 12.5, 22, 18);   // x: log10 h, y: log10 error
+  const err = (q, lh) => Math.log10(Math.max(Math.abs(q(10 ** lh) - e), 1e-13));
+  const curve = (q, cls) => poly(v, Array.from({length: 121},
+    (_, i) => { const lh = -16 + i / 8; return [lh, err(q, lh)]; }), cls);
+  const frame = () => {
+    const out = [seg(v, [-16.5, -12.5], [-0.5, -12.5], 'hair s-construct'),
+      seg(v, [-16.5, -12.5], [-16.5, 0.5], 'hair s-construct')];
+    for (let k = -16; k <= -1; k += 3) out.push(
+      text(v, [k, -12.5], `1e${k}`, 'f-dim', 0, 14));
+    for (let k = -12; k <= 0; k += 4) out.push(
+      text(v, [-16.5, k], `1e${k}`, 'f-dim', -6, 4, 'end'));
+    return out.join('') + text(v, [-8.5, -12.5], 'step h', 'f-dim', 0, 27)
+      + text(v, [-16.5, 0.95], 'error  |quotient − e|', 'f-dim', 0, 0, 'start');
+  };
+  sliders(['st-h'], [''], lh => {
+    const h = 10 ** lh, q = fwd(h);
+    svg.innerHTML = frame() + curve(fwd, 'stroke s-madder') + curve(cen, 'stroke s-verdigris')
+      + text(v, [-3, err(fwd, -3)], 'forward', 'f-madder', 8, -6, 'start')
+      + text(v, [-3, err(cen, -3)], 'central', 'f-verdigris', 8, 12, 'start')
+      + seg(v, [lh, -12.5], [lh, 0.5], 'dash s-construct')
+      + dot(v, [lh, err(fwd, lh)], 'f-madder', 4.5);
+    put('note-step', `h = ${h.toExponential(0)}   (f(x+h) − f(x))/h = <b>${q.toFixed(10)}</b>` +
+      `<br>e = ${e.toFixed(10)}   error <b>${Math.abs(q - e).toExponential(1)}</b>`);
+  });
+}
+
+/* --- speaker notes window --------------------------------------------- */
+
+/* A second window, shared with nobody: put the deck on the projector and
+   keep this one on the laptop. Arrow keys work in either window. */
+const NOTES_DOC = `<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Speaker notes</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+body{margin:0;padding:20px 26px 46px;background:#fbfbfa;color:#3f4750;
+  font-family:Spectral,Georgia,serif}
+header{display:flex;justify-content:space-between;gap:20px;
+  font:12.5px/1.3 'JetBrains Mono',monospace;color:#767f89;
+  border-bottom:1px solid #dcdfe3;padding-bottom:9px}
+h4{font:11.5px 'JetBrains Mono',monospace;color:#767f89;
+  margin:18px 0 0;font-weight:400}
+p{font-size:18px;line-height:1.55;margin:10px 0 0}
+b{color:#000;font-weight:500}
+footer{position:fixed;left:26px;bottom:12px;
+  font:11px 'JetBrains Mono',monospace;color:#9aa2aa}
+</style></head><body>
+<header><span id="where"></span><span id="num"></span></header>
+<div id="notes"></div>
+<footer>← → navigate</footer>
+</body></html>`;
+
+let notesWindow = null;
+
+const paintNotes = () => {
+  if (!notesWindow || notesWindow.closed) return;
+  const d = notesWindow.document;
+  d.getElementById('where').textContent = slides[cur].dataset.where;
+  d.getElementById('num').textContent = `${cur + 1} / ${slides.length}`;
+  d.getElementById('notes').innerHTML =
+    slides[cur].querySelector('.notes').innerHTML;
+};
+
+const openNotes = () => {
+  if (notesWindow && !notesWindow.closed) { notesWindow.focus(); return; }
+  notesWindow = open('', 'speaker-notes', 'width=620,height=700');
+  notesWindow.document.write(NOTES_DOC);
+  notesWindow.document.close();
+  notesWindow.addEventListener('keydown', navigate);
+  paintNotes();
+};
+
+/* --- deck ------------------------------------------------------------- */
+
+const slides = [...document.querySelectorAll('#stage .slide')];
+const stage = document.getElementById('stage');
+const ov = document.getElementById('overview');
+let cur = 0;
+
+const show = i => {
+  cur = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((s, k) => s.classList.toggle('on', k === cur));
+  history.replaceState(null, '', '#' + (cur + 1));
+  [...ov.children].forEach((th, k) => th.classList.toggle('on', k === cur));
+  paintNotes();
+};
+
+const fit = () => {
+  const k = Math.min((innerWidth - 16) / 1280, (innerHeight - 16) / 720);
+  stage.style.transform = `scale(${k})`;
+};
+
+const overview = on => {
+  ov.classList.toggle('on', on);
+  ov.setAttribute('aria-hidden', String(!on));
+  if (!on) { ov.innerHTML = ''; return; }
+  ov.innerHTML = slides.map((s, i) =>
+    `<div class="thumb" data-i="${i}"><div class="wrap"></div><b>${i + 1}</b></div>`)
+    .join('');
+  [...ov.querySelectorAll('.wrap')].forEach((w, i) => {
+    const c = slides[i].cloneNode(true);
+    c.classList.add('on');
+    c.style.transform = `scale(${w.clientWidth / 1280})`;
+    w.appendChild(c);
+  });
+  [...ov.children].forEach((th, k) => th.classList.toggle('on', k === cur));
+};
+
+ov.addEventListener('click', ev => {
+  const th = ev.target.closest('.thumb');
+  if (!th) return;
+  show(+th.dataset.i);
+  overview(false);
+});
+
+/* Navigation, bound in both windows so the notes window can drive the deck. */
+const navigate = ev => {
+  if (ev.target.tagName === 'INPUT' && ev.key.startsWith('Arrow')) return;
+  if (['ArrowRight', 'PageDown'].includes(ev.key)) show(cur + 1);
+  else if (['ArrowLeft', 'PageUp'].includes(ev.key)) show(cur - 1);
+  else if (ev.key === 'Home') show(0);
+  else if (ev.key === 'End') show(slides.length - 1);
+  else return;
+  ev.preventDefault();
+};
+
+addEventListener('keydown', ev => {
+  navigate(ev);
+  if (ev.defaultPrevented) return;
+  if (ev.key === 'n' || ev.key === 'N') openNotes();
+  else if (ev.key === 'o' || ev.key === 'O') overview(!ov.classList.contains('on'));
+  else if (ev.key === 'f' || ev.key === 'F') {
+    document.fullscreenElement ? document.exitFullscreen()
+      : document.documentElement.requestFullscreen();
+  } else if (ev.key === 'Escape') overview(false);
+});
+
+addEventListener('pagehide', () => notesWindow && notesWindow.close());
+
+addEventListener('resize', fit);
+
+slides.forEach((s, i) => s.insertAdjacentHTML('afterbegin',
+  `<div class="rail"><span>${s.dataset.where}</span>` +
+  `<span>${i + 1} / ${slides.length}</span></div>`));
+
+Object.entries(figures).forEach(([id, f]) => {
+  document.getElementById(id).innerHTML = f();
+});
+setupSecant();
+setupChain();
+setupQuad();
+setupGrad();
+setupDir();
+setupStep();
+
+renderMathInElement(document.body, {throwOnError: false, delimiters: [
+  {left: '$$', right: '$$', display: true},
+  {left: '\\(', right: '\\)', display: false}]});
+
+fit();
+show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  ['t-curve', 't-tan', 't-zoom'].forEach((id, i) =>
+    document.getElementById(id).animate([{opacity: 0}, {opacity: 1}],
+      {duration: 800, delay: 220 * i, easing: 'ease-out', fill: 'both'}));
+}
+</script>
+</body>
+</html>
