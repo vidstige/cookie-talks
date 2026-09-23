@@ -236,8 +236,8 @@ input[type=range]{
     that line; in several variables it is the matrix of that map. Everything else in
     the lecture is bookkeeping around that one idea.</p>
     <p>The figure is the thesis. The small window is the curve magnified six times.
-    In it the curve and its tangent line lie on top of each other. The linear
-    approximation slide gives this picture a slider.</p>
+    In it the curve and its tangent line lie on top of each other. The derivative
+    slide gives this picture a zoom slider.</p>
   </aside>
 </section>
 
@@ -269,35 +269,84 @@ input[type=range]{
 <!-- 3 -->
 <section class="slide" data-where="Outline">
   <h2>Outline</h2>
+  <p class="sub">Three kinds of function, then how to get the numbers.</p>
   <div class="body">
     <ol class="outline">
-      <li><span class="n">I</span><span>The derivative in one variable
-        <small>the difference quotient, the linear approximation, the rules, the
-        chain rule</small></span></li>
-      <li><span class="n">II</span><span>Local behaviour
-        <small>stationary points, the second derivative, the quadratic
-        approximation</small></span></li>
-      <li><span class="n">III</span><span>Several variables
-        <small>partial derivatives, the gradient, directional derivatives, the
-        Jacobian, the Hessian</small></span></li>
+      <li><span class="n">I</span><span>One number in, one number out
+        <small>the difference quotient, the derivative, the rules, the chain rule,
+        the second derivative</small></span></li>
+      <li><span class="n">II</span><span>Several numbers in, one number out
+        <small>partial derivatives, the gradient, the Hessian</small></span></li>
+      <li><span class="n">III</span><span>Several numbers in, several out
+        <small>the Jacobian, the chain rule as a matrix product</small></span></li>
       <li><span class="n">IV</span><span>Obtaining derivatives
         <small>by hand, by difference quotient, by program</small></span></li>
       <li><span class="n">V</span><span>Quiz</span></li>
     </ol>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>Section I is one idea seen four ways. II is short: what the first two
-    derivatives say about the shape of a curve near a point. III does I again with a
-    vector going in, and is where the objects the optimization lecture needs are
-    built. IV is practical: none of this is worth much if a program cannot compute
-    it.</p>
+    <p>The first three sections are the same idea three times, with a bigger object
+    going in and coming out each time. Say that now, and say that each section opens
+    by stating which kind of function it is about. Almost every question people have
+    in this material is really the question "what shape is this thing".</p>
+    <p>Section I is where all the work happens, and it is deliberately slow at the
+    start: a constant, a line, a square, and only then a rule. II and III are I
+    again with more coordinates, and they build the objects lecture 3 manipulates.
+    IV is practical: none of this is worth much if a program cannot compute it.</p>
+    <p>Notation, said once here and once on the derivative slide: this lecture writes
+    \(\frac{df}{dx}\) and not \(f'(x)\), because only the first form survives into
+    several variables.</p>
     <p>Keys: ← → or PageUp/PageDown to navigate, <b>N</b> for the notes window,
     <b>O</b> for the overview, <b>F</b> for full screen.</p>
   </aside>
 </section>
 
 <!-- 4 -->
-<section class="slide" data-where="I. The derivative">
+<section class="slide" data-where="I. One number in">
+  <h2>A function of one number</h2>
+  <p class="sub">One number goes in, one number comes out.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$f(x)=\tfrac14 x^3-\tfrac34 x+1$$
+        <p class="note">Pick an \(x\), do the arithmetic, read off \(f(x)\).</p>
+      </div>
+      <ul>
+        <li>\(f(0)=1\), \(f(1)=0.5\), \(f(2)=1.5\)</li>
+        <li>It climbs, then falls, then climbs again</li>
+      </ul>
+    </div>
+    <figure class="demo" data-demo="fn">
+      <svg id="fig-fn" viewBox="0 0 400 300" role="img"
+           aria-label="The graph of the example cubic, with a movable point and dashed guides to both axes showing the input and the value"></svg>
+      <div class="controls">
+        <div class="row"><label for="fn-x">x</label>
+          <input id="fn-x" type="range" min="-2.6" max="2.6" step="0.05" value="1.4">
+          <output id="out-fn-x"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-fn"></div></div>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Spend a minute here and the rest of the section is easier. Slide the point and
+    read values out loud: at \(x=0\) the value is 1, at \(x=1\) it is 0.5, at \(x=2\)
+    it is 1.5. The dashed lines are the two coordinates of the point — one number in
+    on the horizontal axis, one number out on the vertical.</p>
+    <p>This one curve is the example for the whole of section I, so say what to notice
+    about its shape: going left to right it climbs, flattens out around \(x=-1\),
+    falls through the middle, flattens again around \(x=1\), then climbs away. Where
+    it flattens is exactly where the next few slides will find a derivative of zero,
+    and the room will have seen it first as a shape.</p>
+    <p>Why a cubic and not a parabola: a parabola bends one way only. This one bends
+    down on the left and up on the right, which the second-derivative slide needs.</p>
+    <p>It is also built out of the pieces the rules slides differentiate one at a
+    time — \(x^3\), quartered, minus \(\tfrac34x\), plus 1 — so its derivative gets
+    assembled in front of the room by the time the sum rule arrives.</p>
+  </aside>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-where="I. One number in">
   <h2>Rates of change and the difference quotient</h2>
   <p class="sub">How much \(f\) changes, per unit of \(x\).</p>
   <div class="two wide-left body">
@@ -312,535 +361,914 @@ input[type=range]{
         <li>Depends on \(h\) — until \(h\) is small</li>
       </ul>
     </div>
-    <figure>
+    <figure class="demo" data-demo="quotient">
       <svg id="fig-quotient" viewBox="0 0 400 300" role="img"
-           aria-label="A curve with a secant line through two of its points, the horizontal and vertical legs of the slope triangle marked"></svg>
-      <figcaption>The secant through \(x\) and \(x+h\). Its slope is the difference
-      quotient.</figcaption>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>Speed is the example everyone has: distance travelled divided by time taken
-    is an average speed, and the shorter the interval the closer it gets to what the
-    speedometer says. The difference quotient is that, for any function.</p>
-    <p>Do one by hand, out loud, with \(f(x)=x^2\): \((x+h)^2 - x^2 = 2xh + h^2\),
-    divide by \(h\), and the quotient is \(2x + h\). At \(x=1\): \(h=1\) gives 3,
-    \(h=0.1\) gives 2.1, \(h=0.01\) gives 2.01. The \(h\) in the answer is the part
-    that depends on the interval; it shrinks with the interval and leaves \(2x\).</p>
-    <p>"As \(h\) shrinks" is the whole of the limit in this lecture. No epsilon, no
-    delta. The next slide puts it on a slider. If asked when it fails: a corner, like
-    \(|x|\) at zero, has a different slope from each side, and no tangent.</p>
-  </aside>
-</section>
-
-<!-- 5 -->
-<section class="slide" data-where="I. The derivative">
-  <h2>The derivative as best local linear approximation</h2>
-  <div class="two wide-left body">
-    <div>
-      <div class="eq">
-        $$f(x+h)\approx f(x)+f'(x)\,h$$
-        <p class="note">\(f'(x)\) is the slope the secants settle on as \(h\to0\).</p>
-      </div>
-      <ul>
-        <li>Of all lines through \((x, f(x))\), the one that fits best nearby</li>
-        <li>The error shrinks faster than \(h\)</li>
-      </ul>
-      <p class="claim">Zoom in far enough and a smooth curve is a line. The
-      derivative is its slope.</p>
-    </div>
-    <figure class="demo" data-demo="secant">
-      <svg id="fig-secant" viewBox="0 0 400 300" role="img"
-           aria-label="A curve with a movable secant through a point and a second point a distance h away, alongside the tangent at the first point"></svg>
+           aria-label="The example curve with a movable secant line through the point at x and a second point a distance h away, the legs of the slope triangle marked"></svg>
       <div class="controls">
-        <div class="row"><label for="sec-x">x</label>
-          <input id="sec-x" type="range" min="-2" max="2.2" step="0.1" value="1.4">
-          <output id="out-sec-x"></output></div>
-        <div class="row"><label for="sec-h">h</label>
-          <input id="sec-h" type="range" min="0.01" max="2" step="0.01" value="1.5">
-          <output id="out-sec-h"></output></div>
+        <div class="row"><label for="qt-x">x</label>
+          <input id="qt-x" type="range" min="-2" max="2.2" step="0.1" value="1.4">
+          <output id="out-qt-x"></output></div>
+        <div class="row"><label for="qt-h">h</label>
+          <input id="qt-h" type="range" min="0.01" max="2" step="0.01" value="1.5">
+          <output id="out-qt-h"></output></div>
       </div>
-      <div class="readout"><div class="note" id="note-secant"></div></div>
+      <div class="readout"><div class="note" id="note-quotient"></div></div>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>The load-bearing slide of the hour. Pull \(h\) down slowly and narrate: the
-    blue secant swings, and the number beside it settles. Somewhere around
-    \(h=0.1\) it stops visibly moving. The green line it settles on is the tangent,
-    and its slope is \(f'(x)\). Then move \(x\) and do it again somewhere the curve
-    bends the other way.</p>
-    <p>Read the approximation as a recipe: to predict \(f\) a little way from where
-    you are, take the value you have and add slope times step. That is a linear
-    function of \(h\), which is why the next lecture can do anything at all — it
-    replaces the function it cannot see with the line it can.</p>
-    <p>"Error shrinks faster than \(h\)" is the precise sense of <em>best</em>. Halve
-    the step and the error drops by about four, not two. The quadratic-approximation
-    slide says exactly what that error is.</p>
-    <p>Notation, said once: \(f'(x)\), \(\frac{df}{dx}\) and \(\frac{d}{dx}f\) all
-    mean this number. The lecture uses the prime.</p>
+    <p>Speed is the example everyone has: distance travelled divided by time taken is
+    an average speed, and the shorter the interval the closer it gets to what the
+    speedometer says. The difference quotient is that, for any function.</p>
+    <p>Now the slider, and this is the load-bearing minute of the section. Leave \(x\)
+    where it is and pull \(h\) down slowly. Narrate two things at once: the line swings
+    until it just grazes the curve, and the number in the readout stops moving. At
+    \(h=1.5\) it reads one thing, at \(h=0.5\) another, and from about \(h=0.1\) down
+    the digits stop changing. Say: whatever number that is, it belongs to the point and
+    not to the interval. That is the next slide.</p>
+    <p>Then move \(x\) and do the pull again somewhere the curve bends the other way,
+    and once where the curve is flat, so the settled number comes out negative and
+    then near zero.</p>
+    <p>"As \(h\) shrinks" is the whole of the limit in this lecture. No epsilon, no
+    delta. The arithmetic of actually shrinking it is done three slides on, with
+    \(x^2\), where it comes out in one line. If asked when it fails: a corner, like
+    \(|x|\) at zero, gives a different number from each side, and has no tangent.</p>
   </aside>
 </section>
 
 <!-- 6 -->
-<section class="slide" data-where="I. The derivative">
-  <h2>Differentiation rules</h2>
-  <p class="sub">The ones this series uses.</p>
+<section class="slide" data-where="I. One number in">
+  <h2>The derivative</h2>
+  <p class="sub">The number the quotient settles on.</p>
   <div class="two wide-left body">
     <div>
       <div class="eq">
-        $$\begin{aligned}
-        (f+g)' &= f'+g' &\qquad (c\,f)' &= c\,f'\\
-        (x^n)' &= n\,x^{n-1} &\qquad (e^x)' &= e^x
-        \end{aligned}$$
+        $$\frac{df}{dx}=\lim_{h\to0}\frac{f(x+h)-f(x)}{h}$$
+        <p class="note">The value the quotient approaches as \(h\) shrinks.</p>
       </div>
+      <div class="eq bare">$$f(x+h)\approx f(x)+\frac{df}{dx}\,h$$</div>
+      <p class="small">Also written \(f'(x)\).</p>
       <ul>
-        <li>Each is the linear approximation, worked out once</li>
-        <li>Together they differentiate every polynomial</li>
+        <li>One number at each \(x\): the slope there</li>
+        <li>The best straight line, close up</li>
       </ul>
     </div>
-    <figure>
-      <svg id="fig-rules" viewBox="0 0 400 300" role="img"
-           aria-label="The parabola x squared and its derivative, the line 2x, on shared axes"></svg>
-      <figcaption>\(f(x)=x^2\) and \(f'(x)=2x\). Where \(f\) is flat, \(f'\) is zero.</figcaption>
+    <figure class="demo" data-demo="zoom">
+      <svg id="fig-zoom" viewBox="0 0 400 300" role="img"
+           aria-label="The curve and its tangent line at one point, magnified by an adjustable factor, the two becoming indistinguishable as the magnification grows"></svg>
+      <div class="controls">
+        <div class="row"><label for="zm-k">zoom</label>
+          <input id="zm-k" type="range" min="0" max="3" step="0.05" value="0">
+          <output id="out-zm-k"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-zoom"></div></div>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>Not a slide to dwell on. The sum rule and constant rule say differentiation
-    is itself linear, in last week's sense: it respects addition and scaling. Point
-    at the figure for the power rule — the slope of the parabola at each \(x\) is the
-    height of the line, and the two cross zero together.</p>
-    <p>The power rule was done on the previous slide for \(n=2\): the quotient was
-    \(2x+h\), and the \(h\) fell away. For general \(n\), expand \((x+h)^n\); the
-    term linear in \(h\) is \(n x^{n-1} h\), and every other term carries at least
-    \(h^2\). The exponential is the function that is its own slope — accept it as a
-    fact today.</p>
-    <p>Product and quotient rules exist and are in every textbook. Nothing in the
-    next three lectures differentiates a product of two unknown functions, so they are
-    not taught here. Sine and cosine likewise. What the series does differentiate,
-    constantly, is a function of a function — the next slide.</p>
+    <p>Two lines, and the second is the one to remember. The first says what the number
+    is: the quotient from the previous slide, with the interval taken away. The second
+    says what it is for — to predict \(f\) a little way from where you are, take the
+    value you have and add slope times step. That is a linear function of \(h\), which
+    is why the next lecture can do anything at all: it replaces the function it cannot
+    see with the line it can.</p>
+    <p>Read the limit line out in words rather than symbols. "As \(h\) goes to zero"
+    is shorthand for what the room just watched happen on the slider; it is not
+    \(h=0\), which would divide by nothing. That is the entire treatment of limits in
+    this lecture, and it is enough.</p>
+    <p>The prime is on the slide because the room will meet it everywhere else, and
+    for no other reason. Say it once: \(f'(x)\), \(\frac{df}{dx}\) and
+    \(\frac{d}{dx}f\) all name this number, and this series uses the middle one,
+    because in section II there will be two things to differentiate with respect to
+    and a prime cannot say which.</p>
+    <p>The slider magnifies the picture around the point, keeping the tangent drawn,
+    and the readout gives the gap between the two at the edge of the frame — in units
+    of \(f\), and in pixels, so it is not a matter of eyesight. At ×1 the curve is
+    visibly a curve. At ×10 it still leaves the line by a good fraction of the frame.
+    By ×100 the gap is a few pixels, and by ×1000 it is one. Zoom far enough and the
+    curve <em>is</em> the line: that is what "smooth" means, and it is the thesis of
+    the hour.</p>
+    <p>Worth one more sentence, on the two numbers falling at different rates: halve
+    the window and the gap in \(f\) drops by four, not two — it goes like the square of
+    the step, which is the precise sense in which the tangent is the <em>best</em>
+    line. On screen the same gap only halves, because the picture doubled in size at
+    the same time.</p>
   </aside>
 </section>
 
 <!-- 7 -->
-<section class="slide" data-where="I. The derivative">
-  <h2>The chain rule</h2>
-  <p class="sub">The derivative of a function of a function.</p>
+<section class="slide" data-where="I. One number in">
+  <h2>The slope of a constant</h2>
+  <p class="sub">Nothing changes, so the rate of change is nothing.</p>
   <div class="two wide-left body">
     <div>
       <div class="eq">
-        $$\bigl(f(g(x))\bigr)' = f'\bigl(g(x)\bigr)\cdot g'(x)$$
-        <p class="note">Outer rate, at the inner value, times inner rate.</p>
+        $$\frac{d}{dx}c=0$$
+      </div>
+      <div class="eq bare">
+        $$\frac{f(x+h)-f(x)}{h}=\frac{2-2}{h}=0$$
       </div>
       <ul>
-        <li>\(x\) moves \(u=g(x)\) at rate \(g'\)</li>
-        <li>\(u\) moves \(y=f(u)\) at rate \(f'\)</li>
+        <li>Rise zero, over any run</li>
+        <li>The same answer at every \(x\)</li>
+      </ul>
+    </div>
+    <figure class="demo" data-demo="const">
+      <svg id="fig-const" viewBox="0 0 400 300" role="img"
+           aria-label="Above, the horizontal line f of x equals two with a movable point and a slope triangle of zero rise; below, its slope drawn as the constant zero"></svg>
+      <div class="controls">
+        <div class="row"><label for="ct-x">x</label>
+          <input id="ct-x" type="range" min="-2.2" max="1.4" step="0.05" value="-0.6">
+          <output id="out-ct-x"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-const"></div></div>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Four slides now, from the simplest function upwards, and each one is the
+    difference quotient worked out. This is the first and it takes half a minute.</p>
+    <p>Put the arithmetic on the board with the slide: \(f\) is 2 at \(x\) and 2 at
+    \(x+h\), so the rise is zero, so the quotient is zero, whatever \(h\) was. No
+    limit is needed — it was already zero before \(h\) shrank.</p>
+    <p>Introduce the figure carefully here, because the next three slides reuse it.
+    Upper panel: the function. Lower panel: its slope, drawn as a function of \(x\) in
+    its own right. The dashed line runs down through both, so the dot below sits at
+    the height of the slope up above. For a constant the lower panel is flat at zero,
+    and that is the whole content.</p>
+    <p>Say the sentence the room needs to carry forward: the derivative is not one
+    number, it is a function — a slope for every \(x\). The lower panel is that
+    function. Everything after this slide is a way of working out what it is.</p>
+  </aside>
+</section>
+
+<!-- 8 -->
+<section class="slide" data-where="I. One number in">
+  <h2>The slope of a line</h2>
+  <p class="sub">The same slope at every point.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$\frac{d}{dx}\bigl(kx+m\bigr)=k$$
+      </div>
+      <div class="eq bare">
+        $$\frac{\bigl(k(x+h)+m\bigr)-\bigl(kx+m\bigr)}{h}=\frac{kh}{h}=k$$
+      </div>
+      <ul>
+        <li>\(\frac{d}{dx}x=1\), \(\frac{d}{dx}7x=7\)</li>
+        <li>\(m\) moves the line, not its slope</li>
+      </ul>
+    </div>
+    <figure class="demo" data-demo="line">
+      <svg id="fig-line" viewBox="0 0 400 300" role="img"
+           aria-label="Above, a straight line of adjustable slope with a movable point and a slope triangle; below, its slope drawn as a constant at that value"></svg>
+      <div class="controls">
+        <div class="row"><label for="ln-k">k</label>
+          <input id="ln-k" type="range" min="-1.5" max="2.5" step="0.1" value="1.5">
+          <output id="out-ln-k"></output></div>
+        <div class="row"><label for="ln-x">x</label>
+          <input id="ln-x" type="range" min="-2.2" max="1.4" step="0.05" value="-0.6">
+          <output id="out-ln-x"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-line"></div></div>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The arithmetic, out loud: go up by \(h\) in \(x\) and the value goes up by
+    \(kh\), because that is what the \(k\) does. Divide by \(h\) and the \(h\) cancels,
+    leaving \(k\). The \(m\) appears in both values and subtracts away, which is why
+    shifting a line up does not change its steepness.</p>
+    <p>Two sliders. Move \(x\) first, with \(k\) left alone: the triangle slides along
+    the line and its rise never changes, and the dot in the lower panel travels along
+    a flat line. Then move \(k\): the line tilts and the lower panel steps up and down
+    with it. A line has one slope; it is the number in front of the \(x\).</p>
+    <p>The two cases on the slide are the ones needed later: \(k=1\) gives 1, which is
+    the power rule for \(n=1\), and \(7x\) gives 7, which is the constant-multiple
+    rule two slides on. Both are worth saying aloud as instances of what is on
+    screen.</p>
+    <p>If someone asks about \(k=0\): that is the previous slide, and the lower panel
+    drops onto its axis.</p>
+  </aside>
+</section>
+
+<!-- 9 -->
+<section class="slide" data-where="I. One number in">
+  <h2>The slope of \(x^2\)</h2>
+  <p class="sub">The first function whose slope depends on where you are.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$\frac{d}{dx}x^2=2x$$
+      </div>
+      <div class="eq bare">
+        $$\frac{(x+h)^2-x^2}{h}=\frac{2xh+h^2}{h}=2x+h$$
+      </div>
+      <ul>
+        <li>Now the quotient keeps an \(h\) — and \(h\) shrinks away</li>
+        <li>Slope 2 at \(x=1\), 6 at \(x=3\), flat at the origin</li>
+      </ul>
+    </div>
+    <figure class="demo" data-demo="square">
+      <svg id="fig-square" viewBox="0 0 400 300" role="img"
+           aria-label="Above, the parabola x squared with a movable point and its tangent; below, the line two x, whose height is the slope of the tangent above"></svg>
+      <div class="controls">
+        <div class="row"><label for="sq-x">x</label>
+          <input id="sq-x" type="range" min="-2.2" max="2.2" step="0.05" value="1.2">
+          <output id="out-sq-x"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-square"></div></div>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The first real derivative, and the only limit worth doing by hand in this
+    lecture. Expand \((x+h)^2\) as \(x^2+2xh+h^2\); the \(x^2\) cancels against the
+    one being subtracted; divide the rest by \(h\) and get \(2x+h\). Now say the
+    sentence: the quotient depends on the interval only through that last \(h\), so as
+    the interval shrinks, the answer is \(2x\).</p>
+    <p>Check it numerically, because it is the payoff of the slider two slides back.
+    At \(x=1\): \(h=1\) gives 3, \(h=0.1\) gives 2.1, \(h=0.01\) gives 2.01, and the
+    answer is 2.</p>
+    <p>Then the figure. Slide \(x\) and watch the two panels together: to the left of
+    zero the tangent tilts down and the dot below is under the axis; at zero the
+    tangent is flat and the dot is on the axis; to the right it tilts up and the dot
+    climbs. The lower panel is a straight line through the origin of slope 2 — that
+    is \(2x\), and the room can see it is not a constant any more.</p>
+    <p>Worth naming: the slope at \(x=3\) is 6, which is steeper than the curve ever
+    looks in this frame, because the frame is showing about two units either way.</p>
+  </aside>
+</section>
+
+<!-- 10 -->
+<section class="slide" data-where="I. One number in">
+  <h2>Rule: powers</h2>
+  <p class="sub">The pattern that \(x^2\) started.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$\frac{d}{dx}x^n=n\,x^{n-1}$$
+        <p class="note">Bring the exponent down in front, and take one off it.</p>
+      </div>
+      <div class="eq bare">
+        $$\frac{d}{dx}x=1,\qquad\frac{d}{dx}x^2=2x,\qquad\frac{d}{dx}x^3=3x^2$$
+      </div>
+      <ul>
+        <li>A constant is \(x^0\): the rule gives zero</li>
+      </ul>
+    </div>
+    <figure class="demo" data-demo="power">
+      <svg id="fig-power" viewBox="0 0 400 300" role="img"
+           aria-label="Above, x to the chosen power with a movable point and its tangent; below, the derivative curve, whose height is the slope above"></svg>
+      <div class="controls">
+        <div class="row"><label>f</label>
+          <div class="seg" id="pw-n">
+            <button type="button">x</button>
+            <button type="button">x²</button>
+            <button type="button">x³</button>
+          </div></div>
+        <div class="row"><label for="pw-x">x</label>
+          <input id="pw-x" type="range" min="-1.55" max="1.55" step="0.05" value="1.1">
+          <output id="out-pw-x"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-power"></div></div>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>One rule covering the last two slides and everything polynomial after them.
+    The room has seen \(n=1\) and \(n=2\) done from the quotient; assert the pattern
+    and show it on the buttons rather than proving it.</p>
+    <p>If anyone wants the argument: expand \((x+h)^n\). The first term is \(x^n\) and
+    cancels, the next is \(n x^{n-1}h\), and every term after that carries at least
+    \(h^2\), so divides down to something with an \(h\) still in it and shrinks away.
+    What survives is \(n x^{n-1}\).</p>
+    <p>Work the buttons in order. At \(x^1\) the lower panel is flat at 1 — the
+    previous slide. At \(x^2\) it is a line through the origin. At \(x^3\) it is a
+    parabola that never goes below zero, which says \(x^3\) never falls: check that
+    against the upper panel, which climbs everywhere and is level only at the origin.</p>
+    <p>The \(x^0\) remark is worth ten seconds: any constant is \(x^0\), the rule
+    gives \(0\cdot x^{-1}\), which is zero, and that agrees with the constant slide.
+    Do not dwell on the \(x^{-1}\).</p>
+  </aside>
+</section>
+
+<!-- 11 -->
+<section class="slide" data-where="I. One number in">
+  <h2>Rule: constant multiples</h2>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$\frac{d}{dx}\bigl(c\,f\bigr)=c\,\frac{df}{dx}$$
+      </div>
+      <div class="eq bare">
+        $$\frac{d}{dx}\Bigl(\tfrac14 x^3\Bigr)=\tfrac14\cdot 3x^2=\tfrac34 x^2$$
+      </div>
+      <ul>
+        <li>Stretching a curve vertically stretches its slopes</li>
+        <li>Quarter the height, quarter the slope</li>
+      </ul>
+    </div>
+    <figure>
+      <svg id="fig-scale" viewBox="0 0 400 300" role="img"
+           aria-label="The curve x cubed and the curve x cubed over four, with a tangent drawn on each at the same x, the flatter tangent on the flatter curve"></svg>
+      <figcaption>At \(x=1.5\): slope \(6.75\) becomes slope \(1.69\), a quarter of
+      it.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The quickest of the rules. Multiplying every value by a quarter multiplies every
+    rise by a quarter and leaves every run alone, so it multiplies every quotient by a
+    quarter. Nothing survives the division.</p>
+    <p>The figure is the running example's first piece. Both tangents are drawn at
+    \(x=1.5\): \(3x^2\) there is \(6.75\), and a quarter of that is \(1.6875\). The
+    flatter curve has the flatter tangent, by exactly the factor the curve was squashed
+    by.</p>
+    <p>This is half of what "differentiation is linear" means, in last week's sense of
+    the word: it respects scaling. The next slide is the other half. The \(7x\) from
+    the line slide was this rule with \(f=x\), if anyone wants the connection.</p>
+  </aside>
+</section>
+
+<!-- 12 -->
+<section class="slide" data-where="I. One number in">
+  <h2>Rule: sums</h2>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$\frac{d}{dx}\bigl(f+g\bigr)=\frac{df}{dx}+\frac{dg}{dx}$$
+      </div>
+      <div class="eq bare">
+        $$\frac{d}{dx}\Bigl(\tfrac14x^3-\tfrac34x+1\Bigr)=\tfrac34x^2-\tfrac34$$
+      </div>
+      <p class="claim">That is the derivative of the example function, assembled from
+      the three rules.</p>
+    </div>
+    <figure>
+      <svg id="fig-sum" viewBox="0 0 400 300" role="img"
+           aria-label="Two component curves and their sum, which is the example function, with a dashed vertical at one x through all three"></svg>
+      <figcaption>At \(x=2\) the pieces are \(2\) and \(-0.5\), and \(f\) is their
+      sum, \(1.5\). The slopes add the same way: \(3-0.75=2.25\).</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Add two functions and the rises add, so the quotients add, so the derivatives
+    add. Say it in that order; it is three steps long.</p>
+    <p>The figure is the payoff of the last five slides. The example function is the
+    sum of a cubic piece and a straight piece, drawn separately, and the dashed line
+    at \(x=2\) reads all three off at once: the pieces stand at \(2\) and \(-0.5\), and
+    \(f\) sits at \(1.5\), their sum. The slopes there add the same way: the cubic
+    piece has slope \(3\), the straight piece has slope \(-0.75\) everywhere, and
+    \(f\) has slope \(2.25\). Check it against the formula:
+    \(\tfrac34(4)-\tfrac34=2.25\).</p>
+    <p>Now sanity-check the shape claim from the first slide of the section. The
+    derivative \(\tfrac34x^2-\tfrac34\) is zero at \(x=\pm1\) — the two places where
+    the room said the curve flattens — negative between them, where it falls, and
+    positive outside, where it climbs. The picture and the formula agree.</p>
+    <p>Product and quotient rules exist and are in every textbook. Nothing in the next
+    three lectures differentiates a product of two unknown functions, so they are not
+    taught here. What the series does differentiate, constantly, is a function of a
+    function — two slides on.</p>
+  </aside>
+</section>
+
+<!-- 13 -->
+<section class="slide" data-where="I. One number in">
+  <h2>Rule: the exponential</h2>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$\frac{d}{dx}e^x=e^x$$
+        <p class="note">The function that is its own rate of change.</p>
+      </div>
+      <div class="eq bare">
+        $$\text{at }x=0:\;\text{slope }1\qquad
+          \text{at }x=1:\;\text{slope }e\approx2.72$$
+      </div>
+      <ul>
+        <li>Its slope at every point is its height there</li>
+        <li>Taken as a fact today; \(e\) is the number that makes it true</li>
+      </ul>
+    </div>
+    <figure>
+      <svg id="fig-exp" viewBox="0 0 400 300" role="img"
+           aria-label="The exponential curve with two tangents drawn, each labelled with a slope equal to the height of the curve at that point"></svg>
+      <figcaption>Twice as high, twice as steep.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The odd one out, and the only rule here that is not derived. It is on the slide
+    because lecture 4 needs it: the sigmoid and the softmax are built out of \(e^x\),
+    and differentiating them is differentiating this.</p>
+    <p>The figure is the whole content. The tangent at 0 has slope 1, where the curve
+    has height 1; the tangent at 1 has slope \(e\), where the curve has height \(e\).
+    Wherever the curve is twice as high it is twice as steep, which is what
+    proportional growth means and why this function describes compound interest,
+    populations and radioactive decay.</p>
+    <p>If someone asks where \(e\) comes from: among all the curves \(a^x\), each has a
+    slope proportional to its height, and \(e\approx2.718\) is the base for which the
+    constant of proportionality is exactly 1. That is the definition of \(e\), and
+    there is nothing more to it than a choice of convenient base.</p>
+  </aside>
+</section>
+
+<!-- 14 -->
+<section class="slide" data-where="I. One number in">
+  <h2>The chain rule</h2>
+  <p class="sub">One function fed into another.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$u=g(x),\quad y=f(u)\;\Longrightarrow\;
+        \frac{dy}{dx}=\underbrace{\frac{df}{du}}_{\text{at }u=g(x)}\cdot\;\frac{dg}{dx}$$
+        <p class="note">The outer rate, at the value the inner one hands it, times the
+        inner rate.</p>
+      </div>
+      <div class="eq bare">
+        $$u=\tfrac12x^2,\;\;y=\tfrac12u^2\;\Longrightarrow\;
+        \frac{dy}{dx}=u\cdot x=\tfrac12x^3$$
+      </div>
+      <ul>
+        <li>Check: \(y=\tfrac18x^4\), and the power rule gives \(\tfrac12x^3\)</li>
       </ul>
       <p class="claim">Rates compose by multiplying.</p>
     </div>
     <figure class="demo" data-demo="chain">
-      <svg id="fig-chain" viewBox="0 0 400 230" role="img"
-           aria-label="Three number lines for x, u equals g of x, and y equals f of u, with a small step in x carried through to steps in u and y"></svg>
+      <svg id="fig-chain" viewBox="0 0 400 300" role="img"
+           aria-label="The inner function and the whole composite function drawn on the same axes against x, each with its tangent at a movable point"></svg>
       <div class="controls">
         <div class="row"><label for="ch-x">x</label>
-          <input id="ch-x" type="range" min="0.2" max="1.9" step="0.05" value="1">
+          <input id="ch-x" type="range" min="-2.2" max="2.2" step="0.05" value="1.5">
           <output id="out-ch-x"></output></div>
       </div>
       <div class="readout"><div class="note" id="note-chain"></div></div>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>The second load-bearing slide, and the one lecture 4 stands on entirely. The
-    figure is \(g(x)=x^2\), \(f(u)=\sin u\), so \(y=\sin(x^2)\). A small step in
-    \(x\) (red, top line) lands as a step in \(u\) that is \(g'(x)=2x\) times as long,
-    and that lands as a step in \(y\) that is \(f'(u)=\cos u\) times as long again.
-    Two stretches in a row: multiply.</p>
-    <p>Read the numbers off the slider at \(x=1\): \(u=1\), \(g'=2\),
-    \(f'=\cos 1\approx0.54\), so \(dy/dx\approx1.08\). Slide \(x\) toward \(1.25\):
-    \(u=1.5625\), \(\cos u\) is small, and the bottom step almost vanishes though the
-    middle one is wider than before. Around \(x=1.77\), \(u\approx\pi\) and the
-    bottom step reverses.</p>
-    <p>The trap, worth naming: \(f'\) is evaluated at \(g(x)\), not at \(x\). It is
-    the rate of the outer function at the value it actually receives.</p>
+    <p>The second load-bearing slide, and the one lecture 4 stands on entirely. Set it
+    up as a two-stage machine before writing anything: \(x\) goes in, the inner
+    function turns it into \(u\), and the outer function turns that into \(y\). The
+    question is how fast \(y\) moves when \(x\) does, and the answer is the two rates
+    multiplied.</p>
+    <p>The example is built so that both rates come from the power rule and the answer
+    can be checked without the rule at all. Inner: \(u=\tfrac12x^2\), so
+    \(\frac{dg}{dx}=x\). Outer: \(y=\tfrac12u^2\), so \(\frac{df}{du}=u\). Multiply:
+    \(u\cdot x\), and \(u\) is \(\tfrac12x^2\), so the answer is \(\tfrac12x^3\). Then
+    the check that settles it for the room: substitute first, \(y=\tfrac12(\tfrac12
+    x^2)^2=\tfrac18x^4\), and the power rule gives \(\tfrac12x^3\). Same answer, two
+    routes.</p>
+    <p>Both curves are drawn against \(x\) on the same axes: blue is the inner
+    function, red is the whole thing. Each carries its tangent, so both slopes are on
+    screen at once. At \(x=1\) the inner rate is 1 and the outer rate is \(\tfrac12\),
+    so the red tangent is <em>flatter</em> than the blue one — a rate of less than one
+    shrinks what comes through. At \(x=2\) both rates are 2, red's slope is 4 against
+    blue's 2, and the composite has overtaken the function inside it. That is the whole slide: the factors multiply, and neither one
+    alone tells you the answer.</p>
+    <p>The trap, worth naming: \(\frac{df}{du}\) is evaluated at \(u\), not at \(x\).
+    At \(x=2\) it is \(u=2\), not 2 because \(x=2\); the two agree here by accident, so
+    pick \(x=1.5\), where \(u=1.125\), and read the readout.</p>
+    <p>Many books write this as \(\frac{dy}{dx}=\frac{dy}{du}\frac{du}{dx}\), where the
+    \(du\) looks as if it cancels. Mention it, because they will see it, and say what
+    it is: a memory aid that happens to work, not the reason the rule is true.</p>
     <p>Forward reference, said plainly: a neural network is a chain of a dozen
-    functions, and its derivative is a dozen factors multiplied. Lecture 4 is about
-    the order to multiply them in.</p>
-  </aside>
-</section>
-
-<!-- 8 -->
-<section class="slide" data-where="II. Local behaviour">
-  <h2>Stationary points</h2>
-  <p class="sub">Where the tangent is flat.</p>
-  <div class="two wide-left body">
-    <div>
-      <div class="eq bare">$$f'(x)=0$$</div>
-      <ul>
-        <li>Every smooth minimum or maximum is one</li>
-        <li>Not every one is a minimum or maximum</li>
-        <li>What an optimizer looks for</li>
-      </ul>
-    </div>
-    <figure>
-      <svg id="fig-stationary" viewBox="0 0 400 300" role="img"
-           aria-label="A cubic curve with horizontal tangent segments at its local maximum and local minimum"></svg>
-      <figcaption>Two stationary points: a local maximum and a local minimum.</figcaption>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>If the slope at a smooth minimum were nonzero, the linear approximation
-    would say: step a little against the slope and go lower. So it cannot be a
-    minimum. That is the entire argument, and it runs the same way for a maximum.</p>
-    <p>The converse fails. \(x^3\) is flat at zero and keeps rising; a flat tangent
-    alone does not say which of the three cases you are in. The next slide says how
-    to tell.</p>
-    <p>The figure is \(f(x)=\tfrac14(x^3-3x)+1\), so \(f'(x)=\tfrac34(x^2-1)\),
-    zero at \(x=\pm1\). Values: \(f(-1)=1.5\), \(f(1)=0.5\).</p>
-    <p>The third bullet is the coordination point with lecture 3: it will not
-    define a minimum by this condition, it will build algorithms and find that this
-    is where they stop. "Local" is the word to plant now — these are the lowest
-    points nearby, and nothing here says anything about the whole line.</p>
-  </aside>
-</section>
-
-<!-- 9 -->
-<section class="slide" data-where="II. Local behaviour">
-  <h2>The second derivative</h2>
-  <p class="sub">The rate at which the slope changes.</p>
-  <div class="two wide-left body">
-    <div>
-      <div class="eq bare">$$f''=(f')'$$</div>
-      <ul>
-        <li>\(f''>0\): slope increasing, curve bends upward</li>
-        <li>\(f''<0\): slope decreasing, curve bends downward</li>
-        <li>At a stationary point: \(f''>0\) means a minimum, \(f''<0\) a maximum</li>
-      </ul>
-    </div>
-    <figure>
-      <svg id="fig-second" viewBox="0 0 400 300" role="img"
-           aria-label="The same cubic, its downward-bending left half and upward-bending right half labelled, the stationary points marked as maximum and minimum"></svg>
-      <figcaption>Left of zero \(f''<0\); right of zero \(f''>0\).</figcaption>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>Differentiate again. For the running curve, \(f'=\tfrac34(x^2-1)\), so
-    \(f''=\tfrac32 x\): negative on the left, positive on the right, zero at the
-    origin where the bend changes direction.</p>
-    <p>At \(x=-1\), \(f''=-1.5\): the slope is falling through zero, from positive to
-    negative, which is what a hilltop is. At \(x=1\), \(f''=1.5\): the slope rises
-    through zero, a valley floor. That is the second-derivative test, and it is
-    nothing more than reading which way the slope is going.</p>
-    <p>Say the word <em>curvature</em> once. The larger \(|f''|\), the tighter the
-    bend, the sooner the tangent line stops being a good approximation. The next
-    slide fixes that.</p>
-    <p>If \(f''=0\) at a stationary point the test is silent — \(x^3\) again. Name it
-    and move on.</p>
-  </aside>
-</section>
-
-<!-- 10 -->
-<section class="slide" data-where="II. Local behaviour">
-  <h2>The quadratic approximation</h2>
-  <div class="two wide-left body">
-    <div>
-      <div class="eq">
-        $$f(x+h)\approx f(x)+f'(x)\,h+\tfrac12 f''(x)\,h^2$$
-        <p class="note">The tangent line, plus the curvature.</p>
-      </div>
-      <ul>
-        <li>Error now shrinks like \(h^3\)</li>
-        <li>A parabola: the simplest thing with a minimum</li>
-      </ul>
-      <p class="claim">Add curvature to the line and the fit survives a step
-      further out.</p>
-    </div>
-    <figure class="demo" data-demo="quad">
-      <svg id="fig-quad" viewBox="0 0 400 300" role="img"
-           aria-label="A curve with, at a movable point, its tangent line and its best-fitting parabola"></svg>
-      <div class="controls">
-        <div class="row"><label for="qd-x">x</label>
-          <input id="qd-x" type="range" min="-2" max="2.2" step="0.1" value="1.6">
-          <output id="out-qd-x"></output></div>
-      </div>
-      <div class="readout"><div class="note" id="note-quad"></div></div>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>Blue is the tangent from the linear-approximation slide; green is the same
-    thing with one more term. Slide \(x\) about. Near the point the two are
-    indistinguishable from the curve. A step away, the line has left and the parabola
-    is still there. Where the curve is nearly straight, near \(x=0\), the parabola
-    flattens into the line; where it bends hard, the parabola bends with it.</p>
-    <p>The half is not decoration. Differentiate the right-hand side twice in \(h\)
-    and you get \(f''(x)\), as you must. The linear term was already \(f'(x)h\), and
-    the quadratic term is chosen so the second derivatives agree too.</p>
-    <p>This is as far as the lecture expands. Taylor's theorem continues the pattern
-    — \(\tfrac16 f''' h^3\) and on — and the series does not need it. What lecture 3
-    needs is exactly this: Newton's method replaces \(f\) by this parabola and jumps
-    to the parabola's minimum. Where the green curve bottoms out is where Newton
-    would step to.</p>
-  </aside>
-</section>
-
-<!-- 11 -->
-<section class="slide" data-where="III. Several variables">
-  <h2>Functions of several variables</h2>
-  <p class="sub">A vector in, a number out.</p>
-  <div class="two wide-left body">
-    <div>
-      <div class="eq bare">$$f:\mathbb R^n\to\mathbb R,\qquad f(x,y)=x^2+2y^2$$</div>
-      <ul>
-        <li>A surface over the plane, or</li>
-        <li>Its contour lines: where \(f\) is constant</li>
-        <li>Close contours mean steep ground</li>
-      </ul>
-    </div>
-    <figure>
-      <svg id="fig-contours" viewBox="0 0 400 300" role="img"
-           aria-label="Concentric ellipses, the contour lines of x squared plus two y squared, with one point marked and its value"></svg>
-      <figcaption>Contours of \(f(x,y)=x^2+2y^2\). The point is at height
-      \(f(1.5,0.8)=3.53\).</figcaption>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>Everything in section I had one number going in. From here a vector goes in
-    and a number comes out — a loss, a cost, a height. The picture is a landscape,
-    and the lecture draws it from above, as a map with contour lines, because that is
-    the picture that survives into more than two dimensions in the mind's eye.</p>
-    <p>The running example is a bowl, stretched: \(x^2+2y^2\). The contours are
-    ellipses, twice as tight in \(y\) as in \(x\), because \(y\) is charged double.
-    Walking in \(y\) climbs faster. This same bowl is the example lecture 3 uses for
-    steepest descent, so it is worth getting familiar with.</p>
-    <p>The point at \((1.5, 0.8)\): \(2.25 + 2\cdot0.64 = 3.53\). Every figure in this
-    section stands at that point.</p>
-  </aside>
-</section>
-
-<!-- 12 -->
-<section class="slide" data-where="III. Several variables">
-  <h2>Partial derivatives</h2>
-  <p class="sub">Vary one input, hold the others still.</p>
-  <div class="two body">
-    <div>
-      <div class="eq">
-        $$\frac{\partial f}{\partial x}=\lim_{h\to0}\frac{f(x+h,\,y)-f(x,\,y)}{h}$$
-        <p class="note">An ordinary derivative along one axis.</p>
-      </div>
-      <ul>
-        <li>One per input</li>
-        <li>For \(x^2+2y^2\): \(\;\partial f/\partial x=2x,\quad\partial f/\partial y=4y\)</li>
-      </ul>
-    </div>
-    <div class="panels">
-      <figure>
-        <svg id="fig-slices-a" viewBox="0 0 250 190" role="img"
-             aria-label="The contour map with a horizontal and a vertical line through the point, the two slices along which the partial derivatives are taken"></svg>
-        <figcaption>Two slices through the point.</figcaption>
-      </figure>
-      <figure>
-        <svg id="fig-slices-b" viewBox="0 0 250 190" role="img"
-             aria-label="The two slices drawn as ordinary curves, each with its tangent at the point"></svg>
-        <figcaption>Each slice is a one-variable curve.</figcaption>
-      </figure>
-    </div>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>Cut the landscape with a vertical plane along the \(x\) direction. The cut is
-    an ordinary curve, and it has an ordinary slope: that is \(\partial f/\partial x\).
-    Cut along \(y\) and get the other one. The curly \(\partial\) is a reminder that
-    something is being held fixed; the arithmetic is section I with \(y\) treated
-    as a constant.</p>
-    <p>At \((1.5, 0.8)\): the \(x\)-slice is \(x^2+1.28\), slope \(2x=3\). The
-    \(y\)-slice is \(2.25+2y^2\), slope \(4y=3.2\). The right-hand panel shows both
-    slices with their tangents; the \(y\) one is the steeper.</p>
-    <p>Two numbers, one for each axis. The next slide puts them together into one
-    arrow — and then says that the arrow, not the pair of numbers, is the real
-    object, which is exactly the move last week made with vectors and coordinates.</p>
-  </aside>
-</section>
-
-<!-- 13 -->
-<section class="slide" data-where="III. Several variables">
-  <h2>The gradient</h2>
-  <div class="two wide-left body">
-    <div>
-      <div class="eq">
-        $$\nabla f=\begin{pmatrix}\partial f/\partial x\\ \partial f/\partial y\end{pmatrix}$$
-        <p class="note">Its direction: steepest ascent. Its length: how steep.</p>
-      </div>
-      <ul>
-        <li>Perpendicular to the contour through the point</li>
-        <li>\(f(x+h)\approx f(x)+\nabla f\cdot h\) — the linear approximation again</li>
-      </ul>
-      <p class="claim">The gradient points straight uphill.</p>
-    </div>
-    <figure class="demo" data-demo="grad">
-      <svg id="fig-grad" viewBox="0 0 400 300" role="img"
-           aria-label="The contour map with a draggable point, the gradient arrow at that point, and the tangent to the contour there"></svg>
-      <div class="readout"><div class="note" id="note-grad"></div></div>
-      <p class="hint">Drag the point. The arrow stays perpendicular to the contour.</p>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>The third load-bearing slide, and the object lecture 3 is built from. Drag the
-    point around and say what does not change: the red arrow always crosses the
-    contour at a right angle, always points to higher ground, and gets longer where
-    the contours crowd together.</p>
-    <p>Definition first, geometrically: among all directions to step, one climbs
-    fastest, and the gradient is the arrow in that direction whose length is that
-    fastest rate. Coordinates second: in a Cartesian frame, its components are the
-    partial derivatives. That is a theorem, not a definition, and the reason is the
-    linear approximation. Near the point, \(f\) is a plane, \(f(x)+\nabla f\cdot h\).
-    Along the contour that plane is flat, so the contour direction has zero inner
-    product with \(\nabla f\) — perpendicular, in last week's sense. And the inner
-    product is largest when \(h\) points along \(\nabla f\).</p>
-    <p>Drag to \((1.5, 0.8)\): \(\nabla f=(3, 3.2)\), length \(\sqrt{9+10.24}\approx4.39\).
-    Note it does not point at the origin, where the minimum is: it points at the
-    steepest way up <em>here</em>. The bowl is not round, and that gap between
-    "steepest" and "toward the bottom" is the zig-zag lecture 3 spends a slide on.</p>
-    <p>The arrow is drawn at a third of its true length so it fits the figure.</p>
-  </aside>
-</section>
-
-<!-- 14 -->
-<section class="slide" data-where="III. Several variables">
-  <h2>Directional derivatives</h2>
-  <p class="sub">The rate of climb in a chosen direction.</p>
-  <div class="two wide-left body">
-    <div>
-      <div class="eq">
-        $$D_d f=\nabla f\cdot d,\qquad \lVert d\rVert=1$$
-      </div>
-      <ul>
-        <li>Largest along \(\nabla f\), zero along the contour</li>
-        <li>Negative: that way is downhill</li>
-      </ul>
-      <p class="claim">Every direction's slope is one inner product with the gradient.</p>
-    </div>
-    <figure class="demo" data-demo="dir">
-      <svg id="fig-dir" viewBox="0 0 400 300" role="img"
-           aria-label="The contour map at a fixed point, with the gradient arrow and a unit direction arrow at an adjustable angle"></svg>
-      <div class="controls">
-        <div class="row"><label for="dir-a">angle</label>
-          <input id="dir-a" type="range" min="0" max="360" step="1" value="60">
-          <output id="out-dir-a"></output></div>
-      </div>
-      <div class="readout"><div class="note" id="note-dir"></div></div>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>The gradient is one arrow, but you may want to walk any way you please. The
-    slope in that direction is the inner product of the direction with the gradient —
-    the inner-product slide from last week, doing its first real job. Turn the blue
-    arrow with the slider and watch the number.</p>
-    <p>At \(46.8^\circ\) it is aligned with \(\nabla f\) and reads \(4.39\), the full
-    length. Ninety degrees off, at about \(137^\circ\) or \(317^\circ\), it reads zero:
-    that is walking along the contour, neither up nor down. Past that it goes
-    negative, and at \(227^\circ\), straight against the gradient, it reads
-    \(-4.39\): the fastest way down.</p>
-    <p>The formula is the linear approximation with \(h=t\,d\): \(f(x+td)\approx f(x)
-    + t\,\nabla f\cdot d\), so the rate per unit \(t\) is \(\nabla f\cdot d\). With
-    \(\lVert d\rVert=1\) this is \(\lVert\nabla f\rVert\cos\theta\).</p>
-    <p>Forward reference to plant: lecture 3 calls any \(d\) with a negative reading a
-    <em>descent direction</em>, and every method in that lecture is "pick one, step
-    along it".</p>
+    functions, and its derivative is a dozen factors multiplied. Lecture 4 is about the
+    order to multiply them in.</p>
   </aside>
 </section>
 
 <!-- 15 -->
-<section class="slide" data-where="III. Several variables">
-  <h2>The Jacobian</h2>
-  <p class="sub">A vector in, a vector out.</p>
-  <div class="two body">
+<section class="slide" data-where="I. One number in">
+  <h2>The second derivative</h2>
+  <p class="sub">The slope of the slope.</p>
+  <div class="two wide-left body">
     <div>
       <div class="eq">
-        $$J_{ij}=\frac{\partial f_i}{\partial x_j},\qquad f(x+h)\approx f(x)+J\,h$$
-        <p class="note">Row \(i\) is the gradient of output \(i\). Column \(j\) is
-        where a step in \(x_j\) goes.</p>
+        $$\frac{d^2f}{dx^2}=\frac{d}{dx}\frac{df}{dx}$$
+        <p class="note">The derivative is a function, so it has a derivative too.</p>
+      </div>
+      <div class="eq bare">
+        $$\frac{df}{dx}=\tfrac34x^2-\tfrac34\;\Longrightarrow\;
+        \frac{d^2f}{dx^2}=\tfrac32x$$
+      </div>
+      <ul>
+        <li>Positive: the curve bends upward</li>
+        <li>Negative: it bends downward</li>
+      </ul>
+      <p class="claim">The first derivative is the tilt. The second is the bend.</p>
+    </div>
+    <figure class="demo" data-demo="second">
+      <svg id="fig-second" viewBox="0 0 400 300" role="img"
+           aria-label="Three stacked panels against the same x: the example function, its slope, and the slope of that, with a marker running down through all three"></svg>
+      <div class="controls">
+        <div class="row"><label for="sd-x">x</label>
+          <input id="sd-x" type="range" min="-2.3" max="2.3" step="0.05" value="-1.6">
+          <output id="out-sd-x"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-second"></div></div>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Three panels now, each one the slope of the one above it. Take the marker for a
+    slow walk from left to right and read all three at once.</p>
+    <p>Start at \(x=-1.6\). Top: the curve is climbing. Middle: the dot is above the
+    axis, which says the same thing. Bottom: the dot is below the axis, and that is the
+    new information — the climb is easing off. Keep going. At \(x=-1\) the middle dot
+    touches zero and the top curve is level. Past it the middle dot goes negative and
+    the curve falls, while the bottom dot is still negative: the fall is getting
+    steeper. At the origin the bottom dot crosses zero, and from there the fall eases,
+    flattens at \(x=1\), and turns into a climb that keeps getting steeper.</p>
+    <p>So: the middle panel says which way the curve is going, and the bottom panel
+    says whether that is increasing or decreasing. The arithmetic is one line —
+    differentiate \(\tfrac34x^2-\tfrac34\) by the power and constant rules and get
+    \(\tfrac32x\) — and the bottom panel is that straight line.</p>
+    <p>Say the word <em>curvature</em> once, and do not labour the interpretation: the
+    bigger the bottom number, the tighter the bend, and the sooner the tangent line
+    stops being a good approximation. That is the gap the zoom slider measured.</p>
+    <p>Forward reference, and do not do it here: lecture 3 uses the sign of this
+    number at a level point to tell a valley floor from a hilltop, and its
+    several-variable version, the Hessian, to choose step lengths.</p>
+  </aside>
+</section>
+
+<!-- 16 -->
+<section class="slide" data-where="II. Vector in">
+  <h2>A function with vector input</h2>
+  <p class="sub">Several numbers in, one number out.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$f:\mathbb R^n\to\mathbb R$$
+        <p class="note">For the rest of this section: two numbers in, one out.</p>
+      </div>
+      <div class="eq bare">$$f(x,y)=x^2+2y^2$$</div>
+      <ul>
+        <li>\(f(1.5,\,0.8)=2.25+1.28=3.53\)</li>
+        <li>A height above every point of the plane: a landscape</li>
+      </ul>
+    </div>
+    <figure class="demo" data-demo="surface">
+      <svg id="fig-surface" viewBox="0 0 400 300" role="img"
+           aria-label="The surface of x squared plus two y squared drawn as a rotatable wireframe bowl, with level rings and one marked point above its place in the base plane"></svg>
+      <div class="readout"><div class="note" id="note-surface"></div></div>
+      <p class="hint">Drag to rotate.</p>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Say the change of shape explicitly: section I had one number going in. From here
+    two go in — a point of the plane — and one comes out, a height above that point.
+    Everything in this section is a way of asking "which way is uphill, and how
+    steeply".</p>
+    <p>This is the shape that matters most in the series, and worth a sentence of
+    motivation: a loss, a cost, an error, a score is always a single number produced
+    from many inputs, and the whole of lecture 3 is about walking downhill on one.</p>
+    <p>Work the example arithmetic on the figure. The dashed lines in the base plane
+    pick out \((1.5,\,0.8)\) — that is the input, two numbers. Go straight up from
+    there to the surface and the height is \(2.25+1.28=3.53\) — that is the output, one
+    number. Every figure in this section stands at that point.</p>
+    <p>Rotate it. Push the view down towards the horizon and it is two parabolas
+    crossed; lift it towards straight down and the rings flatten into the map of level
+    curves that the gradient slide uses. Do that lift now, so the word "level curve"
+    lands on something they have watched appear.</p>
+    <p>Why the bowl is stretched: \(y\) is charged double, so walking in \(y\) climbs
+    faster and the rings are tighter that way. A round bowl would hide every
+    interesting thing in this section, and lecture 3 uses exactly this stretch for its
+    zig-zag slide.</p>
+  </aside>
+</section>
+
+<!-- 17 -->
+<section class="slide" data-where="II. Vector in">
+  <h2>Partial derivatives</h2>
+  <p class="sub">Hold every input still but one, and differentiate as before.</p>
+  <div class="body">
+    <div class="panels">
+      <div>
+        <h3>Hold \(y=0.8\)</h3>
+        <div class="eq bare">
+          $$\begin{aligned}
+          f(x,\,0.8)&=x^2+2(0.8)^2=x^2+1.28\\[6pt]
+          \frac{\partial f}{\partial x}&=2x+0=2x\\[4pt]
+          &=3\quad\text{at }x=1.5
+          \end{aligned}$$
+        </div>
+      </div>
+      <div>
+        <h3>Hold \(x=1.5\)</h3>
+        <div class="eq bare">
+          $$\begin{aligned}
+          f(1.5,\,y)&=(1.5)^2+2y^2=2.25+2y^2\\[6pt]
+          \frac{\partial f}{\partial y}&=0+4y=4y\\[4pt]
+          &=3.2\quad\text{at }y=0.8
+          \end{aligned}$$
+        </div>
+      </div>
+    </div>
+    <p class="claim">A partial derivative is an ordinary derivative, with the other
+    inputs frozen.</p>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>No figure on purpose. Do the arithmetic slowly, in both columns, because this is
+    the whole of the idea and it is easier than it looks.</p>
+    <p>Left column. Freeze \(y\) at \(0.8\). Then \(2y^2\) is \(2\times0.64\), which is
+    \(1.28\) — a number, not a variable. So the function of the one remaining input is
+    \(x^2+1.28\), which is a section I function: a square plus a constant. Its
+    derivative is \(2x\) by the power rule, plus zero for the constant, by the slide on
+    constants. At \(x=1.5\) that is 3.</p>
+    <p>Right column, the same move with the roles swapped. Freeze \(x\) at \(1.5\) and
+    \(x^2\) becomes \(2.25\), a constant that differentiates away, leaving \(4y\) from
+    \(2y^2\) by the power and constant-multiple rules. At \(y=0.8\) that is \(3.2\).</p>
+    <p>Then the notation, which is the only new thing here: \(\partial\) instead of
+    \(d\), and it means nothing more than "there were other inputs, and they were held
+    still". One partial derivative per input, so two here.</p>
+    <p>Say what the two numbers are not: they are not the slope of the surface. They
+    are the slopes along the two axis directions, and 3 against \(3.2\) already says
+    the \(y\) direction is the steeper of the two. The gradient slide puts them
+    together into one object and answers what the slope of the surface means.</p>
+  </aside>
+</section>
+
+<!-- 18 -->
+<section class="slide" data-where="II. Vector in">
+  <h2>One slice at a time</h2>
+  <p class="sub">Each slice is a curve from section I.</p>
+  <div class="two wide-right body">
+    <div>
+      <div class="eq">
+        $$\frac{\partial f}{\partial x}=\lim_{h\to0}\frac{f(x+h,\,y)-f(x,\,y)}{h}$$
+        <p class="note">The definition from section I, with \(y\) left alone.</p>
+      </div>
+      <ul>
+        <li>Cut the surface along one axis: an ordinary curve</li>
+        <li>At \((1.5,\,0.8)\): slope 3 along \(x\), \(3.2\) along \(y\)</li>
+      </ul>
+    </div>
+    <div class="panels">
+      <figure>
+        <svg id="fig-cuts" viewBox="0 0 250 200" role="img"
+             aria-label="The bowl surface with two cuts through the marked point, one along each axis direction, and the tangent to each cut drawn"></svg>
+        <figcaption>Two cuts through the point, one per axis.</figcaption>
+      </figure>
+      <figure>
+        <svg id="fig-slices" viewBox="0 0 250 200" role="img"
+             aria-label="The two cuts drawn flat as ordinary one-variable curves against the displacement from the point, each with its tangent"></svg>
+        <figcaption>The same two cuts, flattened out.</figcaption>
+      </figure>
+    </div>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The previous slide did the arithmetic; this one says what it was doing. Cut the
+    landscape with a vertical plane along the \(x\) direction. The cut is an ordinary
+    curve — one number in, one number out — and it has an ordinary slope. That slope is
+    \(\frac{\partial f}{\partial x}\). Cut along \(y\) and get the other one.</p>
+    <p>The definition on the slide is the one from the derivative slide with a second
+    input sitting in it untouched. Point at the \(y\) in both terms: it is the same
+    \(y\) in each, so it contributes nothing to the difference. That is the frozen
+    input, written down.</p>
+    <p>Left panel: the two cuts on the surface, each with its tangent, in red for the
+    \(x\) direction and green for \(y\). Right panel: the same two curves drawn flat,
+    against the distance walked from the point. The green one is visibly the steeper,
+    which is the \(3.2\) against 3 from the previous slide.</p>
+    <p>If asked why the cuts are drawn through a point off-centre rather than through
+    the bottom of the bowl: because at the bottom both slopes are zero and there would
+    be nothing to see. Lecture 3 is about getting there.</p>
+  </aside>
+</section>
+
+<!-- 19 -->
+<section class="slide" data-where="II. Vector in">
+  <h2>The gradient</h2>
+  <p class="sub">The partial derivatives, collected in one row.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$\nabla f=\begin{pmatrix}\dfrac{\partial f}{\partial x} &
+          \dfrac{\partial f}{\partial y}\end{pmatrix}$$
+        <p class="note">A row, so that \(\nabla f\,h\) is a matrix times a step.</p>
+      </div>
+      <div class="eq bare">
+        $$x^2+2y^2:\quad\nabla f=\begin{pmatrix}2x & 4y\end{pmatrix}$$
+      </div>
+      <ul>
+        <li>It points the way that makes \(f\) grow fastest</li>
+        <li>At right angles to the level curve through the point</li>
+      </ul>
+      <p class="claim">The gradient is an arrow in the input plane, not on the
+      surface.</p>
+    </div>
+    <figure class="demo" data-demo="grad">
+      <svg id="fig-grad" viewBox="0 0 400 300" role="img"
+           aria-label="The bowl surface with a movable point, the level curve through it drawn in the base plane, and the gradient as an arrow in the base plane at right angles to that curve"></svg>
+      <div class="controls">
+        <div class="row"><label for="gr-x">x</label>
+          <input id="gr-x" type="range" min="-1.7" max="1.7" step="0.05" value="1.5">
+          <output id="out-gr-x"></output></div>
+        <div class="row"><label for="gr-y">y</label>
+          <input id="gr-y" type="range" min="-1.1" max="1.1" step="0.05" value="0.8">
+          <output id="out-gr-y"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-grad"></div></div>
+      <p class="hint">Drag to rotate.</p>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The third load-bearing slide, and the object lecture 3 is built from. The two
+    numbers from the worked slide, written side by side, are the gradient — and then
+    the claim that they are the coordinates of something geometric.</p>
+    <p>Where it lives is the thing people get wrong, so the figure puts it in the base
+    plane: the red arrow lies flat, under the surface, because it is a direction to
+    walk in, and you walk in the input plane. Its length says how fast the height
+    climbs when you do. Nothing about it points out of the plane.</p>
+    <p>Move the point with the sliders and say what does not change: the arrow always
+    crosses the level curve at a right angle, and it always points to higher ground.
+    The faint vertical at its tip is the proof of the second half — the readout gives
+    the height there against the height at the point, and it is always the larger. Then
+    tilt the view towards straight down, where the right angle is a right angle on
+    screen rather than a projected one, and say that this flattened view is the contour
+    map every optimization paper draws.</p>
+    <p>On the arrow's length: it grows with \(\lVert\nabla f\rVert\) until it would
+    leave the frame, and then stops. The readout carries the true length, and it is
+    worth watching as the point moves out towards the steep wall of the bowl.</p>
+    <p>The reason for the right angle, in one breath: along the level curve the height
+    does not change, so that direction contributes nothing, so it has zero product with
+    the gradient — and zero product means perpendicular, in last week's sense.</p>
+    <p>Read it at \((1.5,\,0.8)\): \(\nabla f=(3,\;3.2)\), length
+    \(\sqrt{9+10.24}\approx4.39\). Note it does not point at the origin, where the
+    bottom of the bowl is. It points at the steepest way up <em>here</em>, and that gap
+    between "steepest" and "towards the bottom" is the zig-zag lecture 3 spends a slide
+    on.</p>
+    <p>On the row: the gradient is written lying down because that is the shape that
+    multiplies a step vector, and because on the Jacobian slide it turns out to be a
+    Jacobian with one row. The arrow in the figure is that row stood up; outside of
+    matrix products nobody minds. The arrow is drawn at a third of its true length so
+    it fits the frame.</p>
+  </aside>
+</section>
+
+<!-- 20 -->
+<section class="slide" data-where="II. Vector in">
+  <h2>The Hessian</h2>
+  <p class="sub">All the second derivatives, in a matrix.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$H_{ij}=\frac{\partial^2 f}{\partial x_i\,\partial x_j}$$
+        <p class="note">Differentiate each partial derivative in each input again.</p>
+      </div>
+      <div class="eq bare">
+        $$x^2+2y^2:\quad H=\begin{pmatrix}2&0\\0&4\end{pmatrix}$$
+      </div>
+      <ul>
+        <li>Symmetric: the order of the two derivatives does not matter</li>
+        <li>The diagonal is the bend along each axis</li>
+      </ul>
+      <p class="claim">The Hessian is the bend of the landscape, in every direction at
+      once.</p>
+    </div>
+    <figure class="demo" data-demo="hess">
+      <svg id="fig-hess" viewBox="0 0 400 300" role="img"
+           aria-label="The bowl surface cut along both axes through its lowest point, the two cuts drawn as parabolas of different tightness and labelled with their bends"></svg>
+      <div class="readout"><div class="note" id="note-hess"></div></div>
+      <p class="hint">Drag to rotate.</p>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The second derivative of section I, with a vector going in. There is one for
+    each pair of inputs, and they fit in a square matrix.</p>
+    <p>Do the four entries out loud. \(\frac{\partial f}{\partial x}=2x\): differentiate
+    in \(x\) again and get 2; differentiate it in \(y\) and get zero, because \(2x\)
+    does not mention \(y\). Likewise \(4y\) gives 4 in \(y\) and 0 in \(x\). Twos and
+    fours on the diagonal, zeros off it, and the same at every point of the plane,
+    because this bowl bends the same everywhere.</p>
+    <p>The figure cuts the bowl along both axes through its lowest point, which is
+    where the two bends are easiest to compare. The red cut is \(z=x^2\) and the green
+    one is \(z=2y^2\): same shape, one twice as tight as the other. That is the 2 and
+    the 4, and the stiff direction is the tight one.</p>
+    <p>Those two numbers are the eigenvalues of \(H\), from last week's eigenvalues
+    slide, and the two cut directions are its eigenvectors. For a bowl tilted off the
+    axes they would not lie along the axes, but they would still be the stiff and slack
+    directions. The off-diagonal zeros are what makes this bowl easy: the two
+    coordinates do not interfere. A nonzero corner entry means a valley running
+    diagonally, and that is the hard case.</p>
+    <p>On shapes, if anyone asks how a matrix can belong to a function with one output:
+    the gradient of \(f\) is a function that takes a point of the plane and returns a
+    row of two numbers — a vector in, a vector out, which is the next section. The
+    Hessian is that function's Jacobian, which is why it is square. Park it until the
+    Jacobian slide, where the shapes get stated properly.</p>
+    <p>Two forward references, both for lecture 3. Newton's method needs the Hessian,
+    because it models \(f\) near a point as a bowl of its own —
+    \(f(x)+\nabla f\,h+\tfrac12h^{\mathsf T}Hh\) — and jumps to that model's bottom.
+    And the ratio of the largest bend to the smallest, here 2, is the <em>condition
+    number</em>, which decides how badly steepest descent zig-zags.</p>
+  </aside>
+</section>
+
+<!-- 21 -->
+<section class="slide" data-where="III. Vector out">
+  <h2>A function with vector output</h2>
+  <p class="sub">Several numbers in, several numbers out.</p>
+  <div class="two wide-right body">
+    <div>
+      <div class="eq">
+        $$f:\mathbb R^n\to\mathbb R^m$$
+        <p class="note">\(m\) ordinary functions of the same inputs, stacked in a
+        column.</p>
+      </div>
+      <div class="eq bare">
+        $$f(x,y)=\begin{pmatrix}x+\tfrac14y^2\\[2pt] y+\tfrac14x^2\end{pmatrix},
+        \qquad f(1,1)=\begin{pmatrix}1.25\\1.25\end{pmatrix}$$
+      </div>
+      <ul>
+        <li>Not a landscape any more — a map that moves the plane about</li>
+      </ul>
+    </div>
+    <div class="panels">
+      <figure>
+        <svg id="fig-map-a" viewBox="0 0 250 220" role="img"
+             aria-label="A square grid of straight lines with one point marked"></svg>
+        <figcaption>The plane, gridded, with \(p=(1,1)\).</figcaption>
+      </figure>
+      <figure>
+        <svg id="fig-map-b" viewBox="0 0 250 220" role="img"
+             aria-label="The same grid after the map, its lines bent into curves, with the image of the marked point"></svg>
+        <figcaption>Where \(f\) sends it. Straight lines come out curved.</figcaption>
+      </figure>
+    </div>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Third and last shape, stated as plainly as the other two: several numbers in,
+    several numbers out. A function like this is just \(m\) ordinary functions of the
+    same inputs, written in a column — the top entry is one scalar function of \(x\)
+    and \(y\), the bottom is another. Nothing is new except the stacking.</p>
+    <p>Where they turn up, said now so the shape does not look academic: the residuals
+    of a fit, one per data point, are a vector-valued function of the parameters — that
+    is lecture 3's least squares. A layer of a network takes a vector of activations to
+    a vector of activations — that is lecture 4, every layer. And the gradient itself,
+    from the last slide, is one of these.</p>
+    <p>Arithmetic on one point: \(f(1,1)\) has top entry \(1+\tfrac14=1.25\) and bottom
+    entry the same, by symmetry.</p>
+    <p>The figures are the honest picture: the function takes the whole plane and
+    pushes it somewhere. Grid lines go in straight and come out bent, because the map
+    is not linear — last week every map sent straight lines to straight lines, and this
+    one does not.</p>
+    <p>The question the next slide answers: the map bends the grid, so what is its
+    derivative? Not one number, and not one row. One matrix, and the trick is to look
+    at a small enough piece.</p>
+  </aside>
+</section>
+
+<!-- 22 -->
+<section class="slide" data-where="III. Vector out">
+  <h2>The Jacobian</h2>
+  <p class="sub">One partial derivative for every input–output pair.</p>
+  <div class="two wide-right body">
+    <div>
+      <div class="eq">
+        $$J_{ij}=\frac{\partial f_i}{\partial x_j},\qquad
+        f(x+h)\approx f(x)+J\,h$$
+        <p class="note">Row \(i\) is the gradient of output \(i\). Shape:
+        \(m\times n\).</p>
+      </div>
+      <div class="eq bare">
+        $$J=\begin{pmatrix}1 & \tfrac12 y\\[2pt] \tfrac12x & 1\end{pmatrix},
+        \qquad J(1,1)=\begin{pmatrix}1&0.5\\0.5&1\end{pmatrix}$$
       </div>
       <p class="claim">Locally, every smooth map is a linear map: its Jacobian.</p>
     </div>
     <div class="panels">
       <figure>
         <svg id="fig-jac-a" viewBox="0 0 250 220" role="img"
-             aria-label="A square grid with a small square marked around one point"></svg>
-        <figcaption>Before: a small square at \(p\).</figcaption>
+             aria-label="The straight grid with a small square marked around the point p"></svg>
+        <figcaption>A small square at \(p\).</figcaption>
       </figure>
       <figure>
         <svg id="fig-jac-b" viewBox="0 0 250 220" role="img"
-             aria-label="The same grid bent by a nonlinear map; the small square has become very nearly a parallelogram, drawn against the exact parallelogram given by the Jacobian"></svg>
-        <figcaption>After: the grid bends, but the small square is the
-        parallelogram \(J\) makes.</figcaption>
+             aria-label="The bent grid, in which the image of the small square is very nearly a parallelogram, drawn against the exact parallelogram given by the Jacobian"></svg>
+        <figcaption>Its image is the parallelogram \(J\) makes, to within a line
+        width.</figcaption>
       </figure>
     </div>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>Last week a matrix was a map of the plane and its columns were where the
-    basis vectors went. A nonlinear map bends the grid — the right-hand panel. But
-    look at the small square: it has come out as a parallelogram, to the eye. A
-    linear map did that, and the linear map is the Jacobian, the matrix of all the
-    partial derivatives at that point. Its columns are where small steps along each
-    axis land.</p>
-    <p>The figure's map is \((x,y)\mapsto(x+\tfrac14y^2,\;y+\tfrac14x^2)\). At
-    \(p=(1,1)\): \(\partial f_1/\partial x=1\), \(\partial f_1/\partial y=y/2=0.5\),
-    \(\partial f_2/\partial x=x/2=0.5\), \(\partial f_2/\partial y=1\). So \(J\) is the
-    two-by-two with ones on the diagonal and halves off it — a shear both ways. The
-    dashed green parallelogram is \(J\) applied to the square; the red curve is the
-    true image. They differ by less than the line width.</p>
-    <p>Shapes: \(f:\mathbb R^n\to\mathbb R^m\) gives an \(m\times n\) Jacobian. A
-    single output makes it one row, the gradient lying down. Lecture 3 uses the
-    Jacobian of a residual vector for Gauss–Newton; lecture 4 has one per layer.</p>
+    <p>Build the matrix in front of the room, entry by entry, because the subscripts
+    are the only hard part. Top output is \(x+\tfrac14y^2\): in \(x\) it gives 1, in
+    \(y\) it gives \(\tfrac12y\). That is the first row, and it is the gradient of the
+    top output. Bottom output is \(y+\tfrac14x^2\): in \(x\) it gives \(\tfrac12x\), in
+    \(y\) it gives 1. Second row. At \((1,1)\) the off-diagonal entries are both
+    \(0.5\).</p>
+    <p>Then the picture. Last week a matrix was a map of the plane, and its columns were
+    where the basis vectors went. Here the grid is bent, but look at the small square:
+    it has come out a parallelogram, to the eye. A linear map did that, and the linear
+    map is the Jacobian. The dashed green outline is \(J\) applied to the square; the
+    red one is the true image. They differ by less than the line width.</p>
+    <p>Now the slide to settle every shape question in the lecture, and do it out loud.
+    \(f:\mathbb R^n\to\mathbb R^m\) has an \(m\times n\) Jacobian: one row per output,
+    one column per input. One output makes it a single row — that is the gradient,
+    which is why the gradient was written lying down. One input and one output makes it
+    \(1\times1\), a single number, which is \(\frac{df}{dx}\). And the Hessian is the
+    Jacobian of the gradient map, which takes \(n\) numbers to \(n\) numbers, so it is
+    \(n\times n\). Four objects, one definition.</p>
+    <p>Lecture 3 uses the Jacobian of a residual vector for Gauss–Newton; lecture 4 has
+    one per layer.</p>
   </aside>
 </section>
 
-<!-- 16 -->
-<section class="slide" data-where="III. Several variables">
-  <h2>The Hessian</h2>
-  <p class="sub">All the second derivatives, in a matrix.</p>
-  <div class="two wide-left body">
-    <div>
-      <div class="eq">
-        $$H_{ij}=\frac{\partial^2 f}{\partial x_i\,\partial x_j},\qquad
-        f(x+h)\approx f(x)+\nabla f\cdot h+\tfrac12\,h^{\mathsf T}H\,h$$
-      </div>
-      <ul>
-        <li>Symmetric: the order of the two derivatives does not matter</li>
-        <li>For \(x^2+2y^2\): \(H=\bigl[\begin{smallmatrix}2&0\\0&4\end{smallmatrix}\bigr]\), everywhere</li>
-      </ul>
-      <p class="claim">The Hessian is the curvature of the bowl, in every direction at
-      once.</p>
-    </div>
-    <figure>
-      <svg id="fig-hess" viewBox="0 0 400 300" role="img"
-           aria-label="The elliptical contours with the two axis directions marked and labelled by their curvatures, two and four"></svg>
-      <figcaption>Curvature 2 along \(x\), 4 along \(y\). The tighter direction is the
-      steeper bend.</figcaption>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>The quadratic-approximation slide, with a vector \(h\). The linear term is the
-    gradient against the step, as on the gradient slide; the new term is a quadratic
-    form: step, Hessian, step. For a direction \(d\) of length one, \(d^{\mathsf T}Hd\)
-    is the second derivative of \(f\) along \(d\) — the curvature of the slice in that
-    direction.</p>
-    <p>For the bowl: \(\partial^2 f/\partial x^2=2\), \(\partial^2 f/\partial y^2=4\),
-    the mixed one zero. Along \(x\) the curvature is 2, along \(y\) it is 4, and the
-    contours are correspondingly squashed. Those two numbers are the eigenvalues of
-    \(H\), from last week's eigenvalues slide, and the two arrows are its
-    eigenvectors. For a general bowl they would not lie along the axes, but they
-    would still be the tight and loose directions.</p>
-    <p>Because this \(f\) is itself quadratic, the approximation here is exact — worth
-    saying, since it is the reason a figure of the model would just redraw the
-    figure of the function.</p>
-    <p>Two forward references. Newton's method in lecture 3 minimizes this quadratic
-    directly, which needs the Hessian. And the ratio of the largest to the smallest
-    eigenvalue — here 2 — is the <em>condition number</em>, which decides how badly
-    steepest descent zig-zags.</p>
-  </aside>
-</section>
-
-<!-- 17 -->
-<section class="slide" data-where="III. Several variables">
-  <h2>The chain rule in several variables</h2>
+<!-- 23 -->
+<section class="slide" data-where="III. Vector out">
+  <h2>The chain rule, in several variables</h2>
   <div class="two wide-left body">
     <div>
       <div class="eq">
@@ -848,7 +1276,7 @@ input[type=range]{
         <p class="note">Outer Jacobian, at the inner value, times inner Jacobian.</p>
       </div>
       <ul>
-        <li>Same rule, with matrices in place of numbers</li>
+        <li>The chain rule again, with matrices in place of numbers</li>
         <li>The shapes must agree — and they do</li>
       </ul>
       <p class="claim">Rates compose by matrix multiplication.</p>
@@ -861,116 +1289,238 @@ input[type=range]{
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>Chain rule, second time. A small step \(h\) in \(x\) becomes \(J_g h\) in the
-    middle space, by the Jacobian slide. That step becomes \(J_f(J_g h)\) in the last
+    <p>Chain rule, second time. A small step \(h\) in \(x\) becomes \(J_gh\) in the
+    middle space, by the previous slide. That step becomes \(J_f(J_gh)\) in the last
     space. Two linear maps applied in turn are one linear map, their product — the
     matrix-product slide from last week — so the Jacobian of the composition is the
-    product of the Jacobians. In one variable the matrices are \(1\times1\) and this
-    is the chain rule of section I.</p>
-    <p>The shapes on the figure: \(J_g\) is \(3\times2\), \(J_f\) is \(4\times3\),
-    and \(4\times3\) times \(3\times2\) is \(4\times2\), which is what a map from
+    product of the Jacobians.</p>
+    <p>In one variable the matrices are \(1\times1\) and this is the chain rule of
+    section I, with the middle space one-dimensional. Point at the shapes: the middle
+    dimension is what cancels in the product, exactly as the middle function's value
+    was the thing handed over there.</p>
+    <p>The shapes on the figure: \(J_g\) is \(3\times2\), \(J_f\) is \(4\times3\), and
+    \(4\times3\) times \(3\times2\) is \(4\times2\), which is what a map from
     \(\mathbb R^2\) to \(\mathbb R^4\) must have. Order matters: \(J_gJ_f\) does not
     even have compatible shapes.</p>
     <p>This slide is backpropagation, stated. A network is \(f_L\circ\dots\circ f_1\),
-    its derivative is \(J_L\cdots J_1\), and lecture 4 is about the fact that a
-    product of matrices can be evaluated left-to-right or right-to-left, and that the
-    cost differs enormously. Section IV starts on why.</p>
+    its derivative is \(J_L\cdots J_1\), and lecture 4 is about the fact that a product
+    of matrices can be evaluated left-to-right or right-to-left, and that the cost
+    differs enormously. Section IV starts on why.</p>
   </aside>
 </section>
-
-<!-- 18 -->
+<!-- 24 -->
 <section class="slide" data-where="IV. Obtaining derivatives">
   <h2>By hand, by difference quotient, by program</h2>
-  <p class="sub">Three ways to get the number \(f'(x)\).</p>
+  <p class="sub">Three ways to get the number.</p>
   <div class="body">
     <div class="panels three" style="align-items:start">
       <div>
         <h3>Symbolic</h3>
-        <pre>d/dx sin(x²)
-  = cos(x²) · 2x</pre>
+        <pre>d/dx x⁴/8
+  = x³/2
+  = 4     at x = 2</pre>
         <p class="small">Exact. Done once, by a person or a computer algebra
         system.</p>
       </div>
       <div>
         <h3>Numerical</h3>
-        <pre>(f(x + h) − f(x)) / h</pre>
+        <pre>(f(2 + h) − f(2)) / h
+  = 4.31  at h = 0.1
+  = 4.03  at h = 0.01</pre>
         <p class="small">Any \(f\) you can evaluate. Approximate, and the choice of
         \(h\) matters.</p>
       </div>
       <div>
         <h3>Automatic</h3>
         <pre>x = (2, 1)
-u = x·x
-y = sin(u)</pre>
-        <p class="small">Exact, to rounding. The program computes \(f'\) alongside
-        \(f\).</p>
+u = x·x/2
+y = u·u/2
+  = (2, 4)</pre>
+        <p class="small">Exact, to rounding. The program computes the derivative
+        alongside the value.</p>
       </div>
     </div>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
     <p>Everything so far says what a derivative <em>is</em>. A program needs the
     number. Three ways.</p>
+    <p>All three columns compute the same thing: the derivative of the chain-rule
+    example, \(y=\tfrac12u^2\) with \(u=\tfrac12x^2\), at \(x=2\). The answer
+    is 4, and the three columns differ only in how they get there.</p>
     <p>Symbolic is what section I did: apply the rules, get a formula, type it in.
     Exact, but somebody has to do it for every function, and for a function of a
     million parameters written as code nobody will.</p>
     <p>Numerical is the difference quotient with a finite \(h\), and it works on any
-    black box you can call. It is approximate, and the next slide is about how
-    approximate.</p>
-    <p>Automatic differentiation is the one most people have not met. The program
-    that computes \(f\) is run as written, but every number carries its derivative
-    along with it, and every operation updates both by the rules of section I. No
-    formula is ever produced and nothing is approximated. Two slides on it follow.</p>
+    black box you can call. The next three slides are the three ways to place the two
+    sample points.</p>
+    <p>Automatic differentiation is the one most people have not met. The program that
+    computes \(f\) is run as written, but every number carries its derivative along
+    with it, and every operation updates both by the rules of section I. No formula is
+    ever produced and nothing is approximated.</p>
   </aside>
 </section>
 
-<!-- 19 -->
+<!-- 25 -->
 <section class="slide" data-where="IV. Obtaining derivatives">
-  <h2>Numerical differentiation and the step size</h2>
+  <h2>The forward difference</h2>
+  <p class="sub">Step forward from \(x\).</p>
   <div class="two wide-left body">
     <div>
       <div class="eq">
-        $$\text{error}\;\approx\;\underbrace{\tfrac{h}{2}\,|f''|}_{\text{truncation}}
-        \;+\;\underbrace{\frac{\varepsilon\,|f|}{h}}_{\text{cancellation}}$$
+        $$\frac{df}{dx}\approx\frac{f(x+h)-f(x)}{h}$$
+        <p class="note">The difference quotient, stopped at a finite \(h\).</p>
       </div>
       <ul>
-        <li>Large \(h\): the secant is not the tangent</li>
-        <li>Small \(h\): \(f(x+h)-f(x)\) loses its digits</li>
-        <li>Best near \(h\approx\sqrt{\varepsilon}\approx10^{-8}\)</li>
+        <li>Two evaluations: \(f(x)\) and \(f(x+h)\)</li>
+        <li>Error roughly proportional to \(h\): halve \(h\), halve the error</li>
+        <li>Cheapest, and the usual first choice</li>
       </ul>
     </div>
-    <figure class="demo" data-demo="step">
-      <svg id="fig-step" viewBox="0 0 400 280" role="img"
-           aria-label="Log-log plot of the error of the forward and central difference quotients for the exponential at one, against the step size, with the current step marked"></svg>
+    <figure class="demo" data-demo="fwd">
+      <svg id="fig-fwd" viewBox="0 0 400 300" role="img"
+           aria-label="The example curve with the chord from x to x plus h drawn against the true tangent at x"></svg>
       <div class="controls">
-        <div class="row"><label for="st-h">log₁₀ h</label>
-          <input id="st-h" type="range" min="-16" max="-1" step="0.25" value="-3">
-          <output id="out-st-h"></output></div>
+        <div class="row"><label for="fwd-x">x</label>
+          <input id="fwd-x" type="range" min="-2" max="2.2" step="0.1" value="1.4">
+          <output id="out-fwd-x"></output></div>
+        <div class="row"><label for="fwd-h">h</label>
+          <input id="fwd-h" type="range" min="0.05" max="1.5" step="0.05" value="1">
+          <output id="out-fwd-h"></output></div>
       </div>
-      <div class="readout"><div class="note" id="note-step"></div></div>
+      <div class="readout"><div class="note" id="note-fwd"></div></div>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>The plot is computed live, in double precision, for \(f(x)=e^x\) at \(x=1\),
-    where the true derivative is \(e\). Red is the plain forward difference; green is
-    the central difference \((f(x+h)-f(x-h))/2h\). Both axes are logarithmic.</p>
-    <p>Slide \(h\) from the right. At \(h=10^{-1}\) the error is about \(0.14\): the
-    secant is visibly not the tangent, and the quadratic-approximation slide says the
-    error is about \(\tfrac{h}{2}f''\), which here is \(1.36h\). Each decade down in
-    \(h\) buys a decade of accuracy, as it should — until about \(10^{-8}\). Then it
-    turns round.</p>
-    <p>What went wrong is subtraction. \(f(x+h)\) and \(f(x)\) agree in their leading
-    digits, the difference keeps only the trailing ones, and dividing by a tiny \(h\)
-    magnifies whatever rounding noise was in them: about \(\varepsilon|f|/h\) with
-    \(\varepsilon\approx2\cdot10^{-16}\). By \(h=10^{-16}\), \(x+h\) rounds to \(x\)
-    and the quotient is exactly zero. The two errors balance near
-    \(\sqrt{\varepsilon}\), and the best you get is about eight digits of sixteen.</p>
-    <p>Central difference cancels the \(h\) term; its truncation error is
-    \(\tfrac{h^2}{6}f'''\), so it reaches about \(10^{-11}\) near \(h=10^{-5}\).
-    Better, still not exact, and two evaluations instead of one.</p>
+    <p>Same example function as section I, and the same picture as the difference-quotient
+    slide — but the
+    question has changed. There the interval was shrinking towards an idea; here it
+    stops at whatever \(h\) the program can afford, and what is left over is an error
+    to be measured. The dashed green line is the true tangent, so the gap between the
+    two lines <em>is</em> the error.</p>
+    <p>At \(x=1.4\) with \(h=1\), the chord slope reads \(2.02\) against a true
+    \(0.72\). That is not a subtle error — the chord is reaching all the way out to
+    \(2.4\), where the curve is far steeper. Halve \(h\) to \(0.5\) and the error
+    roughly halves; halve it again and again the same. Say the rule as the room
+    watches it: error proportional to \(h\).</p>
+    <p>Where it comes from, in one sentence: the curve leaves its tangent at a rate
+    set by the bend, so the error is about \(\tfrac{h}{2}\frac{d^2f}{dx^2}\) — bigger
+    step, bigger miss, and worst where the curve bends hardest.</p>
+    <p>Note that the estimate is one-sided: it knows nothing about the curve to the
+    left of \(x\). Move \(x\) to \(-1\) with a large \(h\) and the chord runs off
+    across the dip, giving a slope with the wrong sign entirely.</p>
+    <p>If asked how small \(h\) should be: not as small as you like. Below about
+    \(10^{-8}\) the two values of \(f\) agree in so many leading digits that the
+    subtraction keeps almost nothing, and the quotient becomes noise. Rule of thumb,
+    \(h\approx10^{-8}\) in double precision, and if that is not accurate enough the
+    answer is the next two slides or automatic differentiation.</p>
   </aside>
 </section>
 
-<!-- 20 -->
+<!-- 26 -->
+<section class="slide" data-where="IV. Obtaining derivatives">
+  <h2>The backward difference</h2>
+  <p class="sub">Step back from \(x\).</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$\frac{df}{dx}\approx\frac{f(x)-f(x-h)}{h}$$
+        <p class="note">The same quotient, with the interval behind the point.</p>
+      </div>
+      <ul>
+        <li>Same cost, same error size as forward — the error just leans the other
+          way</li>
+        <li>For when \(f(x+h)\) cannot be had: the edge of a grid, the end of a
+          time series, a constraint in the way</li>
+      </ul>
+    </div>
+    <figure class="demo" data-demo="bwd">
+      <svg id="fig-bwd" viewBox="0 0 400 300" role="img"
+           aria-label="The example curve with the chord from x minus h to x drawn against the true tangent at x"></svg>
+      <div class="controls">
+        <div class="row"><label for="bwd-x">x</label>
+          <input id="bwd-x" type="range" min="-2" max="2.2" step="0.1" value="1.4">
+          <output id="out-bwd-x"></output></div>
+        <div class="row"><label for="bwd-h">h</label>
+          <input id="bwd-h" type="range" min="0.05" max="1.5" step="0.05" value="1">
+          <output id="out-bwd-h"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-bwd"></div></div>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Thirty seconds, and it exists mainly so the next slide is obvious. Nothing is
+    new: the same two evaluations, the same division, the interval simply lies to the
+    left. The error is again proportional to \(h\).</p>
+    <p>Put the two side by side at \(x=1.4\), \(h=1\). Forward read \(2.02\), too
+    high, because the curve steepens to the right. Backward reads \(-0.08\), too low,
+    because the curve is flatter — and at that distance, falling — to the left. The
+    truth, \(0.72\), is between them. Say that plainly and then stop: the room has
+    just invented the next slide.</p>
+    <p>When it is the only option: at the right-hand edge of a grid or the latest
+    sample of a time series there is no \(f(x+h)\) to evaluate, and in an optimizer
+    there may be a constraint immediately to the right. Then you step backwards and
+    take the same error.</p>
+  </aside>
+</section>
+
+<!-- 27 -->
+<section class="slide" data-where="IV. Obtaining derivatives">
+  <h2>The central difference</h2>
+  <p class="sub">Step both ways and split the difference.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$\frac{df}{dx}\approx\frac{f(x+h)-f(x-h)}{2h}$$
+        <p class="note">The chord from \(x-h\) to \(x+h\). Note the \(2h\): the run is
+        twice as long.</p>
+      </div>
+      <ul>
+        <li>The average of the forward and backward quotients</li>
+        <li>Error proportional to \(h^2\): halve \(h\), quarter the error</li>
+        <li>Two evaluations, and \(f(x)\) itself is not one of them</li>
+      </ul>
+      <p class="claim">The two one-sided errors lean opposite ways and cancel.</p>
+    </div>
+    <figure class="demo" data-demo="cen">
+      <svg id="fig-cen" viewBox="0 0 400 300" role="img"
+           aria-label="The example curve with the chord from x minus h to x plus h drawn against the true tangent at x, the two nearly parallel"></svg>
+      <div class="controls">
+        <div class="row"><label for="cen-x">x</label>
+          <input id="cen-x" type="range" min="-2" max="2.2" step="0.1" value="1.4">
+          <output id="out-cen-x"></output></div>
+        <div class="row"><label for="cen-h">h</label>
+          <input id="cen-h" type="range" min="0.05" max="1.5" step="0.05" value="1">
+          <output id="out-cen-h"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-cen"></div></div>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The default, and the one to remember. Add the forward and backward quotients
+    and divide by two: the \(f(x)\) terms cancel and what is left is this. The error
+    terms also nearly cancel, because one was too high and the other too low by
+    almost the same amount, and that is the whole reason this is better.</p>
+    <p>The numbers, at \(x=1.4\) with \(h=1\), against the true \(0.72\): forward
+    \(2.02\), backward \(-0.08\), central \(0.97\). The two one-sided estimates were
+    out by \(1.30\) and \(-0.80\); the central one is out by \(0.25\), with the same
+    two function evaluations.</p>
+    <p>Then shrink \(h\) and let the room watch the difference in kind. From \(h=1\)
+    to \(h=0.5\), forward's error roughly halves while central's drops by four. By
+    \(h=0.1\) the chord and the dashed tangent are one line on screen and the error is
+    in the third decimal. Error proportional to \(h^2\), and for this cubic it is
+    exactly \(h^2/4\) if anyone checks.</p>
+    <p>The cost, said honestly: two evaluations either way, so central is free
+    compared to forward — unless \(f(x)\) was already known for other reasons, which
+    in an optimizer it usually is, and then forward costs one extra evaluation and
+    central costs two.</p>
+    <p>Rule of thumb for \(h\): with central differences the sweet spot is around
+    \(10^{-5}\) rather than \(10^{-8}\), because the rounding noise in the subtraction
+    balances against a smaller truncation error. Below that it degrades the same way,
+    for the same reason.</p>
+  </aside>
+</section>
+
+<!-- 28 -->
 <section class="slide" data-where="IV. Obtaining derivatives">
   <h2>Forward-mode automatic differentiation</h2>
   <p class="sub">Every number carries its derivative.</p>
@@ -978,42 +1528,50 @@ y = sin(u)</pre>
     <div>
       <div class="eq">
         $$\begin{aligned}
-        (u,u')+(v,v') &= (u+v,\;u'+v')\\
-        (u,u')^n &= (u^n,\;n\,u^{n-1}u')\\
-        g\bigl((u,u')\bigr) &= \bigl(g(u),\;g'(u)\,u'\bigr)
+        (u,\dot u)+(v,\dot v) &= (u+v,\;\dot u+\dot v)\\
+        c\,(u,\dot u) &= (c\,u,\;c\,\dot u)\\
+        (u,\dot u)^n &= \bigl(u^n,\;n\,u^{n-1}\dot u\bigr)\\
+        g\bigl((u,\dot u)\bigr) &= \Bigl(g(u),\;\tfrac{dg}{du}\,\dot u\Bigr)
         \end{aligned}$$
+        <p class="note">\(\dot u\) is \(\frac{du}{dx}\), carried alongside \(u\).</p>
       </div>
       <p class="claim">Forward mode is the chain rule, applied one operation at a
       time.</p>
     </div>
     <div>
-      <pre>x = (2,      1)        <span class="c"># seed: dx/dx = 1</span>
-u = x²  = (4,      2·2·1)  <span class="c"># = (4, 4)</span>
-y = sin(u) = (sin 4, cos 4 · 4)
-         = (−0.757, −2.614)</pre>
-      <p class="small">The derivative of \(\sin(x^2)\) at \(x=2\) is
-      \(4\cos4\approx-2.614\). The program never saw that formula.</p>
+      <pre>x   = (2,  1)          <span class="c"># seed: dx/dx = 1</span>
+x²  = (4,  2·2·1)      <span class="c"># = (4, 4)</span>
+u   = x²/2 = (2,  2)
+u²  = (4,  2·2·2)      <span class="c"># = (4, 8)</span>
+y   = u²/2 = (2,  4)</pre>
+      <p class="small">The derivative of \(y=\tfrac18x^4\) at \(x=2\) is
+      \(\tfrac12x^3=4\). The program never saw that formula.</p>
     </div>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
     <p>Replace every number in the program by a pair: its value and its derivative
     with respect to the input. Then overload every operation so it computes both
-    halves of the pair, using the rules of section I. The sum rule gives the first
-    line; the power rule the second; the third is the chain rule and covers every
-    built-in function. Nothing new is being said — the rules are just being executed
+    halves of the pair, using the rules of section I: the sum rule, the
+    constant-multiple rule, the power rule, and — the last line — the chain rule,
+    which covers every built-in function. Nothing new is being said — the rules are just being executed
     by the machine as it goes.</p>
-    <p>Walk the trace. Seed the input with derivative 1, because \(dx/dx=1\). Squaring
-    gives value 4 and derivative \(2\cdot2\cdot1=4\). Sine gives value \(\sin4\approx
-    -0.757\) and derivative \(\cos4\cdot4\approx-0.654\cdot4=-2.614\). Check against
-    the symbolic answer from two slides ago: \(2x\cos(x^2)\) at 2 is \(4\cos4\). Same
-    number, to rounding, with no formula in sight.</p>
+    <p>Walk the trace, which is the chain-rule example run as a program. Seed the
+    input with derivative 1, because \(dx/dx=1\). Squaring gives \((4,\,4)\) by the
+    power rule. Halving gives \((2,\,2)\) by the constant-multiple rule — that is
+    \(u\) and \(\frac{du}{dx}\), and both halves are right. Squaring again gives
+    \((4,\,8)\), and halving gives \((2,\,4)\).</p>
+    <p>So \(y=2\) and \(\frac{dy}{dx}=4\). Check it against the chain rule done by
+    hand: \(u\cdot x=2\cdot2=4\), and against the symbolic route on the
+    three-ways slide, \(\tfrac12x^3=4\). Three routes, one number — and no \(h\) to choose, which is
+    the thing the last three slides were fighting.</p>
     <p>A real implementation adds a rule per primitive — products, quotients,
-    division, comparisons — and the whole thing is a page of code. These pairs are
-    called dual numbers if anyone asks.</p>
+    comparisons — and the whole thing is a page of code. These pairs are called dual
+    numbers if anyone asks, and the dot notation is Newton's, kept here because it
+    fits in a pair.</p>
   </aside>
 </section>
 
-<!-- 21 -->
+<!-- 29 -->
 <section class="slide" data-where="IV. Obtaining derivatives">
   <h2>The cost of forward mode</h2>
   <div class="two wide-left body">
@@ -1028,23 +1586,23 @@ y = sin(u) = (sin 4, cos 4 · 4)
     </div>
     <figure>
       <svg id="fig-cost" viewBox="0 0 400 210" role="img"
-           aria-label="Six inputs feeding one function box feeding one output; one input is seeded and highlighted, the rest are zero"></svg>
+           aria-label="Six inputs feeding one function box feeding one output; one input is seeded with a one and highlighted, the rest are seeded with zero"></svg>
       <figcaption>One pass follows one seed through the whole computation.</figcaption>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
     <p>Look at what the seed did on the last slide: it chose which input the
-    derivative was with respect to. To get \(\partial f/\partial x_1\) seed \(x_1\)
-    with 1 and everything else with 0; run. To get \(\partial f/\partial x_2\), run
-    again. A gradient with \(n\) components is \(n\) runs of the program, each as
-    expensive as evaluating \(f\) itself.</p>
-    <p>In terms of the last section: one forward pass computes \(Jd\) for one
-    direction \(d\), a single column of the Jacobian. For a map with many inputs and
-    few outputs the Jacobian is wide and short — one row, for a loss — and building
-    it a column at a time is the wrong way round.</p>
-    <p>The alternative is to propagate derivatives backward from the output, and get
-    a whole row of \(J\) per pass: for a scalar loss, the entire gradient in one run,
-    at a small constant multiple of the cost of \(f\). That is reverse mode, and it is
+    derivative was with respect to. To get \(\frac{\partial f}{\partial x_1}\), seed
+    \(x_1\) with 1 and everything else with 0, and run. To get
+    \(\frac{\partial f}{\partial x_2}\), run again. A gradient with \(n\) components is
+    \(n\) runs of the program, each as expensive as evaluating \(f\) itself.</p>
+    <p>In terms of section III: one forward pass computes \(J\,d\) for one direction
+    \(d\), which is a single column of the Jacobian. For a map with many inputs and
+    few outputs the Jacobian is wide and short — one row, for a loss — and building it
+    a column at a time is the wrong way round.</p>
+    <p>The alternative is to propagate derivatives backward from the output and get a
+    whole row of \(J\) per pass: for a scalar loss, the entire gradient in one run, at
+    a small constant multiple of the cost of \(f\). That is reverse mode, and it is
     what backpropagation is. It is the first thing lecture 4's training half builds.
     Nothing more on it today.</p>
     <p>Cut candidate: if short, say the first bullet on the previous slide and skip
@@ -1052,7 +1610,7 @@ y = sin(u) = (sin 4, cos 4 · 4)
   </aside>
 </section>
 
-<!-- 22 -->
+<!-- 30 -->
 <section class="slide title" data-where="V. Quiz">
   <h2>Quiz</h2>
   <p class="sub">Four questions, hands up.</p>
@@ -1063,7 +1621,7 @@ y = sin(u) = (sin 4, cos 4 · 4)
   </aside>
 </section>
 
-<!-- 23 -->
+<!-- 31 -->
 <section class="slide" data-where="V. Quiz">
   <h2>The tangent to \(f(x)=x^3\) at \(x=1\) predicts \(f(1.1)\) as</h2>
   <div class="body">
@@ -1077,36 +1635,41 @@ y = sin(u) = (sin 4, cos 4 · 4)
     </div>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p><b>Answer: A.</b> \(f(1)=1\), \(f'(x)=3x^2\) so \(f'(1)=3\), and
-    \(1+3\cdot0.1=1.3\). B is the exact value \(1.1^3\) — the tangent under-predicts,
-    by \(0.031\), and that gap is the \(\tfrac12f''h^2\) term: \(f''(1)=6\),
-    \(3\cdot0.01=0.03\), nearly all of it. C forgot to multiply by the slope; D
-    forgot to add the value at the point.</p>
+    <p><b>Answer: A.</b> \(f(1)=1\), \(\frac{df}{dx}=3x^2\) which is 3 at \(x=1\), and
+    \(1+3\cdot0.1=1.3\). B is the exact value \(1.1^3\): the tangent under-predicts by
+    \(0.031\), because \(x^3\) bends upward and away from its tangent — the gap the
+    zoom slider measured. C forgot to multiply by the slope; D forgot to add the value
+    at the point.</p>
   </aside>
 </section>
 
-<!-- 24 -->
+<!-- 32 -->
 <section class="slide" data-where="V. Quiz">
-  <h2>What is the derivative of \(\sin(x^2)\)?</h2>
+  <h2>What is \(\frac{d}{dx}\bigl(1+x^2\bigr)^3\)?</h2>
   <div class="body">
     <div>
       <ol class="mc">
-      <li><span class="k">A</span><span>\(\cos(x^2)\)</span></li>
-      <li><span class="k">B</span><span>\(2x\cos(x^2)\)</span></li>
-      <li><span class="k">C</span><span>\(2x\cos(2x)\)</span></li>
-      <li><span class="k">D</span><span>\(\cos(x^2)\cdot\sin(2x)\)</span></li>
+      <li><span class="k">A</span><span>\(3\bigl(1+x^2\bigr)^2\)</span></li>
+      <li><span class="k">B</span><span>\(6x\bigl(1+x^2\bigr)^2\)</span></li>
+      <li><span class="k">C</span><span>\(3(2x)^2\)</span></li>
+      <li><span class="k">D</span><span>\(6x\bigl(1+x^2\bigr)^3\)</span></li>
       </ol>
     </div>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p><b>Answer: B.</b> Outer rate \(\cos\) at the inner value \(x^2\), times the
-    inner rate \(2x\). A forgot the inner rate. C evaluated the outer rate at the
-    wrong place — at \(g'(x)\) instead of \(g(x)\) — which is the trap the chain-rule
-    slide named. D differentiated both and multiplied, which is not a rule.</p>
+    <p><b>Answer: B.</b> Inner \(u=1+x^2\), outer \(y=u^3\). The outer rate is
+    \(3u^2=3(1+x^2)^2\), the inner rate is \(2x\), and the product is
+    \(6x(1+x^2)^2\). A is the outer rate alone — the inner rate forgotten, which is
+    the commonest error of all. C evaluated the outer rate at the inner <em>rate</em>
+    instead of the inner value, which is the trap the chain-rule slide named. D
+    multiplied by the inner rate but never lowered the exponent.</p>
+    <p>If the room wants it checked: expanding gives
+    \(1+3x^2+3x^4+x^6\), whose derivative is \(6x+12x^3+6x^5\), and
+    \(6x(1+x^2)^2=6x(1+2x^2+x^4)\) is the same thing.</p>
   </aside>
 </section>
 
-<!-- 25 -->
+<!-- 33 -->
 <section class="slide" data-where="V. Quiz">
   <h2>At a point on a contour line of \(f\), the gradient \(\nabla f\) is</h2>
   <div class="body">
@@ -1120,17 +1683,16 @@ y = sin(u) = (sin 4, cos 4 · 4)
     </div>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p><b>Answer: B.</b> Along the contour \(f\) does not change, so the directional
-    derivative there is zero, so the gradient has zero inner product with the contour
-    direction. It points up because that is how it is defined; down is minus the
-    gradient, which lecture 3 will walk along. D is the good trap: it is true only
-    when the contours are circles. On the stretched bowl the arrow at \((1.5, 0.8)\)
-    pointed well away from the origin, and if the room picked D, go back to the
-    gradient slide and drag.</p>
+    <p><b>Answer: B.</b> Along the contour \(f\) does not change, so a step that way
+    changes nothing, so it has zero product with the gradient. It points up because
+    that is how it is defined; down is minus the gradient, which lecture 3 will walk
+    along. D is the good trap: it is true only when the contours are circles. On the
+    stretched bowl the arrow at \((1.5,\,0.8)\) pointed well away from the origin, and
+    if the room picks D, go back to the gradient slide and drag.</p>
   </aside>
 </section>
 
-<!-- 26 -->
+<!-- 34 -->
 <section class="slide" data-where="V. Quiz">
   <h2>\(g:\mathbb R^3\to\mathbb R^2\) and \(f:\mathbb R^2\to\mathbb R^4\). The Jacobian of \(f\circ g\) is</h2>
   <div class="body">
@@ -1147,27 +1709,30 @@ y = sin(u) = (sin 4, cos 4 · 4)
     <p><b>Answer: A.</b> \(f\circ g\) takes three numbers in and gives four out, so
     its Jacobian has four rows and three columns. As a product: \(J_f\) is
     \(4\times2\), \(J_g\) is \(2\times3\), and \(J_fJ_g\) is \(4\times3\). B has the
-    shape transposed — inputs and outputs swapped. C is the middle space's
-    dimension, which cancels. D is \(J_f\) alone; whoever picks it forgot the inner
-    map.</p>
+    shape transposed — inputs and outputs swapped. C is the middle space's dimension,
+    which cancels. D is \(J_f\) alone; whoever picks it forgot the inner map.</p>
     <p>Follow-up if quick: how many forward-mode passes to build it? Three, one per
     input. How many reverse-mode passes? Four. Lecture 4 starts there.</p>
   </aside>
 </section>
 
-<!-- 27 -->
+<!-- 35 -->
 <section class="slide title" data-where="Questions">
   <h2>Questions?</h2>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>Open the floor. If nothing comes, offer the two figures people usually want
-    to poke at: the secant slider, and dragging the gradient around the bowl.</p>
-    <p>Things deliberately left out, if asked: integration entirely; Taylor series
-    beyond the quadratic term; product and quotient rules; what a limit is, formally;
-    reverse-mode differentiation, which is lecture 4's first job.</p>
+    <p>Open the floor. If nothing comes, offer the three figures people usually want
+    to poke at: pulling \(h\) down on the difference quotient, rotating the bowl, and
+    dragging the gradient around it.</p>
+    <p>Things deliberately left out, if asked: integration entirely; what a limit is,
+    formally; product and quotient rules; Taylor series beyond the two-term model
+    named on the Hessian slide; the directional derivative, which lecture 3 introduces
+    where it needs it; level points and the second-derivative test, which belong with
+    the optimizers in lecture 3; reverse-mode differentiation, which is lecture 4's
+    first job.</p>
   </aside>
 </section>
 
-<!-- 28 -->
+<!-- 36 -->
 <section class="slide title" data-where="Thank you">
   <div>
     <h1>Thank you</h1>
@@ -1189,7 +1754,6 @@ const ap = (m, [x, y]) => [m[0] * x + m[1] * y, m[2] * x + m[3] * y];
 const add = ([a, b], [c, d]) => [a + c, b + d];
 const sc = (k, [x, y]) => [k * x, k * y];
 const norm = ([x, y]) => Math.hypot(x, y);
-const unit = p => sc(1 / norm(p), p);
 
 /* --- svg drawing ------------------------------------------------------ */
 /* A view maps world coordinates to svg pixels, with y upward. `sy` lets a
@@ -1258,11 +1822,6 @@ const clipped = (id, x, y, w, h, inner) =>
   el('clipPath', {id}, el('rect', {x, y, width: w, height: h}))
   + el('g', {'clip-path': `url(#${id})`}, inner);
 
-const rightAngle = (v, p, d1, d2, k, cls) => {
-  const a = add(p, sc(k, d1)), b = add(p, sc(k, d2));
-  return seg(v, a, add(a, sc(k, d2)), cls) + seg(v, add(a, sc(k, d2)), b, cls);
-};
-
 const samples = (f, x0, x1, n = 96) => Array.from({length: n + 1},
   (_, i) => { const x = x0 + (x1 - x0) * i / n; return [x, f(x)]; });
 const graph = (v, f, x0, x1, cls, n) => poly(v, samples(f, x0, x1, n), cls);
@@ -1270,30 +1829,166 @@ const graph = (v, f, x0, x1, cls, n) => poly(v, samples(f, x0, x1, n), cls);
 const fmt = x => (Math.abs(x) < 5e-3 ? 0 : x).toFixed(2);
 const put = (id, markup) => { document.getElementById(id).innerHTML = markup; };
 
-/* Cubic used through sections I and II: f' = 3(x²-1)/4, f'' = 3x/2. */
+/* Cubic used through section I: df/dx = 3(x²-1)/4, d²f/dx² = 3x/2. */
 const F = x => (x ** 3 - 3 * x) / 4 + 1;
 const dF = x => (3 * x * x - 3) / 4;
 const d2F = x => 1.5 * x;
 const PLOT = () => view(200, 205, 55);
 const PLOT_X = [-2.9, 2.9], PLOT_Y = [-1.6, 3.6];
 const CURVE = v => graph(v, F, -2.6, 2.6, 'stroke s-madder');
+/* The same curve out to the edges of the frame, for figures that clip. */
+const CURVE_W = v => graph(v, F, -3.6, 3.6, 'stroke s-madder', 140);
 const lineAt = (v, x0, y0, m, cls) =>
   seg(v, [-3, y0 + (-3 - x0) * m], [3.2, y0 + (3.2 - x0) * m], cls);
+const tanline = (v, [x, y], m, k, cls) =>
+  seg(v, [x - k, y - k * m], [x + k, y + k * m], cls);
+const tangent = (v, f, df, x, k, cls) => tanline(v, [x, f(x)], df(x), k, cls);
+/* Figure labels want 0 and 1.5, not 0.00 and 1.50. */
+const num = x => String(Math.round(x * 100) / 100);
+const tile = (w, h) => el('rect', {x: 0, y: 0, width: w, height: h, fill: '#fff'});
 
-/* The bowl used through section III, with its gradient. */
+/* --- stacked panels --------------------------------------------------- */
+/* A function above, its slope below, and — on the second-derivative slide —
+   the slope of that below again. The panels share one horizontal scale and
+   have separate vertical ones, so a flat slope and a steep one both read.
+   A marker runs down through all of them at the current x. */
+
+const panel = (s, py0, py1, [y0, y1]) => {
+  const sy = (py1 - py0) / (y1 - y0);
+  return view(200, py1 + y0 * sy, s, sy);
+};
+
+/* Panel axes: no arrowheads, and ticks of a fixed length in pixels. */
+const paxes = (v, [x0, x1], [y0, y1]) => {
+  const z = v.to([0, 0])[1];
+  const out = [seg(v, [x0, 0], [x1, 0], 'hair s-construct'),
+    seg(v, [0, y0], [0, y1], 'hair s-construct')];
+  for (let k = Math.ceil(x0); k <= Math.floor(x1); k++) if (k) out.push(
+    el('line', {x1: r2(v.to([k, 0])[0]), y1: r2(z - 3),
+      x2: r2(v.to([k, 0])[0]), y2: r2(z + 3), class: 'hair s-construct'}));
+  return out.join('');
+};
+
+/* The exact slope triangle of a line or a constant, over a run of 1. */
+const triangle = (v, f, x) => {
+  const rise = f(x + 1) - f(x);
+  return seg(v, [x, f(x)], [x + 1, f(x)], 'dash s-prussian')
+    + seg(v, [x + 1, f(x)], [x + 1, f(x + 1)], 'dash s-prussian')
+    + dot(v, [x + 1, f(x + 1)], 'f-prussian', 3)
+    + text(v, [x + 0.5, f(x)], 'run 1', 'f-prussian', 0, 15)
+    + text(v, [x + 1, (f(x) + f(x + 1)) / 2], `rise ${num(rise)}`,
+      'f-prussian', 8, 4, 'start');
+};
+
+const stackFig = (id, {x, xr, rows, exact}) => {
+  const s = 340 / (xr[1] - xr[0]);
+  const h = (282 - 20 * (rows.length - 1)) / rows.length;
+  const px = r2(view(200, 0, s).to([x, 0])[0]);
+  const drawn = rows.map((row, i) => {
+    const top = 12 + i * (h + 20), v = panel(s, top, top + h, row.r);
+    const next = rows[i + 1];
+    const slope = !next ? ''
+      : exact && !i ? triangle(v, row.g, x)
+      : tanline(v, [x, row.g(x)], next.g(x), (xr[1] - xr[0]) / 6,
+        `stroke s-${next.hue}`);
+    return paxes(v, xr, row.r)
+      + clipped(`clip-${id}${i}`, 0, top - 10, 400, h + 20,
+        graph(v, row.g, xr[0] + 0.04, xr[1] - 0.04,
+          `${i ? 'dash' : 'stroke'} s-${row.hue}`) + slope)
+      + dot(v, [x, row.g(x)], `f-${row.hue}`, 3.8)
+      + text(v, [xr[0], row.r[1]], row.name, `f-${row.hue}`, 3, 10, 'start');
+  });
+  return el('line', {x1: px, y1: 12, x2: px, y2: 294, class: 'dash s-construct'})
+    + drawn.join('');
+};
+
+/* --- the bowl, as a surface ------------------------------------------- */
 const G = ([x, y]) => x * x + 2 * y * y;
 const gradG = ([x, y]) => [2 * x, 4 * y];
 const P = [1.5, 0.8];
-const LEVELS = [0.5, 1, 2, 3, 5, 7, 10];
-const CV = () => view(200, 150, 55);
-const CV_X = [-3.6, 3.6], CV_Y = [-2.7, 2.7];
-const ellipse = c => Array.from({length: 73}, (_, i) => {
-  const t = i * Math.PI / 36;
-  return [Math.sqrt(c) * Math.cos(t), Math.sqrt(c / 2) * Math.sin(t)];
-});
-const contours = (v, cls = 'hair s-prussian') =>
-  LEVELS.map(c => loop(v, ellipse(c), cls)).join('');
-const bowl = v => axes(v, CV_X, CV_Y, 'construct') + contours(v);
+
+/* Orthographic camera on the origin, z upward, at azimuth a and elevation
+   e. It maps a world point to the plane, where a 2d view takes over. */
+const cam = (a, e) => ([x, y, z]) =>
+  [y * Math.cos(a) - x * Math.sin(a),
+   z * Math.cos(e) - (x * Math.cos(a) + y * Math.sin(a)) * Math.sin(e)];
+
+const curve3 = (v, c, p, t0, t1, cls, n = 48) =>
+  poly(v, Array.from({length: n + 1},
+    (_, i) => c(p(t0 + (t1 - t0) * i / n))), cls);
+const seg3 = (v, c, a, b, cls) => seg(v, c(a), c(b), cls);
+
+/* Heights are squashed by ZK so the bowl fits the frame; the patch is
+   wider than deep because y is the charged direction. */
+const ZK = 0.28, RX = 2.3, RY = 1.7;
+const lift = ([x, y]) => [x, y, ZK * G([x, y])];
+const SV = () => view(200, 202, 44);
+
+const mesh = (v, c, n = 8) => Array.from({length: n + 1}, (_, i) => {
+  const t = i / n;
+  return curve3(v, c, x => lift([x, -RY + 2 * RY * t]), -RX, RX, 'hair s-construct', 28)
+    + curve3(v, c, y => lift([-RX + 2 * RX * t, y]), -RY, RY, 'hair s-construct', 28);
+}).join('');
+
+/* Level rings on the surface: the contour map, before it is flattened. */
+const RINGS = [0.4, 1, 1.8, 2.8, 4, 5.2];
+const ellipse = (c, t) => [Math.sqrt(c) * Math.cos(t), Math.sqrt(c / 2) * Math.sin(t)];
+const rings = (v, c) => el('g', {opacity: 0.4}, RINGS.map(l =>
+  curve3(v, c, t => lift(ellipse(l, t)), 0, 2 * Math.PI, 'hair s-prussian', 64))
+  .join(''));
+
+const frame3 = (v, c) =>
+  seg3(v, c, [-RX, 0, 0], [RX + 0.6, 0, 0], 'hair s-construct')
+  + seg3(v, c, [0, -RY, 0], [0, RY + 0.6, 0], 'hair s-construct')
+  + seg3(v, c, [0, 0, 0], [0, 0, ZK * 12.5], 'hair s-construct')
+  + text(v, c([RX + 0.6, 0, 0]), 'x', 'f-dim', 9, 4)
+  + text(v, c([0, RY + 0.6, 0]), 'y', 'f-dim', 9, 4)
+  + text(v, c([0, 0, ZK * 12.5]), 'f', 'f-dim', -10, 0);
+
+/* An input point in the base plane, with its height carried up to the
+   surface: several numbers in, one number out. */
+const baseMark = (v, c, p, cls) =>
+  seg3(v, c, [p[0], 0, 0], [p[0], p[1], 0], cls)
+  + seg3(v, c, [0, p[1], 0], [p[0], p[1], 0], cls)
+  + seg3(v, c, [p[0], p[1], 0], lift(p), 'dash s-madder')
+  + dot(v, c([p[0], p[1], 0]), 'f-dim', 2.6);
+
+/* A stretch of the level curve through p, drawn in the base plane. */
+const levelArc = (v, c, p) => {
+  const k = G(p);
+  if (k < 0.1) return '';
+  const t0 = Math.atan2(p[1] / Math.sqrt(k / 2), p[0] / Math.sqrt(k));
+  return curve3(v, c, t => [...ellipse(k, t), 0], t0 - 0.85, t0 + 0.85,
+    'stroke s-prussian', 32);
+};
+
+/* --- the nonlinear map of section III ---------------------------------- */
+/* Its Jacobian at p = (1, 1) is [[1, .5], [.5, 1]]: a shear both ways. */
+const PHI = ([x, y]) => [x + 0.25 * y * y, y + 0.25 * x * x];
+const JP = [1, 0.5, 0.5, 1];
+const PM = [1, 1];
+const SQ = [[-0.4, -0.4], [0.4, -0.4], [0.4, 0.4], [-0.4, 0.4]];
+
+const mapGrid = (v, bent) => {
+  const line = (a, b) => bent
+    ? poly(v, Array.from({length: 25},
+      (_, i) => PHI(add(a, sc(i / 24, add(b, sc(-1, a)))))), 'hair s-construct')
+    : seg(v, a, b, 'hair s-construct');
+  const out = [];
+  for (let i = -2; i <= 2; i++) out.push(line([i, -2], [i, 2]), line([-2, i], [2, i]));
+  return out.join('');
+};
+
+/* The square's image, edge by edge, against the parallelogram J makes. */
+const mapSquare = v => {
+  const edges = SQ.map((c, i) => {
+    const d = SQ[(i + 1) % 4];
+    return Array.from({length: 12},
+      (_, j) => PHI(add(PM, add(c, sc(j / 12, add(d, sc(-1, c)))))));
+  }).flat();
+  return loop(v, edges, 'stroke s-madder')
+    + loop(v, SQ.map(c => add(PHI(PM), ap(JP, c))), 'dash s-verdigris');
+};
 
 /* --- static figures --------------------------------------------------- */
 
@@ -1321,74 +2016,64 @@ const figures = {
           '×6'));
   },
 
-  'fig-quotient': () => {
-    const v = PLOT(), x = 1, h = 1, a = [x, F(x)], b = [x + h, F(x + h)];
+  'fig-scale': () => {
+    const v = view(200, 164, 100, 28.5), x = 1.5, cube = t => t ** 3;
+    return axes(v, [-1.9, 1.9], [-4.5, 5.5]) + clipped('clip-sc', 0, 0, 400, 300,
+        graph(v, cube, -1.75, 1.75, 'stroke s-prussian')
+        + graph(v, t => cube(t) / 4, -1.9, 1.9, 'stroke s-madder')
+        + tangent(v, cube, t => 3 * t * t, x, 0.35, 'dash s-prussian')
+        + tangent(v, t => cube(t) / 4, t => 3 * t * t / 4, x, 0.9, 'dash s-madder'))
+      + dot(v, [x, cube(x)], 'f-prussian', 3.4) + dot(v, [x, cube(x) / 4], 'f-madder', 3.4)
+      + text(v, [1.3, 2.2], 'x³', 'f-prussian', -9, 4, 'end')
+      + text(v, [1.9, 1.71], 'x³/4', 'f-madder', -9, 4, 'end');
+  },
+
+  'fig-sum': () => {
+    const v = PLOT(), x = 2;
+    const a = t => t ** 3 / 4, b = t => 1 - 0.75 * t;
     return axes(v, PLOT_X, PLOT_Y) + CURVE(v)
-      + clipped('clip-q', 0, 0, 400, 300,
-        lineAt(v, x, F(x), (F(x + h) - F(x)) / h, 'stroke s-prussian'))
-      + seg(v, a, [b[0], a[1]], 'dash s-prussian')
-      + seg(v, [b[0], a[1]], b, 'dash s-prussian')
-      + dot(v, a, 'f-madder', 3.6) + dot(v, b, 'f-madder', 3.6)
-      + text(v, [x + h / 2, F(x)], 'h', 'f-prussian', 0, 17)
-      + text(v, [x + h, (F(x) + F(x + h)) / 2], 'f(x+h) − f(x)', 'f-prussian', 8, 4, 'start')
-      + text(v, a, 'x', 'f-madder', 0, -10) + text(v, b, 'x + h', 'f-madder', 0, -10);
+      + graph(v, a, -1.85, 2.05, 'stroke s-prussian')
+      + graph(v, b, -2.6, 2.6, 'stroke s-verdigris')
+      + seg(v, [x, -0.8], [x, 2.25], 'dash s-construct')
+      + dot(v, [x, a(x)], 'f-prussian', 3.4) + dot(v, [x, b(x)], 'f-verdigris', 3.4)
+      + dot(v, [x, F(x)], 'f-madder', 3.8)
+      + text(v, [-1.35, a(-1.35)], 'x³/4', 'f-prussian', -9, 4, 'end')
+      + text(v, [-1.9, b(-1.9)], '1 − 3x/4', 'f-verdigris', 9, 4, 'start')
+      + text(v, [2.45, F(2.45)], 'f', 'f-madder', 9, 4, 'start');
   },
 
-  'fig-rules': () => {
-    const v = view(200, 150, 36);
-    return axes(v, [-2.6, 2.6], [-3.9, 4]) + clipped('clip-r', 0, 0, 400, 300,
-        graph(v, x => x * x, -2.2, 2.2, 'stroke s-madder')
-        + graph(v, x => 2 * x, -2.1, 2.1, 'stroke s-prussian'))
-      + text(v, [-1.6, 2.56], 'x²', 'f-madder', -14, 0)
-      + text(v, [1.6, 3.2], '2x', 'f-prussian', 14, 0)
-      + dot(v, [0, 0], 'f-verdigris', 3.6);
+  'fig-exp': () => {
+    const v = view(200, 268, 79, 46.7), e = Math.exp;
+    return axes(v, [-2.4, 2.4], [-0.5, 5.6]) + clipped('clip-ex', 0, 0, 400, 300,
+        graph(v, e, -2.35, 1.72, 'stroke s-madder')
+        + tanline(v, [0, 1], 1, 0.9, 'dash s-prussian')
+        + tanline(v, [1, Math.E], Math.E, 0.85, 'dash s-prussian'))
+      + dot(v, [0, 1], 'f-madder', 3.4) + dot(v, [1, Math.E], 'f-madder', 3.4)
+      + text(v, [0, 1], 'slope 1', 'f-prussian', -10, 4, 'end')
+      + text(v, [1, Math.E], 'slope e ≈ 2.72', 'f-prussian', 12, 4, 'start')
+      + text(v, [1.6, e(1.6)], 'eˣ', 'f-madder', 9, 4, 'start');
   },
 
-  'fig-stationary': () => {
-    const v = PLOT();
-    const flat = x => seg(v, [x - 0.7, F(x)], [x + 0.7, F(x)], 'stroke s-verdigris')
-      + dot(v, [x, F(x)], 'f-verdigris', 3.6);
-    return axes(v, PLOT_X, PLOT_Y) + CURVE(v) + flat(-1) + flat(1)
-      + text(v, [-1, F(-1)], "f' = 0", 'f-verdigris', 0, -11)
-      + text(v, [1, F(1)], "f' = 0", 'f-verdigris', 0, 20);
+  /* The two cuts through P, drawn on the surface with their tangents. */
+  'fig-cuts': () => {
+    const v = view(125, 135, 30), c = cam(0.75, 0.55);
+    const g = gradG(P), h = ZK * G(P);
+    return tile(250, 200) + frame3(v, c) + mesh(v, c, 6)
+      + curve3(v, c, t => lift([t, P[1]]), -RX, RX, 'stroke s-madder')
+      + curve3(v, c, t => lift([P[0], t]), -RY, RY, 'stroke s-verdigris')
+      + seg3(v, c, [P[0] - 1.1, P[1], h - ZK * 1.1 * g[0]],
+        [P[0] + 1.1, P[1], h + ZK * 1.1 * g[0]], 'dash s-madder')
+      + seg3(v, c, [P[0], P[1] - 0.9, h - ZK * 0.9 * g[1]],
+        [P[0], P[1] + 0.9, h + ZK * 0.9 * g[1]], 'dash s-verdigris')
+      + baseMark(v, c, P, 'hair s-construct')
+      + dot(v, c(lift(P)), 'f-ink', 3.4);
   },
 
-  'fig-second': () => {
-    const v = PLOT();
-    return axes(v, PLOT_X, PLOT_Y) + CURVE(v)
-      + dot(v, [-1, F(-1)], 'f-verdigris', 3.6) + dot(v, [1, F(1)], 'f-verdigris', 3.6)
-      + dot(v, [0, F(0)], 'f-prussian', 3.2)
-      + text(v, [-1, F(-1)], "max   f'' < 0", 'f-verdigris', 0, -11)
-      + text(v, [1, F(1)], "min   f'' > 0", 'f-verdigris', 0, 20)
-      + text(v, [0, 1], "f'' = 0", 'f-prussian', 10, 4, 'start')
-      + text(v, [-1.5, -0.7], 'bends down', 'f-dim', 0, 0)
-      + text(v, [1.75, 2.7], 'bends up', 'f-dim', 0, 0);
-  },
-
-  'fig-contours': () => {
-    const v = CV();
-    const tag = c => text(v, [Math.sqrt(c) * 0.72, Math.sqrt(c / 2) * 0.72], c,
-      'f-prussian', 4, -3, 'start');
-    return bowl(v) + tag(1) + tag(3) + tag(5) + tag(10)
-      + dot(v, P, 'f-madder', 3.8)
-      + text(v, P, '3.53', 'f-madder', 8, 14, 'start');
-  },
-
-  'fig-slices-a': () => {
-    const v = view(125, 95, 31);
-    return axes(v, [-3.9, 3.9], [-2.9, 2.9], 'construct') + contours(v)
-      + seg(v, [-3.7, P[1]], [3.7, P[1]], 'dash s-madder')
-      + seg(v, [P[0], -2.7], [P[0], 2.7], 'dash s-verdigris')
-      + dot(v, P, 'f-ink', 3.4)
-      + text(v, [3.4, P[1]], 'vary x', 'f-madder', 0, -7)
-      + text(v, [P[0], 2.5], 'vary y', 'f-verdigris', 8, 4, 'start');
-  },
-
-  /* Both slices plotted against the displacement t from the point. */
-  'fig-slices-b': () => {
-    const v = view(125, 172, 52, 12), f0 = G(P);
+  /* Both cuts plotted flat, against the displacement t from the point. */
+  'fig-slices': () => {
+    const v = view(125, 180, 52, 12), f0 = G(P);
     const along = ([a, b]) => t => G([P[0] + a * t, P[1] + b * t]);
-    return axes(v, [-1.7, 1.7], [-0.4, 12.4], 'construct')
+    return tile(250, 200) + axes(v, [-1.7, 1.7], [-0.4, 12.4], 'construct')
       + graph(v, along([1, 0]), -1.6, 1.3, 'stroke s-madder')
       + graph(v, along([0, 1]), -1.6, 1.3, 'stroke s-verdigris')
       + seg(v, [-0.9, f0 - 2.7], [0.9, f0 + 2.7], 'dash s-madder')
@@ -1399,43 +2084,28 @@ const figures = {
       + text(v, [1.7, 0], 't', 'f-dim', 0, 14);
   },
 
-  'fig-hess': () => {
-    const v = CV();
-    return bowl(v)
-      + arrow(v, [0, 0], [1, 0], 'verdigris', 2) + arrow(v, [0, 0], [0, 2], 'verdigris', 2)
-      + text(v, [1, 0], 'curvature 2', 'f-verdigris', 6, 16, 'start')
-      + text(v, [0, 2], 'curvature 4', 'f-verdigris', 8, -4, 'start');
+  'fig-map-a': () => {
+    const v = view(125, 120, 40);
+    return mapGrid(v, false) + dot(v, PM, 'f-madder', 3.4)
+      + text(v, PM, 'p', 'f-madder', -11, 6);
+  },
+
+  'fig-map-b': () => {
+    const v = view(108, 138, 40);
+    return mapGrid(v, true) + dot(v, PHI(PM), 'f-madder', 3.4)
+      + text(v, PHI(PM), 'f(p)', 'f-madder', -19, 6);
   },
 
   'fig-jac-a': () => {
-    const v = view(125, 120, 40), p = [1, 1], k = 0.4;
-    const lines = [];
-    for (let i = -2; i <= 2; i++) lines.push(
-      seg(v, [i, -2], [i, 2], 'hair s-construct'), seg(v, [-2, i], [2, i], 'hair s-construct'));
-    const sq = [[-k, -k], [k, -k], [k, k], [-k, k]].map(d => add(p, d));
-    return lines.join('') + loop(v, sq, 'stroke s-madder') + dot(v, p, 'f-madder', 3.4)
-      + text(v, p, 'p', 'f-madder', -11, 6);
+    const v = view(125, 120, 40);
+    return mapGrid(v, false) + loop(v, SQ.map(d => add(PM, d)), 'stroke s-madder')
+      + dot(v, PM, 'f-madder', 3.4) + text(v, PM, 'p', 'f-madder', -11, 6);
   },
 
-  /* Grid and small square pushed through a nonlinear map; the Jacobian at p
-     is [[1, .5], [.5, 1]], drawn as the dashed parallelogram. */
   'fig-jac-b': () => {
-    const v = view(108, 138, 40), p = [1, 1], k = 0.4;
-    const Phi = ([x, y]) => [x + 0.25 * y * y, y + 0.25 * x * x];
-    const J = [1, 0.5, 0.5, 1];
-    const bent = (a, b) => poly(v, Array.from({length: 25},
-      (_, i) => Phi(add(a, sc(i / 24, add(b, sc(-1, a)))))), 'hair s-construct');
-    const lines = [];
-    for (let i = -2; i <= 2; i++) lines.push(bent([i, -2], [i, 2]), bent([-2, i], [2, i]));
-    const corners = [[-k, -k], [k, -k], [k, k], [-k, k]];
-    const edges = corners.map((c, i) => {
-      const d = corners[(i + 1) % 4];
-      return Array.from({length: 12}, (_, j) => Phi(add(p, add(c, sc(j / 12, add(d, sc(-1, c)))))));
-    }).flat();
-    const para = corners.map(c => add(Phi(p), ap(J, c)));
-    return lines.join('') + loop(v, edges, 'stroke s-madder')
-      + loop(v, para, 'dash s-verdigris') + dot(v, Phi(p), 'f-madder', 3.4)
-      + text(v, Phi(p), 'f(p)', 'f-madder', -18, 6);
+    const v = view(108, 138, 40);
+    return mapGrid(v, true) + mapSquare(v) + dot(v, PHI(PM), 'f-madder', 3.4)
+      + text(v, PHI(PM), 'f(p)', 'f-madder', -19, 6);
   },
 
   'fig-chain2': () => {
@@ -1472,8 +2142,9 @@ const figures = {
     const nodes = ins.map(([x, y], i) => el('circle', {cx: x, cy: y, r: 4,
       class: i === 1 ? 'f-madder' : 'f-construct'})
       + el('text', {x: x - 12, y: y + 4, class: i === 1 ? 'f-madder' : 'f-dim',
-        'text-anchor': 'end'}, i === 1 ? "x₂' = 1" : `x${'₁₂₃₄₅₆'[i]}' = 0`)).join('');
-    return wires + nodes + box
+        'text-anchor': 'end'}, i === 1 ? '1' : '0')).join('');
+    return el('text', {x: 48, y: 14, class: 'f-dim', 'text-anchor': 'start'}, 'seeds')
+      + wires + nodes + box
       + el('line', {x1: 230, y1: 105, x2: 340, y2: 105, class: 'stroke s-madder'})
       + el('circle', {cx: 340, cy: 105, r: 4, class: 'f-madder'})
       + el('text', {x: 352, y: 109, class: 'f-madder', 'text-anchor': 'start'}, '∂f/∂x₂');
@@ -1481,19 +2152,17 @@ const figures = {
 };
 
 /* --- interactive figures ---------------------------------------------- */
-const pointAt = (svg, v, ev) => {
-  const r = svg.getBoundingClientRect();
-  const k = svg.viewBox.baseVal.width / r.width;
-  return v.from([(ev.clientX - r.left) * k, (ev.clientY - r.top) * k]);
-};
 
-/* Bind sliders to a draw function and echo their values. */
+/* Bind sliders to a draw function and echo their values. A unit is a
+   suffix, or a function that formats the value itself. */
 const sliders = (ids, units, draw) => {
   const inputs = ids.map(i => document.getElementById(i));
   const go = () => {
     const xs = inputs.map(i => +i.value);
     inputs.forEach((_, k) => {
-      document.getElementById('out-' + ids[k]).textContent = fmt(xs[k]) + units[k];
+      const u = units[k];
+      document.getElementById('out-' + ids[k]).textContent =
+        typeof u === 'function' ? u(xs[k]) : fmt(xs[k]) + u;
     });
     draw(...xs);
   };
@@ -1501,155 +2170,267 @@ const sliders = (ids, units, draw) => {
   go();
 };
 
-function setupSecant() {
-  const svg = document.getElementById('fig-secant'), v = PLOT();
-  sliders(['sec-x', 'sec-h'], ['', ''], (x, h) => {
-    const a = [x, F(x)], b = [x + h, F(x + h)], q = (F(x + h) - F(x)) / h;
-    svg.innerHTML = axes(v, PLOT_X, PLOT_Y) + CURVE(v)
-      + clipped('clip-sec', 0, 0, 400, 300,
-        lineAt(v, x, F(x), dF(x), 'dash s-verdigris')
-        + lineAt(v, x, F(x), q, 'stroke s-prussian'))
-      + seg(v, a, [b[0], a[1]], 'dash s-prussian') + seg(v, [b[0], a[1]], b, 'dash s-prussian')
-      + dot(v, a, 'f-madder', 3.6) + dot(v, b, 'f-prussian', 3.4);
-    put('note-secant', `(f(x+h) − f(x)) / h = <b>${fmt(q)}</b><br>f'(x) = <b>${fmt(dF(x))}</b>`);
-  });
-}
-
-/* Three number lines: a step δ in x becomes g'δ in u, then f'g'δ in y. */
-function setupChain() {
-  const svg = document.getElementById('fig-chain');
-  const g = x => x * x, dg = x => 2 * x, f = Math.sin, df = Math.cos, d = 0.12;
-  const line = (y, lo, hi, label) => ({
-    y, at: t => 40 + 300 * (t - lo) / (hi - lo),
-    draw() {
-      return el('line', {x1: 40, y1: y, x2: 340, y2: y, class: 'hair s-construct'})
-        + el('text', {x: 40, y: y - 12, class: 'f-dim', 'text-anchor': 'start'}, label)
-        + el('text', {x: 40, y: y + 16, class: 'f-dim', 'text-anchor': 'middle'}, lo)
-        + el('text', {x: 340, y: y + 16, class: 'f-dim', 'text-anchor': 'middle'}, hi);
-    },
-  });
-  const X = line(50, 0, 2, 'x'), U = line(125, 0, 4, 'u = x²'), Y = line(200, -1, 1, 'y = sin u');
-  const step = (L, a, b, colour) => el('line', {x1: r2(L.at(a)), y1: L.y, x2: r2(L.at(b)),
-      y2: L.y, class: `stroke s-${colour}`, 'stroke-width': 5, 'stroke-linecap': 'butt'})
-    + el('circle', {cx: r2(L.at(a)), cy: L.y, r: 3.4, class: `f-${colour}`});
-  const link = (A, a, B, b) => el('line', {x1: r2(A.at(a)), y1: A.y + 4, x2: r2(B.at(b)),
-    y2: B.y - 4, class: 'dash s-construct'});
-  sliders(['ch-x'], [''], x => {
-    const u = g(x), y = f(u);
-    svg.innerHTML = X.draw() + U.draw() + Y.draw()
-      + link(X, x, U, u) + link(X, x + d, U, g(x + d))
-      + link(U, u, Y, y) + link(U, g(x + d), Y, f(g(x + d)))
-      + step(X, x, x + d, 'madder') + step(U, u, g(x + d), 'prussian')
-      + step(Y, y, f(g(x + d)), 'verdigris')
-      + el('text', {x: r2(X.at(x + d)) + 8, y: X.y + 4, class: 'f-madder',
-        'text-anchor': 'start'}, 'δ')
-      + el('text', {x: r2(U.at(Math.max(u, g(x + d)))) + 8, y: U.y + 4, class: 'f-prussian',
-        'text-anchor': 'start'}, `≈ ${fmt(dg(x))} δ`)
-      + el('text', {x: r2(Y.at(Math.max(y, f(g(x + d))))) + 8, y: Y.y + 4,
-        class: 'f-verdigris', 'text-anchor': 'start'}, `≈ ${fmt(df(u) * dg(x))} δ`);
-    put('note-chain', `g'(x) = 2x = <b>${fmt(dg(x))}</b> · f'(u) = cos u = <b>${fmt(df(u))}</b>` +
-      `<br>dy/dx = <b>${fmt(df(u) * dg(x))}</b>`);
-  });
-}
-
-function setupQuad() {
-  const svg = document.getElementById('fig-quad'), v = PLOT();
-  sliders(['qd-x'], [''], x => {
-    const y = F(x), m = dF(x), c = d2F(x);
-    const quad = t => y + m * (t - x) + c * (t - x) ** 2 / 2;
-    svg.innerHTML = axes(v, PLOT_X, PLOT_Y) + CURVE(v)
-      + clipped('clip-qd', 0, 0, 400, 300,
-        lineAt(v, x, y, m, 'stroke s-prussian')
-        + graph(v, quad, -2.9, 2.9, 'stroke s-verdigris'))
-      + dot(v, [x, y], 'f-madder', 3.6);
-    put('note-quad', `f'(x) = <b>${fmt(m)}</b>   f''(x) = <b>${fmt(c)}</b>`);
-  });
-}
-
-/* The gradient arrow is drawn at GRAD_K of its length so it fits the bowl. */
-const GRAD_K = 0.3;
-const gradScene = (v, p) => {
-  const g = gradG(p), t = unit([-g[1], g[0]]), gu = unit(g);
-  return bowl(v)
-    + seg(v, add(p, sc(-1.2, t)), add(p, sc(1.2, t)), 'dash s-construct')
-    + rightAngle(v, p, t, gu, 0.22, 'hair s-construct')
-    + arrow(v, p, add(p, sc(GRAD_K, g)), 'madder', 2)
-    + text(v, add(p, sc(GRAD_K, g)), '∇f', 'f-madder', 10, -6, 'start');
+/* A segmented control. Returns the picker, so the caller can set it. */
+const segment = (id, draw) => {
+  const bs = [...document.querySelectorAll(`#${id} button`)];
+  const pick = i => {
+    bs.forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
+    draw(i);
+  };
+  bs.forEach((b, i) => b.addEventListener('click', () => pick(i)));
+  return pick;
 };
 
-function setupGrad() {
-  const svg = document.getElementById('fig-grad'), v = CV();
-  let p = P.slice(), held = false;
-  const draw = () => {
-    const g = gradG(p);
-    svg.innerHTML = gradScene(v, p) + dot(v, p, 'f-madder', 4.5);
-    put('note-grad', `∇f = (2x, 4y) = (<b>${fmt(g[0])}</b>, <b>${fmt(g[1])}</b>)` +
-      `<br>‖∇f‖ = <b>${fmt(norm(g))}</b>   f = <b>${fmt(G(p))}</b>`);
-  };
+/* Drag anywhere in an svg, in client pixels. */
+const drags = (svg, move) => {
+  let last = null;
   svg.addEventListener('pointerdown', ev => {
-    const q = pointAt(svg, v, ev);
-    if (norm(add(q, sc(-1, p))) > 0.6) return;
-    held = true;
+    last = [ev.clientX, ev.clientY];
     svg.setPointerCapture(ev.pointerId);
     ev.preventDefault();
   });
   svg.addEventListener('pointermove', ev => {
-    if (!held) return;
-    const [x, y] = pointAt(svg, v, ev);
-    p = [Math.max(-3.2, Math.min(3.2, x)), Math.max(-2.3, Math.min(2.3, y))];
-    draw();
+    if (!last) return;
+    move(ev.clientX - last[0], ev.clientY - last[1]);
+    last = [ev.clientX, ev.clientY];
   });
-  svg.addEventListener('pointerup', () => { held = false; });
-  draw();
+  svg.addEventListener('pointerup', () => { last = null; });
+};
+
+/* A rotatable 3d scene. Returns its redraw, for sliders to call too. */
+const rotatable = (svg, draw) => {
+  const at = {az: 0.75, el: 0.55};
+  const redraw = () => draw(cam(at.az, at.el), at);
+  drags(svg, (dx, dy) => {
+    at.az += dx * 0.012;
+    at.el = Math.max(0.12, Math.min(1, at.el + dy * 0.008));
+    redraw();
+  });
+  return redraw;
+};
+
+const viewNote = at => `view: azimuth <b>${(Math.round(at.az * 180 / Math.PI)
+  % 360 + 360) % 360}°</b>   tilt <b>${Math.round(at.el * 180 / Math.PI)}°</b>`;
+
+function setupFn() {
+  const svg = document.getElementById('fig-fn'), v = PLOT();
+  sliders(['fn-x'], [''], x => {
+    const y = F(x);
+    svg.innerHTML = axes(v, PLOT_X, PLOT_Y) + CURVE(v)
+      + seg(v, [x, 0], [x, y], 'dash s-construct')
+      + seg(v, [0, y], [x, y], 'dash s-construct')
+      + dot(v, [x, y], 'f-madder', 4.2)
+      + text(v, [x, 0], fmt(x), 'f-dim', 0, y > 0 ? 16 : -8)
+      + text(v, [0, y], fmt(y), 'f-dim', -9, 4, 'end');
+    put('note-fn', `f(<b>${fmt(x)}</b>) = <b>${fmt(y)}</b>`);
+  });
 }
 
-function setupDir() {
-  const svg = document.getElementById('fig-dir'), v = CV(), g = gradG(P);
-  sliders(['dir-a'], ['°'], a => {
-    const t = a * Math.PI / 180, d = [Math.cos(t), Math.sin(t)];
-    const D = g[0] * d[0] + g[1] * d[1];
-    svg.innerHTML = gradScene(v, P) + arrow(v, P, add(P, d), 'prussian', 2)
-      + dot(v, P, 'f-ink', 3.4)
-      + text(v, add(P, d), 'd', 'f-prussian', 10 * d[0], -10 * d[1] + 4);
-    const word = Math.abs(D) < 0.05 ? 'level — along the contour'
-      : D > 0 ? 'uphill' : 'downhill';
-    put('note-dir', `∇f · d = <b>${fmt(D)}</b>   ${word}` +
-      `<br>‖∇f‖ cos θ, ‖∇f‖ = ${fmt(norm(g))}`);
+function setupQuotient() {
+  const svg = document.getElementById('fig-quotient'), v = PLOT();
+  sliders(['qt-x', 'qt-h'], ['', ''], (x, h) => {
+    const a = [x, F(x)], b = [x + h, F(x + h)], q = (F(x + h) - F(x)) / h;
+    svg.innerHTML = axes(v, PLOT_X, PLOT_Y)
+      + clipped('clip-qt', 0, 0, 400, 300,
+        CURVE_W(v) + lineAt(v, x, F(x), q, 'stroke s-prussian'))
+      + seg(v, a, [b[0], a[1]], 'dash s-prussian')
+      + seg(v, [b[0], a[1]], b, 'dash s-prussian')
+      + dot(v, a, 'f-madder', 3.8) + dot(v, b, 'f-prussian', 3.4)
+      + text(v, [x + h / 2, F(x)], 'h', 'f-prussian', 0, 17)
+      + text(v, a, 'x', 'f-madder', -11, 4, 'end');
+    put('note-quotient', `rise <b>${fmt(F(x + h) - F(x))}</b>   run <b>${fmt(h)}</b>` +
+      `<br>(f(x+h) − f(x)) / h = <b>${q.toFixed(3)}</b>`);
   });
 }
 
-/* Error of the difference quotients for exp at 1, in actual doubles. */
-function setupStep() {
-  const svg = document.getElementById('fig-step');
-  const e = Math.E, x = 1;
-  const fwd = h => (Math.exp(x + h) - Math.exp(x)) / h;
-  const cen = h => (Math.exp(x + h) - Math.exp(x - h)) / (2 * h);
-  const v = view(50 + 16 * 22, 250 - 18 * 12.5, 22, 18);   // x: log10 h, y: log10 error
-  const err = (q, lh) => Math.log10(Math.max(Math.abs(q(10 ** lh) - e), 1e-13));
-  const curve = (q, cls) => poly(v, Array.from({length: 121},
-    (_, i) => { const lh = -16 + i / 8; return [lh, err(q, lh)]; }), cls);
-  const frame = () => {
-    const out = [seg(v, [-16.5, -12.5], [-0.5, -12.5], 'hair s-construct'),
-      seg(v, [-16.5, -12.5], [-16.5, 0.5], 'hair s-construct')];
-    for (let k = -16; k <= -1; k += 3) out.push(
-      text(v, [k, -12.5], `1e${k}`, 'f-dim', 0, 14));
-    for (let k = -12; k <= 0; k += 4) out.push(
-      text(v, [-16.5, k], `1e${k}`, 'f-dim', -6, 4, 'end'));
-    return out.join('') + text(v, [-8.5, -12.5], 'step h', 'f-dim', 0, 27)
-      + text(v, [-16.5, 0.95], 'error  |quotient − e|', 'f-dim', 0, 0, 'start');
+/* Magnify around one point, keeping the tangent drawn: the gap between the
+   two at the edge of the frame is the readout. */
+function setupZoom() {
+  const svg = document.getElementById('fig-zoom');
+  const x0 = 1.4, y0 = F(x0), m = dF(x0);
+  sliders(['zm-k'], [e => '×' + Math.round(10 ** e)], e => {
+    const s = 40 * 10 ** e, w = 200 / s;
+    const v = view(200 - s * x0, 150 + s * y0, s);
+    const lo = Math.max(x0 - w, -2.7), hi = Math.min(x0 + w, 2.7);
+    const L = 10 ** Math.floor(Math.log10(w)), bx = x0 - 0.92 * w, by = y0 + 0.62 * w;
+    const xe = Math.min(x0 + w, 2.7);
+    const gap = Math.abs(F(xe) - (y0 + m * (xe - x0)));
+    svg.innerHTML = graph(v, F, lo, hi, 'stroke s-madder')
+      + lineAt(v, x0, y0, m, 'dash s-prussian')
+      + dot(v, [x0, y0], 'f-madder', 3.8)
+      + seg(v, [bx, by], [bx + L, by], 'hair s-ink')
+      + seg(v, [bx, by - 0.02 * w], [bx, by + 0.02 * w], 'hair s-ink')
+      + seg(v, [bx + L, by - 0.02 * w], [bx + L, by + 0.02 * w], 'hair s-ink')
+      + text(v, [bx + L / 2, by], String(L), 'f-dim', 0, -8);
+    put('note-zoom', `window ±<b>${w.toPrecision(2)}</b>` +
+      `<br>curve leaves line by <b>${gap.toExponential(1)}</b> at the edge` +
+      `  (<b>${Math.round(gap * s)}</b> px)`);
+  });
+}
+
+function setupConst() {
+  const svg = document.getElementById('fig-const');
+  sliders(['ct-x'], [''], x => {
+    svg.innerHTML = stackFig('ct', {x, xr: [-2.45, 2.45], exact: true, rows: [
+      {g: () => 2, r: [-0.4, 3.4], hue: 'madder', name: 'f(x) = 2'},
+      {g: () => 0, r: [-1, 1], hue: 'prussian', name: 'df/dx = 0'}]});
+    put('note-const', `f(x) = <b>2</b>   f(x+1) = <b>2</b>` +
+      `<br>rise 0 over run 1 → df/dx = <b>0</b>`);
+  });
+}
+
+function setupLine() {
+  const svg = document.getElementById('fig-line');
+  sliders(['ln-k', 'ln-x'], ['', ''], (k, x) => {
+    svg.innerHTML = stackFig('ln', {x, xr: [-2.45, 2.45], exact: true, rows: [
+      {g: t => k * t + 1, r: [-4.5, 5.5], hue: 'madder',
+        name: `f(x) = ${num(k)}x + 1`},
+      {g: () => k, r: [-2.2, 3.2], hue: 'prussian', name: `df/dx = ${num(k)}`}]});
+    put('note-line', `rise <b>${fmt(k)}</b> over run 1 → df/dx = <b>${fmt(k)}</b>` +
+      `<br>the same at every x`);
+  });
+}
+
+function setupSquare() {
+  const svg = document.getElementById('fig-square');
+  sliders(['sq-x'], [''], x => {
+    svg.innerHTML = stackFig('sq', {x, xr: [-2.45, 2.45], rows: [
+      {g: t => t * t, r: [-0.6, 6.4], hue: 'madder', name: 'f(x) = x²'},
+      {g: t => 2 * t, r: [-5.2, 5.2], hue: 'prussian', name: 'df/dx = 2x'}]});
+    put('note-square', `x = <b>${fmt(x)}</b>   f(x) = <b>${fmt(x * x)}</b>` +
+      `<br>df/dx = 2x = <b>${fmt(2 * x)}</b>`);
+  });
+}
+
+const SUP = ['', '', '²', '³'];
+
+function setupPower() {
+  const svg = document.getElementById('fig-power');
+  let n = 2, x = 1.1;
+  const draw = () => {
+    const dname = n === 1 ? '1' : `${n}x${SUP[n - 1]}`;
+    svg.innerHTML = stackFig('pw', {x, xr: [-1.6, 1.6], rows: [
+      {g: t => t ** n, r: [-4.2, 4.2], hue: 'madder', name: `f(x) = x${SUP[n]}`},
+      {g: t => n * t ** (n - 1), r: [-8.2, 8.2], hue: 'prussian',
+        name: `df/dx = ${dname}`}]});
+    put('note-power', `x = <b>${fmt(x)}</b>   f(x) = <b>${fmt(x ** n)}</b>` +
+      `<br>df/dx = ${dname} = <b>${fmt(n * x ** (n - 1))}</b>`);
   };
-  sliders(['st-h'], [''], lh => {
-    const h = 10 ** lh, q = fwd(h);
-    svg.innerHTML = frame() + curve(fwd, 'stroke s-madder') + curve(cen, 'stroke s-verdigris')
-      + text(v, [-3, err(fwd, -3)], 'forward', 'f-madder', 8, -6, 'start')
-      + text(v, [-3, err(cen, -3)], 'central', 'f-verdigris', 8, 12, 'start')
-      + seg(v, [lh, -12.5], [lh, 0.5], 'dash s-construct')
-      + dot(v, [lh, err(fwd, lh)], 'f-madder', 4.5);
-    put('note-step', `h = ${h.toExponential(0)}   (f(x+h) − f(x))/h = <b>${q.toFixed(10)}</b>` +
-      `<br>e = ${e.toFixed(10)}   error <b>${Math.abs(q - e).toExponential(1)}</b>`);
+  const pick = segment('pw-n', i => { n = i + 1; draw(); });
+  sliders(['pw-x'], [''], v => { x = v; draw(); });
+  pick(1);
+}
+
+/* Inner and composite drawn against the same x, each with its tangent. */
+function setupChain() {
+  const svg = document.getElementById('fig-chain'), v = view(200, 247, 75);
+  const g = x => x * x / 2, y = x => g(x) ** 2 / 2;
+  sliders(['ch-x'], [''], x => {
+    const u = g(x), du = x, dy = u;
+    svg.innerHTML = axes(v, [-2.35, 2.35], [-0.6, 3.25], 'construct')
+      + clipped('clip-ch', 0, 0, 400, 300,
+        graph(v, g, -2.3, 2.3, 'stroke s-prussian')
+        + graph(v, y, -2.3, 2.3, 'stroke s-madder')
+        + tanline(v, [x, u], du, 0.8, 'dash s-prussian')
+        + tanline(v, [x, y(x)], dy * du, 0.8, 'dash s-madder'))
+      + seg(v, [x, y(x)], [x, u], 'hair s-construct')
+      + dot(v, [x, u], 'f-prussian', 3.6) + dot(v, [x, y(x)], 'f-madder', 3.8)
+      + text(v, [-2.3, -0.3], 'u = x²/2', 'f-prussian', 0, 0, 'start')
+      + text(v, [-2.3, -0.52], 'y = u²/2', 'f-madder', 0, 0, 'start');
+    put('note-chain', `du/dx = x = <b>${fmt(du)}</b>` +
+      `   df/du = u = <b>${fmt(dy)}</b>` +
+      `<br>dy/dx = <b>${fmt(dy * du)}</b>` +
+      `   directly: x³/2 = <b>${fmt(x ** 3 / 2)}</b>`);
   });
 }
 
+function setupSecond() {
+  const svg = document.getElementById('fig-second');
+  sliders(['sd-x'], [''], x => {
+    svg.innerHTML = stackFig('sd', {x, xr: [-2.6, 2.6], rows: [
+      {g: F, r: [-1.7, 3.7], hue: 'madder', name: 'f'},
+      {g: dF, r: [-1.4, 5.6], hue: 'prussian', name: 'df/dx'},
+      {g: d2F, r: [-4.2, 4.2], hue: 'verdigris', name: 'd²f/dx²'}]});
+    put('note-second', `f = <b>${fmt(F(x))}</b>   df/dx = <b>${fmt(dF(x))}</b>` +
+      `   d²f/dx² = <b>${fmt(d2F(x))}</b>`);
+  });
+}
+
+function setupSurface() {
+  const svg = document.getElementById('fig-surface'), v = SV();
+  rotatable(svg, (c, at) => {
+    svg.innerHTML = tile(400, 300) + frame3(v, c) + mesh(v, c) + rings(v, c)
+      + baseMark(v, c, P, 'dash s-construct')
+      + dot(v, c(lift(P)), 'f-madder', 4.5)
+      + text(v, c([P[0], P[1], 0]), '(1.5, 0.8)', 'f-dim', 0, 15);
+    put('note-surface', `f(1.5, 0.8) = <b>3.53</b>` +
+      `<br>rings every unit or so<br>${viewNote(at)}`);
+  })();
+}
+
+/* The gradient arrow lies flat in the base plane, where a step is taken.
+   It is drawn at GRAD_K of its true length, and never longer than ARROW_MAX,
+   so that it stays inside the frame. */
+const GRAD_K = 0.22, ARROW_MAX = 1;
+
+function setupGrad() {
+  const svg = document.getElementById('fig-grad'), v = SV();
+  let p = P.slice();
+  const redraw = rotatable(svg, (c, at) => {
+    const g = gradG(p), L = Math.min(GRAD_K * norm(g), ARROW_MAX);
+    const tip = add(p, sc(L / norm(g), g));
+    svg.innerHTML = tile(400, 300) + frame3(v, c) + mesh(v, c) + rings(v, c)
+      + levelArc(v, c, p)
+      + baseMark(v, c, p, 'dash s-construct')
+      + seg3(v, c, [tip[0], tip[1], 0], lift(tip), 'dash s-construct')
+      + dot(v, c(lift(tip)), 'f-construct', 3)
+      + dot(v, c(lift(p)), 'f-madder', 4)
+      + arrow(v, c([p[0], p[1], 0]), c([tip[0], tip[1], 0]), 'madder', 2)
+      + text(v, c([tip[0], tip[1], 0]), '∇f', 'f-madder', 10, -6, 'start');
+    put('note-grad', `∇f = (2x, 4y) = (<b>${fmt(g[0])}</b>, <b>${fmt(g[1])}</b>)` +
+      `   ‖∇f‖ = <b>${fmt(norm(g))}</b>` +
+      `<br>f here <b>${fmt(G(p))}</b>, at the arrow's tip <b>${fmt(G(tip))}</b>` +
+      `<br>${viewNote(at)}`);
+  });
+  sliders(['gr-x', 'gr-y'], ['', ''], (x, y) => { p = [x, y]; redraw(); });
+}
+
+/* The bowl cut along both axes through its lowest point: the two bends. */
+function setupHess() {
+  const svg = document.getElementById('fig-hess'), v = SV();
+  rotatable(svg, (c, at) => {
+    svg.innerHTML = tile(400, 300) + frame3(v, c) + mesh(v, c)
+      + curve3(v, c, t => lift([t, 0]), -RX, RX, 'stroke s-madder')
+      + curve3(v, c, t => lift([0, t]), -RY, RY, 'stroke s-verdigris')
+      + dot(v, c([0, 0, 0]), 'f-ink', 3.4)
+      + text(v, c(lift([RX, 0])), 'bend 2', 'f-madder', 0, -9)
+      + text(v, c(lift([0, RY])), 'bend 4', 'f-verdigris', 8, -6, 'start');
+    put('note-hess', `along x: f = x², bend <b>2</b>` +
+      `<br>along y: f = 2y², bend <b>4</b><br>${viewNote(at)}`);
+  })();
+}
+
+/* Forward, backward and central are one chord, with the two sample points
+   placed differently around x. The dashed green line is the truth. */
+const setupDiff = (name, lo, hi) => {
+  const svg = document.getElementById(`fig-${name}`), v = PLOT();
+  sliders([`${name}-x`, `${name}-h`], ['', ''], (x, h) => {
+    const a = x + lo * h, b = x + hi * h, q = (F(b) - F(a)) / (b - a);
+    svg.innerHTML = axes(v, PLOT_X, PLOT_Y)
+      + clipped(`clip-${name}`, 0, 0, 400, 300, CURVE_W(v)
+        + tanline(v, [x, F(x)], dF(x), 3.2, 'dash s-verdigris')
+        + lineAt(v, a, F(a), q, 'stroke s-prussian'))
+      + seg(v, [a, F(a)], [b, F(a)], 'dash s-prussian')
+      + seg(v, [b, F(a)], [b, F(b)], 'dash s-prussian')
+      + dot(v, [a, F(a)], 'f-prussian', 3.4) + dot(v, [b, F(b)], 'f-prussian', 3.4)
+      + dot(v, [x, F(x)], 'f-madder', 4.2)
+      + text(v, [(a + 3 * b) / 4, F(a)], hi - lo > 1 ? '2h' : 'h', 'f-prussian', 0, 17)
+      + text(v, [x, F(x)], 'x', 'f-madder', -11, 4, 'end');
+    put(`note-${name}`, `quotient <b>${q.toFixed(3)}</b>` +
+      `   df/dx <b>${dF(x).toFixed(3)}</b>` +
+      `<br>error <b>${Math.abs(q - dF(x)).toFixed(3)}</b>`);
+  });
+};
 /* --- speaker notes window --------------------------------------------- */
 
 /* A second window, shared with nobody: put the deck on the projector and
@@ -1772,12 +2553,21 @@ slides.forEach((s, i) => s.insertAdjacentHTML('afterbegin',
 Object.entries(figures).forEach(([id, f]) => {
   document.getElementById(id).innerHTML = f();
 });
-setupSecant();
+setupFn();
+setupQuotient();
+setupZoom();
+setupConst();
+setupLine();
+setupSquare();
+setupPower();
 setupChain();
-setupQuad();
+setupSecond();
+setupSurface();
 setupGrad();
-setupDir();
-setupStep();
+setupHess();
+setupDiff('fwd', 0, 1);
+setupDiff('bwd', -1, 0);
+setupDiff('cen', -1, 1);
 
 renderMathInElement(document.body, {throwOnError: false, delimiters: [
   {left: '$$', right: '$$', display: true},

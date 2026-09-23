@@ -75,24 +75,48 @@ wrong option is a trap for. Pick distractors that are plausible mistakes, not fi
 
 ## Presentation style
 
-*The slide is not the script.*
+*The slide is not the script, and every word on it is spoken to the room.*
 
-A slide carries, at most, a heading, an optional one-line italic `.sub`, a short list or
-a displayed equation, one `.claim`, and a figure with its caption. Three or four bullets,
-each a fragment rather than a sentence. As a number to steer by: lecture 1 as delivered
-averages 35 words of on-slide text per slide, and the draft that had to be rewritten
-averaged 113.
+**Write for the audience, never about the deck.** Nothing on a slide may refer to the
+deck's own structure or to the lecturer's plan for it. "The example for this section",
+"no derivatives yet", "the second of the three cases", "as promised earlier" are notes
+to the author that have leaked onto the screen. Say the mathematical thing instead:
+*One number goes in, one number comes out.* Headings and `.sub` lines break this rule
+first, so write them last and read them back as if from the third row. The plan for the
+hour belongs in the speaker notes, and there it is welcome.
 
-Everything else is spoken, and everything spoken is written down in the speaker notes:
-the derivation, the worked arithmetic, the caveat, the aside, the demonstration to run,
-the forward reference. Notes run long on purpose — roughly a hundred words a slide — and
-they are the place a sentence goes when it is true, worth saying, and would crowd the
-slide. If prose is on the slide, the audience reads it instead of listening.
+**Meet the audience where it is.** No prerequisites beyond arithmetic. A term is defined
+before it is used; a rule is built up through the simplest cases that show it — a
+constant, then a line, then a square, then the general power — and each case may have
+its own slide. Assume nothing about a topic the series has not covered, however
+standard: a function nobody has differentiated yet cannot appear in an example.
 
-Interactive figures carry one idea and one cluster of controls. A segmented control that
-switches a figure between four unrelated transforms is a slide doing four jobs; give
-each its own slide and its own slider. Every such figure needs a resting state that
+**A slide carries little.** At most a heading, an optional one-line italic `.sub`, a
+short list or a displayed equation, one `.claim`, and a figure with its caption. Three
+or four bullets, each a fragment rather than a sentence; a full stop in a bullet is a
+sign it belongs in the notes. As a number to steer by: lecture 1 as delivered averages
+35 words of on-slide text per slide, and the draft that had to be rewritten averaged
+113.
+
+**A definition box holds the definition.** The general statement goes in the `.eq` box;
+a worked instance goes underneath it in a bare one, never inside the same box. Where the
+example *is* the lesson — a differentiation rule, a first encounter with notation — it
+earns its place on the slide; otherwise the arithmetic is spoken, and lives in the
+notes.
+
+**Everything else is spoken, and everything spoken is written down** in the speaker
+notes: the derivation, the worked arithmetic, the caveat, the aside, the demonstration
+to run, the forward reference. Notes run long on purpose — roughly a hundred words a
+slide — and they are where a sentence goes when it is true, worth saying, and would
+crowd the slide. If prose is on the slide, the audience reads it instead of listening.
+The notes should be the longest thing in a slide's markup; if they are not, the slide is
+carrying prose that belongs in them.
+
+**Interactive figures carry one idea and one cluster of controls.** A segmented control
+that switches a figure between four unrelated transforms is a slide doing four jobs;
+give each its own slide and its own slider. Every such figure needs a resting state that
 reads correctly before anything is touched.
+
 ---
 
 # Lecture 1 — Vectors, bases and linear maps
@@ -252,125 +276,147 @@ Their tables below were written before lecture 1 was built, at the old granulari
 line per topic, several topics to a slide, twenty-three slides to a deck. Read them as
 lists of *concepts in order*, not as slide sequences. Expect each to split into thirty or
 so slides once the presentation-style rules above are applied, and renumber the
-cross-references in this document when it happens. Lecture 2 has been rewritten at the
-new granularity and no longer needs this caveat.
+cross-references in this document when it happens.
 
 ---
 
 # Lecture 2 — Basic calculus
 
-**Status: plan, revised.** Slimmed against what lectures 3 and 4 actually consume; see
-*What was cut* below. Written at one concept per line, so the table is close to the slide
-sequence rather than a topic list.
+**Status: built.** `calculus/lecture-2.html`.
 
-**Arc.** The derivative is presented as the coefficient of the best local linear
-approximation, from which a handful of rules and the chain rule follow. The second
-derivative gives curvature and the quadratic approximation, which is as far as expansion
-goes. The same construction is then carried into several variables: partial derivatives,
-gradient, directional derivative, Jacobian, Hessian, and the chain rule as a product of
-Jacobians. The lecture closes on how a derivative is actually obtained: by hand, by
-difference quotient, or automatically — with forward mode worked and its cost stated, so
-that lecture 4 has a reason to want reverse mode.
+**Arc.** The lecture is organised by the shape of the function, and says so: one number
+in and one out, then several in and one out, then several in and several out. Each
+section opens on a slide that states the shape, gives the general form and an example,
+and every section after the first is the first one again with more coordinates. Section
+I is deliberately slow at the start — a constant, a line, a square, and only then the
+power rule — and closes on the chain rule and the second derivative. Section II builds
+the partial derivatives, the gradient and the Hessian over a surface drawn in three
+dimensions. Section III does the Jacobian and the chain rule as a matrix product. The
+lecture closes on how a derivative is actually obtained: by hand, by difference quotient
+— forward, backward, central, one slide each — or automatically, with forward mode worked
+and its cost stated, so lecture 4 has a reason to want reverse mode.
+
+**Notation.** \(\frac{df}{dx}\) throughout. The prime is named once, on its own line on
+slide 6, and never used: it cannot say which variable it differentiates with respect to,
+and section II has two. Gradients are written as rows, so \(\nabla f\,h\) is a matrix
+times a step and the gradient is visibly the one-row Jacobian of slide 22.
 
 | # | Slide | |
 |---|---|---|
-| 1 | Basic calculus | |
-| 2 | The series | |
-| 3 | Outline | |
-| | **I. The derivative in one variable** | |
-| 4 | Rates of change and the difference quotient | |
-| 5 | The derivative as best local linear approximation | slider |
-| 6 | Differentiation rules | |
-| 7 | The chain rule | slider |
-| | **II. Local behaviour** | |
-| 8 | Stationary points | |
-| 9 | The second derivative | |
-| 10 | The quadratic approximation | slider |
-| | **III. Several variables** | |
-| 11 | Functions of several variables | |
-| 12 | Partial derivatives | |
-| 13 | The gradient | drag |
-| 14 | Directional derivatives | slider |
-| 15 | The Jacobian | |
-| 16 | The Hessian | |
-| 17 | The chain rule in several variables | |
+| 1–3 | Title, the series, outline | |
+| | **I. One number in** | |
+| 4 | A function of one number | slider |
+| 5 | Rates of change and the difference quotient | sliders x, h |
+| 6 | The derivative | zoom slider |
+| 7 | The slope of a constant | slider |
+| 8 | The slope of a line | sliders k, x |
+| 9 | The slope of \(x^2\) | slider |
+| 10 | Rule: powers | buttons, slider |
+| 11 | Rule: constant multiples | |
+| 12 | Rule: sums | |
+| 13 | Rule: the exponential | |
+| 14 | The chain rule | slider |
+| 15 | The second derivative | slider |
+| | **II. Vector in** | |
+| 16 | A function with vector input | drag to rotate |
+| 17 | Partial derivatives | |
+| 18 | One slice at a time | |
+| 19 | The gradient | sliders, drag |
+| 20 | The Hessian | drag to rotate |
+| | **III. Vector out** | |
+| 21 | A function with vector output | |
+| 22 | The Jacobian | |
+| 23 | The chain rule, in several variables | |
 | | **IV. Obtaining derivatives** | |
-| 18 | By hand, by difference quotient, by program | |
-| 19 | Numerical differentiation and the step size | slider |
-| 20 | Forward-mode automatic differentiation | |
-| 21 | The cost of forward mode | |
+| 24 | By hand, by difference quotient, by program | |
+| 25 | The forward difference | sliders x, h |
+| 26 | The backward difference | sliders x, h |
+| 27 | The central difference | sliders x, h |
+| 28 | Forward-mode automatic differentiation | |
+| 29 | The cost of forward mode | |
 | | **V. Quiz** | |
-| 22 | Quiz | |
-| 23–26 | Four questions | |
-| 27 | Questions? | |
-| 28 | Thank you | |
+| 30 | Quiz, then four questions | |
+| 35–36 | Questions? Thank you | |
 
-Eighteen material slides, six of them interactive, against twenty-two in lecture 1. The
-budget is deliberately below lecture 1's: three of the slides — 5, 7 and 13 — are
-load-bearing for the rest of the series and should get the time the cut material frees.
+Twenty-six material slides, twelve of them interactive. Slides 5, 14 and 19 are
+load-bearing for the rest of the series and should get the time the rules slides save.
 
-**What each later lecture takes from here.** Lecture 3 needs the gradient (13) and the
-directional derivative (14) for descent directions and line search; the stationary-point
-condition (8) as the thing an algorithm searches for; the second derivative (9), the
-quadratic approximation (10) and the Hessian (16) for Newton's method and for
-conditioning; the Jacobian (15) and the chain rule (7) for Gauss–Newton. Lecture 4 needs
-the chain rule in several variables (17) — that is the whole of backpropagation — and the
-cost of forward mode (21) as the reason reverse mode exists. Lecture 5 needs nothing
-beyond what lecture 4 already uses. Every slide in the table is on that list or is the
-step immediately before one that is.
+**One example per section, met before it is differentiated.** Slide 4 is nothing but
+\(f(x)=\tfrac14x^3-\tfrac34x+1\) on a slider: put a number in, read one out, and see
+where the curve flattens before slopes are mentioned. Slides 10 to 12 then differentiate
+its three pieces one rule at a time and arrive at \(\tfrac34x^2-\tfrac34\), so the
+derivative every figure in section I uses is assembled in front of the room. Section II
+uses the stretched bowl \(x^2+2y^2\) throughout, and section III the bent map
+\((x,y)\mapsto(x+\tfrac14y^2,\;y+\tfrac14x^2)\).
 
-**The limit has no slide of its own.** Slide 4 writes the difference quotient and says
-"as \(h\) shrinks"; slide 5 shows it on a slider. That is the whole treatment. No
-epsilon-delta argument, no discussion of when the limit fails to exist beyond a remark
-that a corner has no tangent.
+**Only polynomials and \(e^x\) are ever differentiated.** Sine and cosine are never used,
+not even in an example, because no slide gives their derivatives. The chain rule,
+automatic differentiation and the quiz all run on \(u=\tfrac12x^2\), \(y=\tfrac12u^2\) —
+a composite whose answer can also be got by substituting first, which is the check that
+settles the rule for a room new to it.
 
-**The rules are one slide.** Sum, scalar multiple, power and exponential, in a short
-table, because those are the ones the later lectures differentiate. Product and quotient
-rules are named in the notes as existing and are not used anywhere in the series; sine and
-cosine likewise. The chain rule gets its own slide because it is the one that matters.
+**The limit is written but not developed.** Slide 5 puts the difference quotient on two
+sliders and the room watches the number settle; slide 6 writes \(\lim_{h\to0}\) and reads
+it out in words; slide 9 does the one algebraic limit in the lecture, \((x+h)^2\). The
+same \(\lim\) appears on slide 18 for the partials. No epsilon-delta argument, and no
+discussion of when the limit fails beyond the remark that a corner has no tangent.
 
-**Expansion stops at degree two.** Taylor polynomials as a topic were cut. What lecture 3
-needs is the quadratic model \(f(x+h)\approx f(x)+f'(x)h+\tfrac12 f''(x)h^2\), and that is
-slide 10, presented as "the linear approximation, plus curvature". The general series, its
-remainder and its convergence are not mentioned. Slide 16 does the same in several
-variables with the Hessian, and that is the second-order expansion lecture 3 uses.
+**The slope of a function is a function, and the figures say so.** Slides 7 to 10 and 15
+share one figure: the function in an upper panel, its slope in a lower one, a marker
+running down through both, and the tangent in each panel coloured to match the panel
+below, whose height it is. Slide 15 stacks three panels and does not name them \(f'\) or
+\(f''\).
 
-**The chain rule in several variables is Jacobians multiplied.** Slide 17 says the
-derivative of a composition is the matrix product of the Jacobians, which is the matrix
-product from lecture 1 read as "rates compose". Backpropagation in lecture 4 is this slide
-evaluated in a particular order; say so.
+**Section II is drawn in three dimensions, on white.** The 3D figures get an opaque tile
+so the deck's grid does not read through them, a light wireframe, and level rings toned
+down and drawn every unit or so. Slide 16 is the rotatable surface with the input point
+marked in the base plane and its height carried up. Slide 17 works both partial
+derivatives arithmetically with no figure at all, and slide 18 then shows what the
+arithmetic was doing. Slide 19 puts the gradient where it belongs — flat in the base
+plane, at right angles to the level curve, with a faint vertical at its tip to show the
+climb it buys. Slide 20 cuts the bowl along both axes through its lowest point, so the
+two bends are side by side. The flattened contour map is never a slide of its own; it is
+what the surface becomes when the room tilts the view towards straight down.
 
-**Obtaining derivatives stays here, and closes the deck.** Slide 18 names the three
-routes. Slide 19 revisits the difference quotient with a finite \(h\) and shows the
-trade-off between truncation and cancellation on a slider — that is the floating block
-of the earlier plan, collapsed to one slide and settled here rather than in lecture 3.
-Slide 20 carries (value, derivative) pairs through the rules of slide 6 and the chain
-rule of slide 7, so that forward mode is seen to be the chain rule made mechanical.
-Slide 21 states the cost: one pass per input, which a function of a million parameters
-and one output cannot afford. Reverse mode is named as the fix and left for lecture 4.
+**Expansion stops at the first order.** The second-order model is named in one sentence
+in the Hessian notes, as the thing lecture 3's Newton method minimises. Lecture 3
+introduces \(f(x+h)\approx f(x)+\nabla f\,h+\tfrac12h^{\mathsf T}Hh\) where it needs it.
 
-**Coordination note.** Slide 8 states the condition \(f' = 0\) at stationary points as a
-fact about local behaviour. Lecture 3 does not restate it as a definition; it arrives at
-the same condition as the thing an algorithm searches for.
+**Shapes are settled on the Jacobian slide.** \(m\times n\): one row per output, one
+column per input. One output makes it the gradient, one of each makes it
+\(\frac{df}{dx}\), and the Hessian is the Jacobian of the gradient map, which is why it
+is square. Four objects, one definition — say it out loud there.
 
-**Cut candidates, in order:** 21 (say the cost in a sentence on slide 20), 19, 12
-(define partials on the gradient slide). Slides 5, 7 and 13 are not cut candidates.
+**Numerical differentiation is three slides.** Forward, backward and central, each with
+the same example function, the same two sliders, and the true tangent drawn dashed beside
+the chord so the gap on screen is the error. Shrinking \(h\) shows the one-sided errors
+halving while the central one quarters. The truncation-versus-cancellation log-log plot
+is not in the deck; the rules of thumb — \(h\approx10^{-8}\) one-sided, \(10^{-5}\)
+central, noise below that — are in the notes of slides 25 and 27.
 
-**Forward dependencies.** Slide 5 (linear approximation) is the picture lecture 3 uses
-for every descent step. Slide 7 (chain rule) is the whole of backpropagation in
-lecture 4. Slide 13 (gradient) and slide 16 (Hessian) are the objects lecture 3
-manipulates. Slide 21 (cost of forward mode) is the reason lecture 4 needs reverse mode.
+**What each later lecture takes from here.** Lecture 3 needs the gradient (19) for
+descent directions, the second derivative (15) and the Hessian (20) for Newton's method
+and for conditioning, and the Jacobian (22) with the chain rule (14) for Gauss–Newton.
+Lecture 4 needs the chain rule in several variables (23) — that is the whole of
+backpropagation — and the cost of forward mode (29) as the reason reverse mode exists.
+Lecture 5 needs nothing beyond what lecture 4 already uses.
 
-**What was cut, and why.** The limit as a slide (folded into 4 and 5); product and
-quotient rules (named, not taught; unused later); higher derivatives beyond the second
-and Taylor polynomials as a topic (replaced by the quadratic approximation, which is all
-lecture 3 needs); the second-order expansion as a slide separate from the Hessian
-(merged into 16). Restoring Taylor polynomials is the first thing to reconsider if the
-hour comes in short, since they are the natural continuation of slide 10.
+**What lecture 3 must introduce itself.** The *directional derivative*
+\(D_df=\nabla f\,d\), which is not in this deck, so lecture 3 defines it where it first
+needs a descent direction. *Stationary points* and the second-derivative test, likewise:
+lecture 3 arrives at \(\nabla f=0\) as the thing its algorithms stop at, which is where
+it belongs. Slide 15 plants the word "bend" and nothing more.
+
+**Cut candidates, in order:** 29 (say the cost in a sentence on slide 28), 26 (name the
+backward difference on slide 25 and go straight to central), 13 (quote \(e^x\) when
+lecture 4 first needs it), 11 (fold the constant-multiple rule into the sum rule).
+Slides 5, 14 and 19 are not cut candidates.
 
 **Not covered, deliberately:** integration; series, convergence and the Taylor remainder;
-multivariable integration; differential equations; any epsilon-delta argument; implicit
-differentiation; reverse-mode differentiation (lecture 4).
+product and quotient rules; the derivatives of sine and cosine; multivariable
+integration; differential equations; any epsilon-delta argument; implicit
+differentiation; the quadratic approximation as a slide; directional derivatives;
+stationary points; reverse-mode differentiation (lecture 4).
 
 ---
 
@@ -554,16 +600,17 @@ probability the series never develops. The current decision is to acknowledge th
 the slide and continue. A sixth lecture on probability, expectation and likelihood is the
 obvious extension if there is appetite.
 
-**Numerical differentiation.** Settled: it is one slide at the end of lecture 2, together
-with forward-mode automatic differentiation, so that lecture 3 may assume derivatives are
-available and lecture 4 only has to add reverse mode.
+**Numerical differentiation.** Settled: it is three slides at the end of lecture 2 —
+forward, backward and central — together with forward-mode automatic differentiation, so
+that lecture 3 may assume derivatives are available and lecture 4 only has to add reverse
+mode.
 
 **Load-bearing slides.** If any of these does not land, later lectures suffer: in
 lecture 1, the inner product (10) and the columns of a matrix as the images of the basis
-vectors (18); then 2/5 (the derivative as linear approximation), 2/7 (the chain rule),
-2/13 (the gradient), 3/7 (descent direction and line search), 4/5 (a composition of
-linear maps is linear), 5/10 (scores as inner products). The lecture 3–5 numbers are at
-the old granularity and will move.
+vectors (18); then 2/5 (the difference quotient settling on a slider), 2/14 (the chain
+rule), 2/19 (the gradient), 3/7 (descent direction and line search), 4/5 (a composition
+of linear maps is linear), 5/10 (scores as inner products). The lecture 3–5 numbers are
+at the old granularity and will move.
 
 ---
 
@@ -687,9 +734,6 @@ state it opens in that reads correctly with nothing touched.
 An interactive figure replaces `<figure>` with `<figure class="demo" data-demo="name">`
 and adds `.controls`, `.readout` and a `.hint` line under the svg.
 
-Note the shape of it: the notes are the longest thing in the section. If they are not,
-the slide is carrying prose that belongs in them.
-
 ## Editorial rules
 
 Headings are mathematical, in sentence case, and name their subject rather than
@@ -706,16 +750,6 @@ Forward references are stated explicitly, and paid off explicitly when they arri
 Omissions are named in a sentence rather than passed over.
 
 Headings name one thing. A heading joined by "and" or a semicolon is two slides.
-
-Every slide carries speaker notes: the prose that is not on the slide, what to emphasise,
-any demonstration worth doing, the worked arithmetic to say out loud, and what to cut if
-time is short.
-
-Worked numbers are spoken, not printed. A slide shows the formula; the notes carry the
-example, with the arithmetic done so the lecturer can read it off.
-
-Bullets are fragments, not sentences. A full stop in a bullet is a sign it belongs in the
-notes.
 
 Cross-references name their target rather than numbering it, in both the decks and this
 document.
