@@ -1,12 +1,16 @@
 # How Stuff Works: AI from scratch — master plan
 
-Five lectures of one hour. They build on each other and are meant to be taken in order:
-each one uses what the ones before it established. No prerequisites beyond arithmetic and
-a willingness to look at notation.
+Five lectures of one hour, meant to be taken in order.
 
-This document specifies the structure of the series: the slide sequence of each lecture,
-the mathematical arc it follows, and the dependencies between lectures. It does not
-specify slide content. Visual and editorial style are in the appendix.
+**Lecture 1 assumes nothing beyond arithmetic and a willingness to look at notation.**
+Every lecture after it assumes the ones before: their material is used, not rebuilt. A
+result established earlier is recalled in a sentence where it is needed — named, not
+re-derived — and then used. Nothing outside the series is ever assumed.
+
+This document specifies the shape of the series: what each lecture covers, in what
+order, and what it takes from the ones before it. It does not specify slide content, and
+it does not record how a lecture came out — a built deck is its own record, in its HTML
+and its speaker notes. Visual and editorial style are in the appendix.
 
 ---
 
@@ -21,14 +25,16 @@ The builder is expected to:
 1. Produce one self-contained HTML file per lecture. No build step; it opens by
    double-clicking.
 2. Follow Appendix A exactly. The five decks must read as one series.
-3. Follow *Presentation style* below exactly. It is the rule a first draft is most likely
-   to break, and the most expensive one to repair afterwards.
-4. Write the mathematical content for each slide listed below, at the level of a first
-   encounter, together with speaker notes on every slide. Most of the writing goes in the
-   notes.
-5. Verify anything a slide asserts numerically: figure geometry, worked arithmetic,
+3. Follow *Presentation style* below exactly. It is the rule a first draft is most
+   likely to break, and the most expensive one to repair afterwards.
+4. Read the decks of the preceding lectures first, and build on what they established
+   rather than teaching it again.
+5. Write the mathematical content for each topic listed below, at the level of a first
+   encounter, together with speaker notes on every slide. Most of the writing goes in
+   the notes.
+6. Verify anything a slide asserts numerically: figure geometry, worked arithmetic,
    internal slide references.
-6. Not add topics beyond the sequences below without asking — and say which listed topics
+7. Not add topics beyond the outlines below without asking — and say which listed topics
    were dropped, so this document can be brought back in line.
 
 ---
@@ -41,16 +47,16 @@ The builder is expected to:
 | Quiz | 5 min, at the end |
 | Questions and overrun | 10 min |
 
-Budget in *concepts*, not in slides. Lecture 1 as delivered carries about twenty
-concepts across twenty-two material slides, and runs the full 45 minutes. A slide
+Budget in *concepts*, not in slides: about twenty concepts fill the 45 minutes. A slide
 holding one short list and one figure costs well under two minutes; a slide with a
 slider the room wants to play with costs four. Count the sliders and the load-bearing
 slides first, then fill the rest in around them.
 
 Slide count is therefore a consequence, not a target. Splitting one crowded slide into
 three plain ones costs no extra time — the same words get said either way — so split
-freely. There is no recap slide: the quiz serves that purpose and gets a response from
-the room rather than a nod.
+freely; thirty-odd slides is what twenty concepts look like once no slide holds two of
+them. There is no recap slide: the quiz serves that purpose and gets a response from the
+room rather than a nod.
 
 ## Structure common to every lecture
 
@@ -85,18 +91,19 @@ to the author that have leaked onto the screen. Say the mathematical thing inste
 first, so write them last and read them back as if from the third row. The plan for the
 hour belongs in the speaker notes, and there it is welcome.
 
-**Meet the audience where it is.** No prerequisites beyond arithmetic. A term is defined
-before it is used; a rule is built up through the simplest cases that show it — a
-constant, then a line, then a square, then the general power — and each case may have
-its own slide. Assume nothing about a topic the series has not covered, however
-standard: a function nobody has differentiated yet cannot appear in an example.
+**Meet the audience where it is.** Lecture 1 assumes arithmetic and nothing else; every
+later lecture assumes the series so far and nothing else. A term is defined before it is
+used, unless an earlier lecture defined it — then it is recalled in a sentence and used.
+A rule is built up through the simplest cases that show it — a constant, then a line,
+then a square, then the general power — and each case may have its own slide. Assume
+nothing about a topic the series has not covered, however standard: a function nobody
+has differentiated yet cannot appear in an example.
 
 **A slide carries little.** At most a heading, an optional one-line italic `.sub`, a
 short list or a displayed equation, one `.claim`, and a figure with its caption. Three
 or four bullets, each a fragment rather than a sentence; a full stop in a bullet is a
-sign it belongs in the notes. As a number to steer by: lecture 1 as delivered averages
-35 words of on-slide text per slide, and the draft that had to be rewritten averaged
-113.
+sign it belongs in the notes. As a number to steer by: a delivered deck averages about
+35 words of on-slide text per slide, and a draft that has to be rewritten averages 113.
 
 **A definition box holds the definition.** The general statement goes in the `.eq` box;
 a worked instance goes underneath it in a bare one, never inside the same box. Where the
@@ -117,166 +124,54 @@ that switches a figure between four unrelated transforms is a slide doing four j
 give each its own slide and its own slider. Every such figure needs a resting state that
 reads correctly before anything is touched.
 
+**Every slide says what to drop if the hour runs long,** in its notes, once the timing
+is known. Load-bearing slides — the ones a later lecture depends on — say so instead.
+
 ---
 
 # Lecture 1 — Vectors, bases and linear maps
 
-**Status: delivered.** The table below is the deck as it stands, not a proposal. Where
-lectures 2–5 still read as plans, this one reads as a record.
+**Status: delivered.** `linear-algebra/lecture-1.html`.
+
+**Assumes:** arithmetic. This is the one lecture in the series with no prerequisite
+inside it.
 
 **Arc.** Vectors come first as geometric objects, then as coordinates in an arbitrary
 basis — skewed, unlovely — and only then as coordinates in a square one, presented as a
 choice rather than as what coordinates are. Length and the inner product arrive after
-that, turning right angles into a number. Matrices appear where they are actually needed:
-a system of linear equations, written \(Ax = b\). That gives the matrix–vector product a
-reason to exist before it is given a name, and substituting one system into another gives
-the matrix product, its non-commutativity and the identity. Only then is a matrix reread
-as a transformation of space, at which point its columns are recognised as the images of
-the basis vectors and a whole figure can be pushed through one. Two decompositions close
-the lecture, briefly.
+that, turning right angles into a number. Matrices appear where they are actually
+needed: a system of linear equations, written \(Ax = b\). That gives the matrix–vector
+product a reason to exist before it is given a name, and substituting one system into
+another gives the matrix product, its non-commutativity and the identity. Only then is a
+matrix reread as a transformation of space, at which point its columns are recognised as
+the images of the basis vectors and a whole figure can be pushed through one. Two
+decompositions close the lecture, briefly.
 
-**Why this ordering.** A matrix introduced as a transformation has to carry an arithmetic
-nobody asked for. A matrix introduced as the bookkeeping of a linear system has that
-arithmetic forced on it: multiplication is what substituting one system into another does,
-the identity is the system that changes nothing, the inverse is the system run backwards.
-The transformation reading then arrives as a reinterpretation of something already
-familiar, which is the one moment in the lecture worth spending real time on.
+**Why this ordering.** A matrix introduced as a transformation has to carry an
+arithmetic nobody asked for; a matrix introduced as the bookkeeping of a linear system
+has that arithmetic forced on it. The transformation reading then arrives as a
+reinterpretation of something already familiar, which is the one moment in the lecture
+worth spending real time on.
 
-| # | Slide | |
-|---|---|---|
-| 1 | Vectors, bases and linear maps | |
-| 2 | The series | |
-| 3 | Outline | |
-| | **I. Vectors** | |
-| 4 | Vectors as geometric objects | |
-| 5 | Addition, scalar multiplication and linear combinations | |
-| 6 | Coordinates in a basis | drag |
-| 7 | Orthogonality | |
-| 8 | Cartesian coordinates | |
-| 9 | The norm | |
-| 10 | The inner product | |
-| 11 | Orthogonal projection | |
-| | **II. Linear systems** | |
-| 12 | Systems of linear equations | |
-| 13 | The matrix product | click |
-| 14 | The transpose | click |
-| 15 | The identity matrix | |
-| 16 | The inverse | |
-| | **III. Basis vectors and transforms** | |
-| 17 | Matrices as linear transformations | |
-| 18 | The columns of a matrix are the images of the basis vectors | drag |
-| 19 | Rotation | slider |
-| 20 | Scaling | slider |
-| 21 | Shear | slider |
-| 22 | Translation is the odd one out | slider |
-| 23 | Combining transforms | slider |
-| | **IV. Matrix decomposition** | |
-| 24 | Eigenvalues and eigenvectors | |
-| 25 | LU | |
-| | **V. Quiz** | |
-| 26 | Quiz | |
-| 27 | What is \(u \cdot v\)? | |
-| 28 | Which picture is *not* a linear map? | |
-| 29 | A map sends \(e_1 \mapsto (0,1)\) and \(e_2 \mapsto (-2,0)\). What is its matrix? | |
-| 30 | What is an eigenvector of a matrix \(A\)? | |
-| 31 | Questions? | |
-| 32 | Thank you | |
+**Outline.**
 
-Thirty-two slides, nine of them interactive. That is not a slide count anyone should
-copy; it is what twenty concepts look like once no slide holds two of them. The five
-transform slides, 19 to 23, were one slide with a segmented control in the plan and are
-now the part of the hour that works best.
+**I. Vectors** — vectors as geometric objects; addition, scalar multiplication and
+linear combinations; coordinates in a basis; orthogonality; Cartesian coordinates; the
+norm; the inner product; orthogonal projection
 
-**Coordinates are given twice, and that is the point.** Slide 6 defines coordinates
-against an arbitrary basis: two draggable vectors off a common line, weights that exist
-and are unique, a grid that is not square. Slide 7 asks what right angles buy — each
-coordinate readable on its own, by a perpendicular drop rather than by a line parallel to
-the other basis vector — and only slide 8 adds a common step and calls the result
-Cartesian, presenting it as a *choice*. Slides 9 and 10 then turn length and the right
-angle into numbers.
+**II. Linear systems** — systems of linear equations; the matrix product; the transpose;
+the identity; the inverse
 
-The ordering here was corrected during drafting: the plan originally put the square
-frame before orthogonality. Orthogonality first is better, because the square frame is
-then the answer to a question the room has already been asked.
+**III. Basis vectors and transforms** — matrices as linear transformations; the columns
+as the images of the basis vectors; rotation, scaling, shear and translation, one slider
+each; combining transforms
 
-Nothing in slides 4–8 may use length, which is not defined until slide 9. A Cartesian
-basis is therefore described on slide 8 as one vector together with its quarter turn,
-which fixes the step without measuring anything, and slide 10 states plainly that the
-coordinate formula for the inner product is reading a Cartesian frame.
+**IV. Matrix decomposition** — eigenvalues and eigenvectors; LU
 
-**The matrix–vector product has no slide of its own.** It is introduced on slide 12 as
-the notation the system forces — entry \(i\) of \(Ax\) is row \(i\) of \(A\) against
-\(x\), which is the left-hand side of equation \(i\) — with the column reading,
-\(Ax = x_1a_1 + x_2a_2\), named in the notes. A separate slide for it repeated the
-systems slide and was dropped.
+**V. Quiz**
 
-**Elimination is deliberately absent.** How a system is actually solved — elimination,
-pivoting, rank, the null space, the conditions for existence and uniqueness — is skipped.
-The inverse slide says only that the inverse undoes the system, that not every matrix has
-one, and that forming it is not how software solves anything; the LU slide says what
-software does instead.
-
-**Span, independence, basis and dimension are absent too.** They were slides 15 and 16 of
-the plan and were cut in drafting: every use they had was already carried by a picture.
-"Two vectors off a common line" does the work of independence on the coordinates slide,
-and dragging one column arrow onto the other does the work of rank deficiency on the
-draggable-arrows slide. Restoring them is the first thing to reconsider if the hour ever
-comes in short.
-
-**The logo.** Slide 17 is the first appearance of the Volumental logo, as a point cloud
-pushed through a transformation. It recurs throughout section III and in section IV. It
-must not appear before slide 17 — in particular not on the title slide, whose figure is
-one arrow measured against two frames — so that its arrival coincides with the
-reinterpretation it illustrates.
-
-**The transforms are one slider each.** Rotation, scaling, shear, translation and the
-composition of two of them get a slide apiece, each with its own figure, its own controls
-and a live matrix readout. An earlier draft put all four behind one segmented control on
-one slide; splitting them is the single largest improvement in the deck. Reflection is a
-remark on the scaling slide — a negative scale — rather than a slide. Scaling sliders
-reach zero, so the figure can be collapsed onto a line deliberately; that collapse is
-this deck's only account of a matrix that cannot be undone, and it is reached again by
-dragging on slide 18. Sliders must not advance the deck; see Appendix A.
-
-**Determinants are not covered at all.** The plan had a live determinant readout on the
-transforms slide. It was cut: a number nobody can yet interpret is noise, and the two
-things it was there to show — area scaling and the collapse to a line — are both visible
-in the figure. The readouts show the matrix itself, and \(Q^{\mathsf T}Q = I\) on the
-rotation slide.
-
-**Cut candidates — to confirm after the next delivery.** The deck as it stands carries no
-per-slide cut guidance; the plan's rule that every slide says what to drop if time is
-short was not followed, and the honest reason is that the timing is not known yet. On
-paper the order is 25 (LU), 14 (the transpose), 21 (shear). Slides 6, 7 and 8 are not cut
-candidates: they are the sequence the rest of the lecture reads coordinates through.
-Slide 18 is not a cut candidate at any price.
-
-**Forward dependencies.** Slide 10 (the inner product) is reused in lecture 5 for
-attention scores. Slide 11 (projection) is reused in lecture 3 for least squares. Slide 16
-(the inverse) is reused in lecture 3 for the normal equations. The homogeneous coordinates
-of slides 22 and 23 are reused in lecture 4 for the bias term. Slide 24 (eigenvalues) is
-reused in lecture 3 for the condition number.
-
-Lecture 5 wanted orthonormal bases for multi-head projections, and this deck no longer
-has a change-of-basis slide to point at. Orthogonality (7), Cartesian coordinates (8) and
-the orthogonality of a rotation (19) are what is available; lecture 5 must build the rest
-itself or accept the gap.
-
-**Not covered, deliberately:** elimination and the solution of systems in any form; span,
-independence, basis and dimension as named concepts; rank and the null space;
-determinants; change of basis and similar matrices; eigendecomposition; the SVD; the
-QR/Cholesky family; inner products other than the Cartesian one; general metrics;
-Gram–Schmidt; complex eigenvalues beyond a caveat.
-
----
-
-## A note on lectures 3–5
-
-Their tables below were written before lecture 1 was built, at the old granularity: one
-line per topic, several topics to a slide, twenty-three slides to a deck. Read them as
-lists of *concepts in order*, not as slide sequences. Expect each to split into thirty or
-so slides once the presentation-style rules above are applied, and renumber the
-cross-references in this document when it happens.
+**Carried forward:** the inner product, projection, the inverse, eigenvalues, and the
+homogeneous coordinates of the translation slide.
 
 ---
 
@@ -284,148 +179,50 @@ cross-references in this document when it happens.
 
 **Status: built.** `calculus/lecture-2.html`.
 
-**Arc.** The lecture is organised by the shape of the function, and says so: one number
-in and one out, then several in and one out, then several in and several out. Each
-section opens on a slide that states the shape, gives the general form and an example,
-and every section after the first is the first one again with more coordinates. Section
-I is deliberately slow at the start — a constant, a line, a square, and only then the
-power rule — and closes on the chain rule and the second derivative. Section II builds
-the partial derivatives, the gradient and the Hessian over a surface drawn in three
-dimensions. Section III does the Jacobian and the chain rule as a matrix product. The
-lecture closes on how a derivative is actually obtained: by hand, by difference quotient
-— forward, backward, central, one slide each — or automatically, with forward mode worked
-and its cost stated, so lecture 4 has a reason to want reverse mode.
+**Assumes lecture 1:** vectors and coordinates throughout, and the matrix product for
+the Jacobian and the chain rule in section III.
 
-**Notation.** \(\frac{df}{dx}\) throughout. The prime is named once, on its own line on
-slide 6, and never used: it cannot say which variable it differentiates with respect to,
-and section II has two. Gradients are written as rows, so \(\nabla f\,h\) is a matrix
-times a step and the gradient is visibly the one-row Jacobian of slide 22.
+**Arc.** Organised by the shape of the function, and says so: one number in and one out,
+then several in and one out, then several in and several out. Each section opens on a
+slide that states the shape, gives the general form and an example, and every section
+after the first is the first one again with more coordinates. Section I is deliberately
+slow at the start — a constant, a line, a square, and only then the power rule. The
+lecture closes on how a derivative is actually obtained: by hand, by difference quotient,
+or automatically, with forward mode worked and its cost stated, so lecture 4 has a reason
+to want reverse mode.
 
-| # | Slide | |
-|---|---|---|
-| 1–3 | Title, the series, outline | |
-| | **I. One number in** | |
-| 4 | A function of one number | slider |
-| 5 | Rates of change and the difference quotient | sliders x, h |
-| 6 | The derivative | zoom slider |
-| 7 | The slope of a constant | slider |
-| 8 | The slope of a line | sliders k, x |
-| 9 | The slope of \(x^2\) | slider |
-| 10 | Rule: powers | buttons, slider |
-| 11 | Rule: constant multiples | |
-| 12 | Rule: sums | |
-| 13 | Rule: the exponential | |
-| 14 | The chain rule | slider |
-| 15 | The second derivative | slider |
-| | **II. Vector in** | |
-| 16 | A function with vector input | drag to rotate |
-| 17 | Partial derivatives | |
-| 18 | One slice at a time | |
-| 19 | The gradient | sliders, drag |
-| 20 | The Hessian | drag to rotate |
-| | **III. Vector out** | |
-| 21 | A function with vector output | |
-| 22 | The Jacobian | |
-| 23 | The chain rule, in several variables | |
-| | **IV. Obtaining derivatives** | |
-| 24 | By hand, by difference quotient, by program | |
-| 25 | The forward difference | sliders x, h |
-| 26 | The backward difference | sliders x, h |
-| 27 | The central difference | sliders x, h |
-| 28 | Forward-mode automatic differentiation | |
-| 29 | The cost of forward mode | |
-| | **V. Quiz** | |
-| 30 | Quiz, then four questions | |
-| 35–36 | Questions? Thank you | |
+**Outline.**
 
-Twenty-six material slides, twelve of them interactive. Slides 5, 14 and 19 are
-load-bearing for the rest of the series and should get the time the rules slides save.
+**I. One number in** — A function of one number; rates of change and the difference
+quotient; the derivative; the slope of a constant, of a line, of \(x^2\); the rules for
+powers, constant multiples, sums and the exponential; the chain rule; the second
+derivative
 
-**One example per section, met before it is differentiated.** Slide 4 is nothing but
-\(f(x)=\tfrac14x^3-\tfrac34x+1\) on a slider: put a number in, read one out, and see
-where the curve flattens before slopes are mentioned. Slides 10 to 12 then differentiate
-its three pieces one rule at a time and arrive at \(\tfrac34x^2-\tfrac34\), so the
-derivative every figure in section I uses is assembled in front of the room. Section II
-uses the stretched bowl \(x^2+2y^2\) throughout, and section III the bent map
-\((x,y)\mapsto(x+\tfrac14y^2,\;y+\tfrac14x^2)\).
+**II. Vector in** — A function with vector input; partial derivatives; one slice at a
+time; the gradient; the Hessian
 
-**Only polynomials and \(e^x\) are ever differentiated.** Sine and cosine are never used,
-not even in an example, because no slide gives their derivatives. The chain rule,
-automatic differentiation and the quiz all run on \(u=\tfrac12x^2\), \(y=\tfrac12u^2\) —
-a composite whose answer can also be got by substituting first, which is the check that
-settles the rule for a room new to it.
+**III. Vector out** — A function with vector output; the Jacobian; the chain rule in
+several variables
 
-**The limit is written but not developed.** Slide 5 puts the difference quotient on two
-sliders and the room watches the number settle; slide 6 writes \(\lim_{h\to0}\) and reads
-it out in words; slide 9 does the one algebraic limit in the lecture, \((x+h)^2\). The
-same \(\lim\) appears on slide 18 for the partials. No epsilon-delta argument, and no
-discussion of when the limit fails beyond the remark that a corner has no tangent.
+**IV. Obtaining derivatives** — by hand, by difference quotient, by program; the
+forward, backward and central differences; forward-mode automatic differentiation and
+its cost
 
-**The slope of a function is a function, and the figures say so.** Slides 7 to 10 and 15
-share one figure: the function in an upper panel, its slope in a lower one, a marker
-running down through both, and the tangent in each panel coloured to match the panel
-below, whose height it is. Slide 15 stacks three panels and does not name them \(f'\) or
-\(f''\).
+**V. Quiz**
 
-**Section II is drawn in three dimensions, on white.** The 3D figures get an opaque tile
-so the deck's grid does not read through them, and the surface is drawn as depth-sorted
-quads with a nearly opaque fill, so that whatever lies behind it — the far side of the
-mesh, the axes, a guide in the base plane — shows through dimmed rather than crossing it.
-That dimming is the only depth cue a line drawing has, so no contour rings are drawn on
-the surface; the level curve appears only where it is the subject, through the point on
-the gradient slide. Each figure is framed once, at the camera it opens on; the viewer turns it with a drag
-and scales it with the wheel or two fingers. Slide 16 is the rotatable surface with the input point
-marked in the base plane and its height carried up. Slide 17 works both partial
-derivatives arithmetically with no figure at all, and slide 18 then shows what the
-arithmetic was doing. Slide 19 puts the gradient where it belongs — flat in the base
-plane, at right angles to the level curve, with a faint vertical at its tip to show the
-climb it buys. Slide 20 cuts the bowl along both axes through its lowest point, so the
-two bends are side by side. The flattened contour map is never a slide of its own; it is
-what the surface becomes when the room tilts the view towards straight down.
+**Carried forward:** the gradient, the second derivative and the Hessian, the Jacobian
+and the chain rule, and the cost of forward mode as the reason reverse mode exists.
 
-**Expansion stops at the first order.** The second-order model is named in one sentence
-in the Hessian notes, as the thing lecture 3's Newton method minimises. Lecture 3
-introduces \(f(x+h)\approx f(x)+\nabla f\,h+\tfrac12h^{\mathsf T}Hh\) where it needs it.
-
-**Shapes are settled on the Jacobian slide.** \(m\times n\): one row per output, one
-column per input. One output makes it the gradient, one of each makes it
-\(\frac{df}{dx}\), and the Hessian is the Jacobian of the gradient map, which is why it
-is square. Four objects, one definition — say it out loud there.
-
-**Numerical differentiation is three slides.** Forward, backward and central, each with
-the same example function, the same two sliders, and the true tangent drawn dashed beside
-the chord so the gap on screen is the error. Shrinking \(h\) shows the one-sided errors
-halving while the central one quarters. The truncation-versus-cancellation log-log plot
-is not in the deck; the rules of thumb — \(h\approx10^{-8}\) one-sided, \(10^{-5}\)
-central, noise below that — are in the notes of slides 25 and 27.
-
-**What each later lecture takes from here.** Lecture 3 needs the gradient (19) for
-descent directions, the second derivative (15) and the Hessian (20) for Newton's method
-and for conditioning, and the Jacobian (22) with the chain rule (14) for Gauss–Newton.
-Lecture 4 needs the chain rule in several variables (23) — that is the whole of
-backpropagation — and the cost of forward mode (29) as the reason reverse mode exists.
-Lecture 5 needs nothing beyond what lecture 4 already uses.
-
-**What lecture 3 must introduce itself.** The *directional derivative*
-\(D_df=\nabla f\,d\), which is not in this deck, so lecture 3 defines it where it first
-needs a descent direction. *Stationary points* and the second-derivative test, likewise:
-lecture 3 arrives at \(\nabla f=0\) as the thing its algorithms stop at, which is where
-it belongs. Slide 15 plants the word "bend" and nothing more.
-
-**Cut candidates, in order:** 29 (say the cost in a sentence on slide 28), 26 (name the
-backward difference on slide 25 and go straight to central), 13 (quote \(e^x\) when
-lecture 4 first needs it), 11 (fold the constant-multiple rule into the sum rule).
-Slides 5, 14 and 19 are not cut candidates.
-
-**Not covered, deliberately:** integration; series, convergence and the Taylor remainder;
-product and quotient rules; the derivatives of sine and cosine; multivariable
-integration; differential equations; any epsilon-delta argument; implicit
-differentiation; the quadratic approximation as a slide; directional derivatives;
-stationary points; reverse-mode differentiation (lecture 4).
+**Left for lecture 3 to introduce:** the directional derivative, stationary points and
+the second-derivative test, and the quadratic approximation.
 
 ---
 
 # Lecture 3 — Numerical optimization
+
+**Assumes lectures 1 and 2:** eigenvalues and orthogonal projection from lecture 1;
+the gradient, the Hessian and the Jacobian from lecture 2, whose derivatives it may
+now take as available.
 
 **Arc.** A sequence of algorithms of increasing sophistication for finding the argument
 that minimizes a function. It begins in one dimension with comparisons only and no
@@ -436,186 +233,123 @@ lecture closes on the wider landscape: the pathologies that defeat local methods
 two directions — global search and constrained problems — named so that the boundary of
 what has been covered is visible.
 
-| # | Slide |
-|---|---|
-| 1 | Numerical optimization |
-| 2 | The series |
-| 3 | Outline |
-| | **I. One dimension, without derivatives** |
-| 4 | The minimization problem |
-| 5 | Bracketing a minimum |
-| 6 | Bisection and golden-section search |
-| | **II. Descent directions and step lengths** |
-| 7 | Descent directions and line search |
-| 8 | Newton's method in one dimension |
-| | **III. Several variables** |
-| 9 | Steepest descent |
-| 10 | Fixed step lengths |
-| 11 | Conditioning and the zig-zag |
-| 12 | Momentum |
-| 13 | Per-coordinate step lengths |
-| 14 | Newton's method in several variables |
-| | **IV. Least squares** |
-| 15 | Linear least squares and the normal equations |
-| 16 | Least squares as orthogonal projection |
-| 17 | Nonlinear least squares and Gauss–Newton |
-| 18 | Levenberg–Marquardt and trust regions |
-| | **V. The wider landscape** |
-| 19 | Stationary points, local minima, saddle points, plateaus |
-| 20 | Global methods, in brief |
-| 21 | Constrained optimization, in brief |
-| 22 | Stochastic gradient descent |
-| 23 | Quiz |
+**Outline.**
 
-Slide 11 uses the eigenvalues of the Hessian; slide 16 uses orthogonal projection. Both
-are recalled in a sentence, with a pointer back to the slide in lecture 1 that established
-them — by name, "the eigenvalues slide" and "the projection slide", not by number.
+**I. One dimension, without derivatives** — the minimization problem; bracketing a
+minimum; bisection and golden-section search
 
-Slides 20 and 21 are one slide each and are meant to stay that way. Slide 20 follows
-directly from slide 19: every method in this lecture finds a local minimum, so the
-question of how one searches globally has to at least be named — grid and random search,
-multiple starts, simulated annealing, population methods. Slide 21 marks the other
-boundary: the whole lecture has assumed the argument may be anything at all, and the
-moment it may not, the subject changes. State the feasible set, mention that equality
-constraints are handled by Lagrange multipliers and inequalities by the KKT conditions,
-and stop there.
+**II. Descent directions and step lengths** — descent directions and line search;
+Newton's method in one dimension
 
-**Cut candidates, in order:** 18, 13, 12. Slides 20 and 21 are already minimal and
-should not be shortened further; they exist to show where the subject continues.
+**III. Several variables** — steepest descent; fixed step lengths; conditioning and the
+zig-zag; momentum; per-coordinate step lengths; Newton's method in several variables
 
-**Not covered, deliberately:** Lagrange multipliers and the KKT conditions worked through
-rather than named, linear and convex programming, conjugate gradients, BFGS and the
-quasi-Newton family in any detail, and the global methods of slide 20 beyond a list.
+**IV. Least squares** — linear least squares and the normal equations; least squares as
+orthogonal projection; nonlinear least squares and Gauss–Newton; Levenberg–Marquardt and
+trust regions
+
+**V. The wider landscape** — stationary points, local minima, saddle points, plateaus;
+global methods, in brief; constrained optimization, in brief; stochastic gradient
+descent
+
+**VI. Quiz**
+
+The two "in brief" topics are one slide each and stay that way: they exist to show where
+the subject continues, not to cover it.
+
+**Carried forward:** stochastic gradient descent and step-length behaviour, which
+lecture 4 trains with.
 
 ---
 
 # Lecture 4 — The multilayer perceptron
 
+**Assumes lectures 1–3:** affine maps and homogeneous coordinates from lecture 1; the
+chain rule in several variables from lecture 2, which is the whole of backpropagation;
+gradient descent and its step length from lecture 3.
+
 **Arc.** The object first, the training second. A multilayer perceptron is defined as a
 parametric family of functions built by alternating affine maps with a fixed
 nonlinearity, and the necessity of that nonlinearity is established before it is
 introduced. XOR provides a network whose weights can be chosen by hand, which motivates
-the second half: choosing them by minimization instead. A single toy problem in the plane
-carries the training material, with an accompanying notebook.
+the second half: choosing them by minimization instead. A single toy problem in the
+plane — two interleaving classes, so the decision boundary can be watched during
+training — carries the training material from the moment it is introduced.
 
-| # | Slide |
-|---|---|
-| 1 | The multilayer perceptron |
-| 2 | The series |
-| 3 | Outline |
-| | **I. The network** |
-| 4 | A parametric family of functions |
-| 5 | A composition of linear maps is linear |
-| 6 | The affine layer and the activation function |
-| 7 | Activation functions |
-| 8 | The multilayer perceptron |
-| 9 | The forward pass, and batches |
-| 10 | XOR and the limits of one layer |
-| 11 | A network with weights chosen by hand |
-| | **II. Training** |
-| 12 | A toy problem in the plane |
-| 13 | Loss functions |
-| 14 | Squared error and cross-entropy |
-| 15 | Training as minimization over the parameters |
-| 16 | Many parameters, one scalar output |
-| 17 | Reverse-mode differentiation |
-| 18 | Backpropagation for a two-layer network |
-| 19 | The training loop |
-| 20 | Initialization and step length |
-| 21 | Overfitting and validation |
-| 22 | What a multilayer perceptron cannot do |
-| 23 | Quiz |
+**Outline.**
 
-**Toy problem.** Two interleaving classes in the plane, so that the decision boundary can
-be plotted and watched during training. Introduced at slide 12 and used for everything
-after it.
+**I. The network** — a parametric family of functions; a composition of linear maps is
+linear; the affine layer and the activation function; activation functions; the
+multilayer perceptron; the forward pass and batches; XOR and the limits of one layer; a
+network with weights chosen by hand
+
+**II. Training** — the toy problem; loss functions; squared error and cross-entropy;
+training as minimization over the parameters; many parameters, one scalar output;
+reverse-mode differentiation; backpropagation for a two-layer network; the training
+loop; initialization and step length; overfitting and validation; what a multilayer
+perceptron cannot do
+
+**III. Quiz**
 
 **Notebook.** A separate `.ipynb`, built with the deck. NumPy only, no framework, so
-nothing is hidden: dataset, explicit forward pass, explicit backward pass matching slide
-18, training loop plotting the boundary periodically, and a set of deliberate breakages
-to run (zero initialization, step length far too large, nonlinearity removed). Under
-about 150 lines of code.
+nothing is hidden: dataset, explicit forward pass, explicit backward pass matching the
+backpropagation slide, training loop plotting the boundary periodically, and a set of
+deliberate breakages to run — zero initialization, step length far too large,
+nonlinearity removed. Under about 150 lines of code.
 
-**Slide 14 carries an admission.** Cross-entropy has a probabilistic justification that
-this series does not supply. Say so on the slide rather than implying the choice is
-arbitrary.
+Cross-entropy has a probabilistic justification this series does not supply. Say so on
+the slide rather than implying the choice is arbitrary.
 
-**No notation slide.** Symbols are introduced where first needed.
-
-**Not covered, deliberately:** convolutional and recurrent architectures, normalization
-layers, dropout beyond a remark, hyperparameter search, anything about scale.
+**Carried forward:** the affine layer, the activation function and the training loop,
+which lecture 5 assembles into a transformer block.
 
 ---
 
 # Lecture 5 — The attention mechanism
 
+**Assumes lectures 1–4:** the inner product and linear maps from lecture 1; the layers,
+the loss and the training loop from lecture 4. Nothing from lecture 2 beyond what
+lecture 4 already uses.
+
 **Arc.** The problem is stated first: variable-length sequences in which every position
 must consult the others, which a fixed-width network cannot express. Attention is then
 built in stages — mixing with fixed weights, then with content-dependent weights, then
 with weights obtained from inner products — so that the final formula assembles from
-parts already justified. The transformer block, residual connections and stacking follow.
-The lecture closes by returning to invariance.
+parts already justified. The transformer block, residual connections and stacking
+follow. The lecture closes by returning to invariance: the coordinates of a learned
+vector carry little meaning individually, and the operations a transformer is built
+from — linear maps and inner products — are precisely those that do not depend on a
+choice of basis. That is the closing argument of the series.
 
-| # | Slide |
-|---|---|
-| 1 | The attention mechanism |
-| 2 | The series |
-| 3 | Outline |
-| | **I. The problem** |
-| 4 | Sequences of variable length |
-| 5 | Why a fixed-width network cannot do this |
-| 6 | From tokens to vectors |
-| | **II. Constructing attention** |
-| 7 | Mixing with fixed weights |
-| 8 | Content-dependent weights |
-| 9 | Queries, keys and values |
-| 10 | Scores as inner products |
-| 11 | Scaling by the square root of the dimension |
-| 12 | The softmax |
-| 13 | The attention operation |
-| 14 | A worked example |
-| | **III. Variants and structure** |
-| 15 | Self-attention and cross-attention |
-| 16 | Causal masking |
-| 17 | Multi-head attention |
-| 18 | Permutation invariance and positional encoding |
-| | **IV. The transformer** |
-| 19 | The transformer block |
-| 20 | Residual connections |
-| 21 | Stacked blocks, logits and sampling |
-| 22 | Invariance revisited: inner products and linear maps |
-| 23 | Quiz, and what this series did not cover |
+**Outline.**
 
-Slide 22 is the closing argument of the series: the coordinates of a learned vector carry
-little meaning individually, and the operations a transformer is built from — linear maps
-and inner products — are precisely those that do not depend on a choice of basis.
+**I. The problem** — sequences of variable length; why a fixed-width network cannot do
+this; from tokens to vectors
 
-**Cut candidates, in order:** 20, 16, 14.
+**II. Constructing attention** — mixing with fixed weights; content-dependent weights;
+queries, keys and values; scores as inner products; scaling by the square root of the
+dimension; the softmax; the attention operation; a worked example
 
-**Not covered, deliberately:** encoder-decoder architectures in detail, tokenization,
-attention-cost reductions, pretraining and fine-tuning procedure, everything after the
-architecture.
+**III. Variants and structure** — self-attention and cross-attention; causal masking;
+multi-head attention; permutation invariance and positional encoding
+
+**IV. The transformer** — the transformer block; residual connections; stacked blocks,
+logits and sampling; invariance revisited
+
+**V. Quiz** — and what this series did not cover.
+
+Multi-head attention wants orthonormal bases, which lecture 1 does not supply beyond
+orthogonality, Cartesian coordinates and the orthogonality of a rotation. This lecture
+builds the rest itself or accepts the gap.
 
 ---
 
-# Open questions for the series
+# Open question for the series
 
 **Probability.** Cross-entropy in lecture 4 and the softmax in lecture 5 both rest on
 probability the series never develops. The current decision is to acknowledge the gap on
-the slide and continue. A sixth lecture on probability, expectation and likelihood is the
-obvious extension if there is appetite.
-
-**Numerical differentiation.** Settled: it is three slides at the end of lecture 2 —
-forward, backward and central — together with forward-mode automatic differentiation, so
-that lecture 3 may assume derivatives are available and lecture 4 only has to add reverse
-mode.
-
-**Load-bearing slides.** If any of these does not land, later lectures suffer: in
-lecture 1, the inner product (10) and the columns of a matrix as the images of the basis
-vectors (18); then 2/5 (the difference quotient settling on a slider), 2/14 (the chain
-rule), 2/19 (the gradient), 3/7 (descent direction and line search), 4/5 (a composition
-of linear maps is linear), 5/10 (scores as inner products). The lecture 3–5 numbers are
-at the old granularity and will move.
+the slide and continue. A sixth lecture on probability, expectation and likelihood is
+the obvious extension if there is appetite.
 
 ---
 
@@ -697,6 +431,16 @@ under an interactive figure saying what is draggable; `.mc`, the quiz options, r
 with a mono letter in the first column; `.series`, the five-lecture list on slide 2, each
 entry a bold title over a mono `small` of its contents.
 
+## Figures
+
+Definitions are geometric first and in coordinates second, wherever both are available.
+
+Three-dimensional figures get an opaque tile so the graph paper does not read through
+them. The surface is depth-sorted quads with a nearly opaque fill, so whatever lies
+behind it shows through dimmed rather than crossing it; that dimming is the only depth
+cue a line drawing has. Each figure is framed once, at the camera it opens on, and the
+viewer turns it with a drag and scales it with the wheel or two fingers.
+
 ## Mechanics
 
 KaTeX 0.16.9 from `cdnjs.cloudflare.com`: stylesheet, `katex.min.js`, and
@@ -739,6 +483,17 @@ state it opens in that reads correctly with nothing touched.
 An interactive figure replaces `<figure>` with `<figure class="demo" data-demo="name">`
 and adds `.controls`, `.readout` and a `.hint` line under the svg.
 
+## Notation
+
+Fixed across the series, so a symbol means the same thing in every deck.
+
+Derivatives are \(\frac{df}{dx}\) throughout. The prime is named once, in lecture 2, and
+never used: it cannot say which variable it differentiates with respect to. Gradients are
+rows, so \(\nabla f\,h\) is a matrix times a step and the gradient is visibly the one-row
+Jacobian. A Jacobian is \(m\times n\): one row per output, one column per input.
+
+No notation slide anywhere. Symbols are introduced where they are first needed.
+
 ## Editorial rules
 
 Headings are mathematical, in sentence case, and name their subject rather than
@@ -748,8 +503,6 @@ No motivational preamble and no slide arguing that the material is worth learnin
 
 Nothing about performance, hardware, or making code fast.
 
-Definitions are geometric first and in coordinates second, wherever both are available.
-
 Forward references are stated explicitly, and paid off explicitly when they arrive.
 
 Omissions are named in a sentence rather than passed over.
@@ -757,7 +510,7 @@ Omissions are named in a sentence rather than passed over.
 Headings name one thing. A heading joined by "and" or a semicolon is two slides.
 
 Cross-references name their target rather than numbering it, in both the decks and this
-document.
+document — "the projection slide in lecture 1", never a slide number.
 
 Avoid: all-caps labels, decorative numbering, new notation introduced before it is
 needed, more than one `.claim` per slide, and any paragraph of prose on a slide.
