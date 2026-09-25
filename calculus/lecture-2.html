@@ -78,6 +78,7 @@ b,strong{font-weight:600}
   padding:11px 16px;margin:15px 0 0;font-size:20px;
 }
 .eq.bare{border:0;background:none;padding:0}
+.body>.eq{max-width:760px;margin-left:auto;margin-right:auto}
 .eq .katex-display{margin:.34em 0}
 .eq p:first-child .katex-display{margin-top:0}
 .eq p,.eq .note{font-size:16px;color:var(--ink-2);margin:8px 0 0;max-width:none}
@@ -113,6 +114,9 @@ svg .stroke{fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:roun
 svg .hair{fill:none;stroke-width:1;stroke-linecap:round}
 svg .dash{fill:none;stroke-width:1.3;stroke-dasharray:4 4;stroke-linecap:round}
 svg .cloud{fill:none;stroke-width:2.4;stroke-linecap:round}
+/* One patch of a 3d surface: nearly opaque, so what is behind it dims. */
+svg .face{fill:#fff;fill-opacity:.84;stroke:var(--construct);stroke-width:.9;
+  stroke-linejoin:round}
 svg .cloud.ghost{stroke-width:2}
 
 /* interactive figures */
@@ -841,14 +845,16 @@ input[type=range]{
         <p class="note">The derivative is a function, so it has a derivative too.</p>
       </div>
       <div class="eq bare">
-        $$\frac{df}{dx}=\tfrac34x^2-\tfrac34\;\Longrightarrow\;
-        \frac{d^2f}{dx^2}=\tfrac32x$$
+        $$\begin{aligned}
+        f(x)&=\tfrac14x^3-\tfrac34x+1\\[4pt]
+        \frac{df}{dx}&=\tfrac34x^2-\tfrac34\\[4pt]
+        \frac{d^2f}{dx^2}&=\tfrac32x
+        \end{aligned}$$
       </div>
       <ul>
         <li>Positive: the curve bends upward</li>
         <li>Negative: it bends downward</li>
       </ul>
-      <p class="claim">The first derivative is the tilt. The second is the bend.</p>
     </div>
     <figure class="demo" data-demo="second">
       <svg id="fig-second" viewBox="0 0 400 300" role="img"
@@ -872,9 +878,14 @@ input[type=range]{
     steeper. At the origin the bottom dot crosses zero, and from there the fall eases,
     flattens at \(x=1\), and turns into a climb that keeps getting steeper.</p>
     <p>So: the middle panel says which way the curve is going, and the bottom panel
-    says whether that is increasing or decreasing. The arithmetic is one line —
-    differentiate \(\tfrac34x^2-\tfrac34\) by the power and constant rules and get
-    \(\tfrac32x\) — and the bottom panel is that straight line.</p>
+    says whether that is increasing or decreasing.</p>
+    <p>Read the three lines beside the figure downwards, and say that each is the one
+    above it differentiated. The example function, then its derivative by the rules of
+    the last few slides, then that differentiated again — the \(\tfrac34x^2\) gives
+    \(\tfrac32x\) by the power and constant-multiple rules, and the \(-\tfrac34\) is a
+    constant and gives nothing. Each line in the panel beside it.</p>
+    <p>The line to leave them with, said rather than shown: the first derivative is
+    the tilt, and the second is the bend.</p>
     <p>Say the word <em>curvature</em> once, and do not labour the interpretation: the
     bigger the bottom number, the tighter the bend, and the sooner the tangent line
     stops being a good approximation. That is the gap the zoom slider measured.</p>
@@ -901,10 +912,10 @@ input[type=range]{
       </ul>
     </div>
     <figure class="demo" data-demo="surface">
-      <svg id="fig-surface" viewBox="0 0 400 300" role="img"
-           aria-label="The surface of x squared plus two y squared drawn as a rotatable wireframe bowl, with level rings and one marked point above its place in the base plane"></svg>
+      <svg id="fig-surface" viewBox="0 0 400 350" role="img"
+           aria-label="The surface of x squared plus two y squared drawn as a rotatable mesh bowl, with one marked point above its place in the base plane"></svg>
       <div class="readout"><div class="note" id="note-surface"></div></div>
-      <p class="hint">Drag to rotate.</p>
+      <p class="hint">Drag to rotate, scroll to zoom.</p>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
@@ -919,65 +930,67 @@ input[type=range]{
     pick out \((1.5,\,0.8)\) — that is the input, two numbers. Go straight up from
     there to the surface and the height is \(2.25+1.28=3.53\) — that is the output, one
     number. Every figure in this section stands at that point.</p>
-    <p>Rotate it. Push the view down towards the horizon and it is two parabolas
-    crossed; lift it towards straight down and the rings flatten into the map of level
-    curves that the gradient slide uses. Do that lift now, so the word "level curve"
-    lands on something they have watched appear.</p>
+    <p>Rotate it, and say what the rotation is for: it is one surface, and the
+    picture the room carries away should be of a shape rather than of a drawing. Push
+    the view down towards the horizon and it is two parabolas crossed; lift it towards
+    straight down and it flattens into the map the gradient slide works on. The mesh is
+    drawn solid enough that the far side shows through dimmed, which is the only depth
+    cue a line drawing has.</p>
     <p>Why the bowl is stretched: \(y\) is charged double, so walking in \(y\) climbs
-    faster and the rings are tighter that way. A round bowl would hide every
-    interesting thing in this section, and lecture 3 uses exactly this stretch for its
-    zig-zag slide.</p>
+    faster and the wall is steeper that way — visible along the two sides of the mesh.
+    A round bowl would hide every interesting thing in this section, and lecture 3 uses
+    exactly this stretch for its zig-zag slide.</p>
   </aside>
 </section>
 
 <!-- 17 -->
 <section class="slide" data-where="II. Vector in">
   <h2>Partial derivatives</h2>
-  <p class="sub">Hold every input still but one, and differentiate as before.</p>
   <div class="body">
+    <div class="eq">
+      $$\frac{\partial f}{\partial x}=\lim_{h\to0}\frac{f(x+h,\,y)-f(x,\,y)}{h}$$
+    </div>
     <div class="panels">
-      <div>
-        <h3>Hold \(y=0.8\)</h3>
-        <div class="eq bare">
-          $$\begin{aligned}
-          f(x,\,0.8)&=x^2+2(0.8)^2=x^2+1.28\\[6pt]
-          \frac{\partial f}{\partial x}&=2x+0=2x\\[4pt]
-          &=3\quad\text{at }x=1.5
-          \end{aligned}$$
-        </div>
+      <div class="eq bare">
+        $$\begin{aligned}
+        &\text{hold }y\\[6pt]
+        \frac{\partial f}{\partial x}&=\frac{\partial}{\partial x}
+          \bigl(x^2+\underbrace{2y^2}_{\text{constant}}\bigr)=2x
+        \end{aligned}$$
       </div>
-      <div>
-        <h3>Hold \(x=1.5\)</h3>
-        <div class="eq bare">
-          $$\begin{aligned}
-          f(1.5,\,y)&=(1.5)^2+2y^2=2.25+2y^2\\[6pt]
-          \frac{\partial f}{\partial y}&=0+4y=4y\\[4pt]
-          &=3.2\quad\text{at }y=0.8
-          \end{aligned}$$
-        </div>
+      <div class="eq bare">
+        $$\begin{aligned}
+        &\text{hold }x\\[6pt]
+        \frac{\partial f}{\partial y}&=\frac{\partial}{\partial y}
+          \bigl(\underbrace{x^2}_{\text{constant}}+2y^2\bigr)=4y
+        \end{aligned}$$
       </div>
     </div>
-    <p class="claim">A partial derivative is an ordinary derivative, with the other
-    inputs frozen.</p>
+    <p class="claim">A partial derivative is an ordinary derivative, with every other
+    input treated as a constant.</p>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>No figure on purpose. Do the arithmetic slowly, in both columns, because this is
-    the whole of the idea and it is easier than it looks.</p>
-    <p>Left column. Freeze \(y\) at \(0.8\). Then \(2y^2\) is \(2\times0.64\), which is
-    \(1.28\) — a number, not a variable. So the function of the one remaining input is
-    \(x^2+1.28\), which is a section I function: a square plus a constant. Its
-    derivative is \(2x\) by the power rule, plus zero for the constant, by the slide on
-    constants. At \(x=1.5\) that is 3.</p>
-    <p>Right column, the same move with the roles swapped. Freeze \(x\) at \(1.5\) and
-    \(x^2\) becomes \(2.25\), a constant that differentiates away, leaving \(4y\) from
-    \(2y^2\) by the power and constant-multiple rules. At \(y=0.8\) that is \(3.2\).</p>
-    <p>Then the notation, which is the only new thing here: \(\partial\) instead of
-    \(d\), and it means nothing more than "there were other inputs, and they were held
-    still". One partial derivative per input, so two here.</p>
-    <p>Say what the two numbers are not: they are not the slope of the surface. They
-    are the slopes along the two axis directions, and 3 against \(3.2\) already says
-    the \(y\) direction is the steeper of the two. The gradient slide puts them
-    together into one object and answers what the slope of the surface means.</p>
+    <p>No figure on purpose. The definition first, then the arithmetic, slowly, because
+    this is the whole of the idea and it is easier than it looks.</p>
+    <p>Read the limit line out: it is the definition from section I, with \(y\) sitting
+    unchanged in both terms. Point at the two \(y\)s — the same \(y\) in each, so it
+    contributes nothing to the difference. Only \(x\) moves. The curly \(\partial\) is
+    the reminder that another input is being held, and it means nothing more than
+    that.</p>
+    <p>Left column. Hold \(y\) and look at what the function becomes: \(2y^2\) is now a
+    number — whatever number \(y\) happens to be — so it differentiates to zero, by the
+    slide on constants. What is left is \(x^2\), which gives \(2x\) by the power rule.
+    If the room does not see it, rename the held \(y\) to \(a\) on the board and read
+    \(x^2+2a^2\) again: it is a section I function, a square plus a constant.</p>
+    <p>Right column, the same move with the roles swapped: \(x^2\) is the constant and
+    differentiates away, and \(2y^2\) gives \(4y\) by the power and constant-multiple
+    rules.</p>
+    <p>Worth saying once, because it is what makes the answer useful: the held input
+    never appears in the result. \(\frac{\partial f}{\partial x}=2x\) holds at every
+    \(y\), not at one particular one.</p>
+    <p>One partial derivative per input, so two here. Say what they are not: they are
+    not the slope of the surface. They are the slopes along the two axis directions,
+    and the next slide is the picture of that.</p>
   </aside>
 </section>
 
@@ -988,12 +1001,14 @@ input[type=range]{
   <div class="two wide-right body">
     <div>
       <div class="eq">
-        $$\frac{\partial f}{\partial x}=\lim_{h\to0}\frac{f(x+h,\,y)-f(x,\,y)}{h}$$
-        <p class="note">The definition from section I, with \(y\) left alone.</p>
+        $$\frac{\partial f}{\partial x}(1.5,\,0.8)=3,\qquad
+        \frac{\partial f}{\partial y}(1.5,\,0.8)=3.2$$
+        <p class="note">\(2x\) and \(4y\), at the point the whole section stands
+        on.</p>
       </div>
       <ul>
         <li>Cut the surface along one axis: an ordinary curve</li>
-        <li>At \((1.5,\,0.8)\): slope 3 along \(x\), \(3.2\) along \(y\)</li>
+        <li>The \(y\) cut is the steeper of the two</li>
       </ul>
     </div>
     <div class="panels">
@@ -1014,10 +1029,10 @@ input[type=range]{
     landscape with a vertical plane along the \(x\) direction. The cut is an ordinary
     curve — one number in, one number out — and it has an ordinary slope. That slope is
     \(\frac{\partial f}{\partial x}\). Cut along \(y\) and get the other one.</p>
-    <p>The definition on the slide is the one from the derivative slide with a second
-    input sitting in it untouched. Point at the \(y\) in both terms: it is the same
-    \(y\) in each, so it contributes nothing to the difference. That is the frozen
-    input, written down.</p>
+    <p>This is also where the two formulas finally meet a pair of numbers. Put
+    \(x=1.5\) into \(2x\) and \(y=0.8\) into \(4y\): 3 and \(3.2\). Say that
+    the second is the larger and then point at the figure, where the green curve is
+    visibly the steeper of the two.</p>
     <p>Left panel: the two cuts on the surface, each with its tangent, in red for the
     \(x\) direction and green for \(y\). Right panel: the same two curves drawn flat,
     against the distance walked from the point. The green one is visibly the steeper,
@@ -1054,14 +1069,14 @@ input[type=range]{
            aria-label="The bowl surface with a movable point, the level curve through it drawn in the base plane, and the gradient as an arrow in the base plane at right angles to that curve"></svg>
       <div class="controls">
         <div class="row"><label for="gr-x">x</label>
-          <input id="gr-x" type="range" min="-1.7" max="1.7" step="0.05" value="1.5">
+          <input id="gr-x" type="range" min="-1.55" max="1.55" step="0.05" value="1.5">
           <output id="out-gr-x"></output></div>
         <div class="row"><label for="gr-y">y</label>
-          <input id="gr-y" type="range" min="-1.1" max="1.1" step="0.05" value="0.8">
+          <input id="gr-y" type="range" min="-0.95" max="0.95" step="0.05" value="0.8">
           <output id="out-gr-y"></output></div>
       </div>
       <div class="readout"><div class="note" id="note-grad"></div></div>
-      <p class="hint">Drag to rotate.</p>
+      <p class="hint">Drag to rotate, scroll to zoom.</p>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
@@ -1072,13 +1087,13 @@ input[type=range]{
     plane: the red arrow lies flat, under the surface, because it is a direction to
     walk in, and you walk in the input plane. Its length says how fast the height
     climbs when you do. Nothing about it points out of the plane.</p>
-    <p>Move the point with the sliders and say what does not change: the arrow always
-    crosses the level curve at a right angle, and it always points to higher ground.
-    The faint vertical at its tip is the proof of the second half — the readout gives
-    the height there against the height at the point, and it is always the larger. Then
-    tilt the view towards straight down, where the right angle is a right angle on
-    screen rather than a projected one, and say that this flattened view is the contour
-    map every optimization paper draws.</p>
+    <p>The view starts higher than on the other two slides, because this figure is
+    read across the base plane rather than up the wall. Move the point with the sliders
+    and say what does not change: the arrow always crosses the level curve at a right
+    angle, and it always points at the rising wall. The readout is the proof of the
+    second half — it gives the height at the point against the height at the arrow's
+    tip, and the tip is always the higher. Then tilt further towards straight down and
+    say that this flattened view is the contour map every optimization paper draws.</p>
     <p>On the arrow's length: it grows with \(\lVert\nabla f\rVert\) until it would
     leave the frame, and then stops. The readout carries the true length, and it is
     worth watching as the point moves out towards the steep wall of the bowl.</p>
@@ -1119,10 +1134,10 @@ input[type=range]{
       once.</p>
     </div>
     <figure class="demo" data-demo="hess">
-      <svg id="fig-hess" viewBox="0 0 400 300" role="img"
+      <svg id="fig-hess" viewBox="0 0 400 340" role="img"
            aria-label="The bowl surface cut along both axes through its lowest point, the two cuts drawn as parabolas of different tightness and labelled with their bends"></svg>
       <div class="readout"><div class="note" id="note-hess"></div></div>
-      <p class="hint">Drag to rotate.</p>
+      <p class="hint">Drag to rotate, scroll to zoom.</p>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
@@ -1913,6 +1928,10 @@ const cam = (a, e) => ([x, y, z]) =>
   [y * Math.cos(a) - x * Math.sin(a),
    z * Math.cos(e) - (x * Math.cos(a) + y * Math.sin(a)) * Math.sin(e)];
 
+/* Distance towards the camera, for sorting what is drawn over what. */
+const depth = (a, e) => ([x, y, z]) =>
+  (x * Math.cos(a) + y * Math.sin(a)) * Math.cos(e) + z * Math.sin(e);
+
 const curve3 = (v, c, p, t0, t1, cls, n = 48) =>
   poly(v, Array.from({length: n + 1},
     (_, i) => c(p(t0 + (t1 - t0) * i / n))), cls);
@@ -1920,37 +1939,62 @@ const seg3 = (v, c, a, b, cls) => seg(v, c(a), c(b), cls);
 
 /* Heights are squashed by ZK so the bowl fits the frame; the patch is
    wider than deep because y is the charged direction. */
-const ZK = 0.28, RX = 2.3, RY = 1.7;
+const ZK = 0.28, RX = 2.1, RY = 1.5;
 const lift = ([x, y]) => [x, y, ZK * G([x, y])];
-const SV = () => view(200, 202, 44);
-
-const mesh = (v, c, n = 8) => Array.from({length: n + 1}, (_, i) => {
-  const t = i / n;
-  return curve3(v, c, x => lift([x, -RY + 2 * RY * t]), -RX, RX, 'hair s-construct', 28)
-    + curve3(v, c, y => lift([-RX + 2 * RX * t, y]), -RY, RY, 'hair s-construct', 28);
-}).join('');
-
-/* Level rings on the surface: the contour map, before it is flattened. */
-const RINGS = [0.4, 1, 1.8, 2.8, 4, 5.2];
 const ellipse = (c, t) => [Math.sqrt(c) * Math.cos(t), Math.sqrt(c / 2) * Math.sin(t)];
-const rings = (v, c) => el('g', {opacity: 0.4}, RINGS.map(l =>
-  curve3(v, c, t => lift(ellipse(l, t)), 0, 2 * Math.PI, 'hair s-prussian', 64))
-  .join(''));
+
+/* Scale and centre the camera's picture to the frame it is drawn in.
+   Worked out once, at the camera a figure opens on, and then held: turning
+   the bowl does not rescale it. Returns the numbers `view` wants. */
+const fitted = (c, w, h, pad = 8) => {
+  const pts = [[RX + 0.4, 0, 0], [0, RY + 0.4, 0], [0, 0, ZK * 9]];
+  for (const x of [-RX, 0, RX]) for (const y of [-RY, 0, RY])
+    pts.push(lift([x, y]), [x, y, 0]);
+  const ps = pts.map(c);
+  const [x0, x1] = [Math.min(...ps.map(p => p[0])), Math.max(...ps.map(p => p[0]))];
+  const [y0, y1] = [Math.min(...ps.map(p => p[1])), Math.max(...ps.map(p => p[1]))];
+  const s = Math.min((w - 2 * pad) / (x1 - x0), (h - 2 * pad) / (y1 - y0));
+  return [w / 2 - s * (x0 + x1) / 2, h / 2 + s * (y0 + y1) / 2, s];
+};
+
+/* The bowl as quads, drawn far to near and filled almost opaquely, so that
+   whatever lies behind the surface shows through dimmed. The quad edges
+   are the wireframe. */
+const surface = (v, c, dep, n = 10) => {
+  const at = (i, j) => lift([-RX + 2 * RX * i / n, -RY + 2 * RY * j / n]);
+  const quads = [];
+  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+    const ps = [at(i, j), at(i + 1, j), at(i + 1, j + 1), at(i, j + 1)];
+    quads.push([ps.reduce((s, p) => s + dep(p), 0), ps]);
+  }
+  quads.sort((a, b) => a[0] - b[0]);
+  return quads.map(([, ps]) => el('polygon', {class: 'face',
+    points: ps.map(p => v.to(c(p)).map(r2).join(',')).join(' ')})).join('');
+};
+
+/* A curve lying on the surface, split at its midpoint into the half that
+   is behind and the half that is in front, for the caller to draw either
+   side of the surface itself. */
+const onSurface = (v, c, dep, p, t0, t1, cls) => {
+  const m = (t0 + t1) / 2;
+  const halves = [curve3(v, c, p, t0, m, cls), curve3(v, c, p, m, t1, cls)];
+  return dep(p(t1)) > dep(p(t0)) ? halves : halves.reverse();
+};
 
 const frame3 = (v, c) =>
-  seg3(v, c, [-RX, 0, 0], [RX + 0.6, 0, 0], 'hair s-construct')
-  + seg3(v, c, [0, -RY, 0], [0, RY + 0.6, 0], 'hair s-construct')
-  + seg3(v, c, [0, 0, 0], [0, 0, ZK * 12.5], 'hair s-construct')
-  + text(v, c([RX + 0.6, 0, 0]), 'x', 'f-dim', 9, 4)
-  + text(v, c([0, RY + 0.6, 0]), 'y', 'f-dim', 9, 4)
-  + text(v, c([0, 0, ZK * 12.5]), 'f', 'f-dim', -10, 0);
+  seg3(v, c, [-RX, 0, 0], [RX + 0.4, 0, 0], 'hair s-construct')
+  + seg3(v, c, [0, -RY, 0], [0, RY + 0.4, 0], 'hair s-construct')
+  + seg3(v, c, [0, 0, 0], [0, 0, ZK * 9], 'hair s-construct')
+  + text(v, c([RX + 0.4, 0, 0]), 'x', 'f-dim', 9, 4)
+  + text(v, c([0, RY + 0.4, 0]), 'y', 'f-dim', 9, 4)
+  + text(v, c([0, 0, ZK * 9]), 'f', 'f-dim', -10, 0);
 
 /* An input point in the base plane, with its height carried up to the
    surface: several numbers in, one number out. */
-const baseMark = (v, c, p, cls) =>
+const baseMark = (v, c, p, cls, drop = true) =>
   seg3(v, c, [p[0], 0, 0], [p[0], p[1], 0], cls)
   + seg3(v, c, [0, p[1], 0], [p[0], p[1], 0], cls)
-  + seg3(v, c, [p[0], p[1], 0], lift(p), 'dash s-madder')
+  + (drop ? seg3(v, c, [p[0], p[1], 0], lift(p), 'dash s-madder') : '')
   + dot(v, c([p[0], p[1], 0]), 'f-dim', 2.6);
 
 /* A stretch of the level curve through p, drawn in the base plane. */
@@ -2056,16 +2100,17 @@ const figures = {
 
   /* The two cuts through P, drawn on the surface with their tangents. */
   'fig-cuts': () => {
-    const v = view(125, 135, 30), c = cam(0.75, 0.55);
+    const c = cam(0.75, 0.55), dep = depth(0.75, 0.55);
+    const v = view(...fitted(c, 250, 200));
     const g = gradG(P), h = ZK * G(P);
-    return tile(250, 200) + frame3(v, c) + mesh(v, c, 6)
-      + curve3(v, c, t => lift([t, P[1]]), -RX, RX, 'stroke s-madder')
-      + curve3(v, c, t => lift([P[0], t]), -RY, RY, 'stroke s-verdigris')
-      + seg3(v, c, [P[0] - 1.1, P[1], h - ZK * 1.1 * g[0]],
-        [P[0] + 1.1, P[1], h + ZK * 1.1 * g[0]], 'dash s-madder')
-      + seg3(v, c, [P[0], P[1] - 0.9, h - ZK * 0.9 * g[1]],
-        [P[0], P[1] + 0.9, h + ZK * 0.9 * g[1]], 'dash s-verdigris')
-      + baseMark(v, c, P, 'hair s-construct')
+    const xc = onSurface(v, c, dep, t => lift([t, P[1]]), -RX, RX, 'stroke s-madder');
+    const yc = onSurface(v, c, dep, t => lift([P[0], t]), -RY, RY, 'stroke s-verdigris');
+    return tile(250, 200) + frame3(v, c) + baseMark(v, c, P, 'hair s-construct')
+      + xc[0] + yc[0] + surface(v, c, dep, 8) + xc[1] + yc[1]
+      + seg3(v, c, [P[0] - 0.9, P[1], h - ZK * 0.9 * g[0]],
+        [P[0] + 0.9, P[1], h + ZK * 0.9 * g[0]], 'dash s-madder')
+      + seg3(v, c, [P[0], P[1] - 0.7, h - ZK * 0.7 * g[1]],
+        [P[0], P[1] + 0.7, h + ZK * 0.7 * g[1]], 'dash s-verdigris')
       + dot(v, c(lift(P)), 'f-ink', 3.4);
   },
 
@@ -2198,14 +2243,20 @@ const drags = (svg, move) => {
 };
 
 /* A rotatable 3d scene. Returns its redraw, for sliders to call too. */
-const rotatable = (svg, draw) => {
-  const at = {az: 0.75, el: 0.55};
-  const redraw = () => draw(cam(at.az, at.el), at);
+const rotatable = (svg, draw, {az = 0.75, el = 0.55, w = 400, h = 300} = {}) => {
+  const at = {az, el, k: 1};
+  const [cx, cy, s] = fitted(cam(az, el), w, h);
+  const redraw = () => draw(cam(at.az, at.el), at, view(cx, cy, s * at.k));
   drags(svg, (dx, dy) => {
     at.az += dx * 0.012;
-    at.el = Math.max(0.12, Math.min(1, at.el + dy * 0.008));
+    at.el = Math.max(0.1, Math.min(1.35, at.el + dy * 0.008));
     redraw();
   });
+  svg.addEventListener('wheel', ev => {
+    ev.preventDefault();
+    at.k = Math.max(0.5, Math.min(3.5, at.k * Math.exp(-ev.deltaY * 0.0015)));
+    redraw();
+  }, {passive: false});
   return redraw;
 };
 
@@ -2357,33 +2408,35 @@ function setupSecond() {
 }
 
 function setupSurface() {
-  const svg = document.getElementById('fig-surface'), v = SV();
-  rotatable(svg, (c, at) => {
-    svg.innerHTML = tile(400, 300) + frame3(v, c) + mesh(v, c) + rings(v, c)
+  const svg = document.getElementById('fig-surface');
+  rotatable(svg, (c, at, v) => {
+    const dep = depth(at.az, at.el);
+    svg.innerHTML = tile(400, 350) + frame3(v, c)
       + baseMark(v, c, P, 'dash s-construct')
+      + surface(v, c, dep)
       + dot(v, c(lift(P)), 'f-madder', 4.5)
       + text(v, c([P[0], P[1], 0]), '(1.5, 0.8)', 'f-dim', 0, 15);
-    put('note-surface', `f(1.5, 0.8) = <b>3.53</b>` +
-      `<br>rings every unit or so<br>${viewNote(at)}`);
-  })();
+    put('note-surface', `f(1.5, 0.8) = <b>3.53</b><br>${viewNote(at)}`);
+  }, {h: 350})();
 }
 
 /* The gradient arrow lies flat in the base plane, where a step is taken.
    It is drawn at GRAD_K of its true length, and never longer than ARROW_MAX,
    so that it stays inside the frame. */
-const GRAD_K = 0.22, ARROW_MAX = 1;
+const GRAD_K = 0.22, ARROW_MAX = 0.85;
 
 function setupGrad() {
-  const svg = document.getElementById('fig-grad'), v = SV();
+  const svg = document.getElementById('fig-grad');
   let p = P.slice();
-  const redraw = rotatable(svg, (c, at) => {
+  const redraw = rotatable(svg, (c, at, v) => {
     const g = gradG(p), L = Math.min(GRAD_K * norm(g), ARROW_MAX);
     const tip = add(p, sc(L / norm(g), g));
-    svg.innerHTML = tile(400, 300) + frame3(v, c) + mesh(v, c) + rings(v, c)
+    const dep = depth(at.az, at.el);
+    svg.innerHTML = tile(400, 300) + frame3(v, c)
+      + baseMark(v, c, p, 'dash s-construct', false)
+      + surface(v, c, dep)
       + levelArc(v, c, p)
-      + baseMark(v, c, p, 'dash s-construct')
-      + seg3(v, c, [tip[0], tip[1], 0], lift(tip), 'dash s-construct')
-      + dot(v, c(lift(tip)), 'f-construct', 3)
+      + seg3(v, c, [p[0], p[1], 0], lift(p), 'dash s-madder')
       + dot(v, c(lift(p)), 'f-madder', 4)
       + arrow(v, c([p[0], p[1], 0]), c([tip[0], tip[1], 0]), 'madder', 2)
       + text(v, c([tip[0], tip[1], 0]), '∇f', 'f-madder', 10, -6, 'start');
@@ -2391,23 +2444,25 @@ function setupGrad() {
       `   ‖∇f‖ = <b>${fmt(norm(g))}</b>` +
       `<br>f here <b>${fmt(G(p))}</b>, at the arrow's tip <b>${fmt(G(tip))}</b>` +
       `<br>${viewNote(at)}`);
-  });
+  }, {el: 0.85});
   sliders(['gr-x', 'gr-y'], ['', ''], (x, y) => { p = [x, y]; redraw(); });
 }
 
 /* The bowl cut along both axes through its lowest point: the two bends. */
 function setupHess() {
-  const svg = document.getElementById('fig-hess'), v = SV();
-  rotatable(svg, (c, at) => {
-    svg.innerHTML = tile(400, 300) + frame3(v, c) + mesh(v, c)
-      + curve3(v, c, t => lift([t, 0]), -RX, RX, 'stroke s-madder')
-      + curve3(v, c, t => lift([0, t]), -RY, RY, 'stroke s-verdigris')
+  const svg = document.getElementById('fig-hess');
+  rotatable(svg, (c, at, v) => {
+    const dep = depth(at.az, at.el);
+    const xc = onSurface(v, c, dep, t => lift([t, 0]), -RX, RX, 'stroke s-madder');
+    const yc = onSurface(v, c, dep, t => lift([0, t]), -RY, RY, 'stroke s-verdigris');
+    svg.innerHTML = tile(400, 340) + frame3(v, c)
+      + xc[0] + yc[0] + surface(v, c, dep) + xc[1] + yc[1]
       + dot(v, c([0, 0, 0]), 'f-ink', 3.4)
       + text(v, c(lift([RX, 0])), 'bend 2', 'f-madder', 0, -9)
       + text(v, c(lift([0, RY])), 'bend 4', 'f-verdigris', 8, -6, 'start');
     put('note-hess', `along x: f = x², bend <b>2</b>` +
       `<br>along y: f = 2y², bend <b>4</b><br>${viewNote(at)}`);
-  })();
+  }, {h: 340})();
 }
 
 /* Forward, backward and central are one chord, with the two sample points

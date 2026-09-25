@@ -368,8 +368,13 @@ below, whose height it is. Slide 15 stacks three panels and does not name them \
 \(f''\).
 
 **Section II is drawn in three dimensions, on white.** The 3D figures get an opaque tile
-so the deck's grid does not read through them, a light wireframe, and level rings toned
-down and drawn every unit or so. Slide 16 is the rotatable surface with the input point
+so the deck's grid does not read through them, and the surface is drawn as depth-sorted
+quads with a nearly opaque fill, so that whatever lies behind it — the far side of the
+mesh, the axes, a guide in the base plane — shows through dimmed rather than crossing it.
+That dimming is the only depth cue a line drawing has, so no contour rings are drawn on
+the surface; the level curve appears only where it is the subject, through the point on
+the gradient slide. Each figure is framed once, at the camera it opens on; the viewer turns it with a drag
+and scales it with the wheel or two fingers. Slide 16 is the rotatable surface with the input point
 marked in the base plane and its height carried up. Slide 17 works both partial
 derivatives arithmetically with no figure at all, and slide 18 then shows what the
 arithmetic was doing. Slide 19 puts the gradient where it belongs — flat in the base
