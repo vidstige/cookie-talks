@@ -220,6 +220,8 @@ the second-derivative test, and the quadratic approximation.
 
 # Lecture 3 — Numerical optimization
 
+**Status: built.** `optimization/lecture-3.html`.
+
 **Assumes lectures 1 and 2:** eigenvalues and orthogonal projection from lecture 1;
 the gradient, the Hessian and the Jacobian from lecture 2, whose derivatives it may
 now take as available.
@@ -256,6 +258,13 @@ descent
 
 The two "in brief" topics are one slide each and stay that way: they exist to show where
 the subject continues, not to cover it.
+
+Two listed topics are covered inside another slide rather than on their own: trust regions
+on the Levenberg–Marquardt slide, whose damping is the same thing seen from the other side,
+and saddle points and plateaus on the second-derivative test, which is what classifies them.
+Section II also carries the three topics lecture 2 handed forward — the stationary
+condition, the directional derivative and the quadratic approximation — each where the
+method that needs it arrives.
 
 **Carried forward:** stochastic gradient descent and step-length behaviour, which
 lecture 4 trains with.
