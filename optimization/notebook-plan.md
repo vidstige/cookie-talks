@@ -1,22 +1,30 @@
-# Lecture 3 notebook — the Eye searches for the Ring
+# Notebook plan
 
-The deck stays abstract. This notebook is its companion: one toy problem,
-worked in NumPy in the same order as the slides, so that every method in
-the lecture is applied in turn to the same objective function. Markdown
-cells restate the slide's formula; code cells apply it; each cell ends in
-a map with the path drawn on it.
+The decks stay abstract and dry. Each lecture from 3 onwards gets a
+companion notebook that works one Middle-earth toy problem, told from
+Sauron's side, in the same order as the slides. Switch from deck to
+notebook at section boundaries only, a few times per hour.
 
-Switch from the deck to the notebook at section boundaries only, four or
-five times in the hour. The notebook's headers match the deck's sections
-so each switch lands on the right cell.
+| Lecture | Toy problem | Status |
+|---|---|---|
+| 3, optimization | The Eye searches for the Ring | decided |
+| 4, the perceptron | Something with the Palantíri, perhaps screen time | open |
+| 5, attention | Tolkien names, or words of the Black Speech | open |
 
-## The problem
+**On the Palantíri.** The mechanics of the stones — their fixed
+orientation, the bearing a stone must be turned to, who is looking at
+the other end — make a geometry problem, not a good match for a
+perceptron. A perceptron toy needs labels whose hidden truth the room
+cannot write down as a rule or a formula. Screen time is the leading
+candidate: the Mouth logs the Dark Lord's hours on the stone and the
+number of hobbits glimpsed, and predicts whether tomorrow is a bearable
+day for the staff.
+
+## Lecture 3 — the Eye searches for the Ring
 
 Each Nazgûl senses its distance to the Ring, with noise. The Ring's
 position is the unknown. The objective is the sum of squared distance
 residuals over all readings. One function, every section acts on it.
-
-## Cells, by section
 
 **I. One dimension, without derivatives.** The Ring is known to be on the
 East Road, so the unknown is one number: the distance along the road. One
@@ -47,14 +55,3 @@ the map is the global-methods cell. Constrain the Ring to the road again
 and the Lagrange picture appears. Finally the readings arrive one at a
 time and the estimate moves after each: stochastic gradient descent, and
 the hand-off to lecture 4's training loop.
-
-## Implementation notes
-
-- NumPy and matplotlib only. The objective, its gradient and its Jacobian
-  are written once and reused by every cell.
-- Budget: about 150 lines of code, as for the lecture 4 notebook.
-- Nazgûl positions are fixed per cell and chosen to produce the
-  pathology that cell is about: one-sided for the zig-zag, nearly
-  collinear for Levenberg–Marquardt, two of them for the mirror minima.
-- Verify when building that the chosen positions actually produce the
-  long thin bowl and the ill-conditioned Jacobian the text claims.
