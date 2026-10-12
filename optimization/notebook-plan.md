@@ -29,7 +29,7 @@ residuals over all readings. One function, every section acts on it.
 **I. One dimension, without derivatives.** The Ring is known to be on the
 East Road, so the unknown is one number: the distance along the road. One
 Nazgûl's reading gives a function of that number. Bracket a minimum, then
-bisection, then golden-section search.
+bisection.
 
 **II. Descent directions and step lengths.** Newton in one dimension on
 the same function, the derivative written out by hand from the chain

@@ -280,7 +280,7 @@ input[type=range]{
   <div class="body">
     <ol class="outline">
       <li><span class="n">I</span><span>One dimension, without derivatives
-        <small>bracketing, halving, golden-section search</small></span></li>
+        <small>bracketing, halving</small></span></li>
       <li><span class="n">II</span><span>Descent directions and step lengths
         <small>which way, how far, Newton in one dimension</small></span></li>
       <li><span class="n">III</span><span>Several variables
@@ -430,70 +430,20 @@ input[type=range]{
     &mdash; not per step, but per evaluation, because evaluations are what a real
     objective charges for. Half the width for two evaluations is \(\sqrt{0.5}\),
     about \(0.707\), each time we ask.</p>
-    <p>Then name the waste, which is the reason the next slide exists. Each step
-    throws away both probes and starts the next one from scratch, even though one of
-    them is a perfectly good point inside the new bracket. The trouble is that it sits
-    almost exactly in the middle of the new interval, which is the one place where it
-    tells us nothing.</p>
+    <p>Then name the limit. Every step cuts the bracket by the same factor, so each
+    correct digit costs the same number of evaluations, about seven, and shrinking the
+    bracket a thousandfold takes twenty. Placing the probes more cleverly trims that
+    constant but leaves the rate alone. The next section changes the rate, by asking
+    for the slope.</p>
     <p>If asked about \(\varepsilon\): it has to be small enough to be inside the
     bracket and large enough that the two values differ in floating point. The figure
     exaggerates it so the two probes can be told apart.</p>
     <p>Cut candidate: if the hour is running long, state the halving rate in a sentence
-    and go straight to golden section.</p>
+    and move on to the derivative.</p>
   </aside>
 </section>
 
 <!-- 7 -->
-<section class="slide" data-where="I. Without derivatives">
-  <h2>Golden-section search</h2>
-  <p class="sub">One new point per step, placed so the old one still fits.</p>
-  <div class="two wide-left body">
-    <div>
-      <div class="eq">
-        $$\frac1\varphi=\frac{\sqrt5-1}{2}\approx0.618$$
-        <p class="note">Keep \(0.618\) of the bracket, and one value inside it.</p>
-      </div>
-      <ul>
-        <li>The one ratio that repeats forever</li>
-        <li>One evaluation per step, not two</li>
-      </ul>
-      <p class="claim">To shrink a bracket a thousandfold: twenty evaluations by
-      halving, fifteen by golden section.</p>
-    </div>
-    <figure class="demo" data-demo="golden">
-      <svg id="fig-golden" viewBox="0 0 400 300" role="img"
-           aria-label="The curve with the current bracket shaded and its two interior points at the golden ratio, one of which is reused from the previous step"></svg>
-      <div class="controls">
-        <div class="row"><label for="gs-k">steps</label>
-          <input id="gs-k" type="range" min="0" max="10" step="1" value="0">
-          <output id="out-gs-k"></output></div>
-      </div>
-      <div class="readout"><div class="note" id="note-golden"></div></div>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>The design question is where to put the two interior points so that, whichever
-    end gets discarded, the survivor lands in the right place for the next step. Write
-    it on the board if the room wants it: a bracket of width 1, interior points at
-    \(t\) and \(1-t\) from the ends, and the new bracket has width \(1-t\). For the
-    survivor to sit at the same proportion again, \(t/(1-t)=(1-t)/1\), so
-    \(t^2-3t+1=0\) and \(t=(3-\sqrt5)/2\approx0.382\). The kept fraction is
-    \(1-t\approx0.618\), which is \(1/\varphi\).</p>
-    <p>Run the slider and point at the reused value: the green point in each frame is a
-    value already paid for. That is the entire gain &mdash; one evaluation buys a
-    factor \(0.618\), where halving needed two to buy \(0.5\).</p>
-    <p>Where the claim comes from: \(0.618^{15}\approx7\times10^{-4}\) and
-    \(0.618^{14}\approx1.2\times10^{-3}\), so fifteen evaluations do it; halving needs
-    ten halvings at two evaluations each, so twenty. Not a dramatic saving, and say so
-    &mdash; it is a constant factor, and the rate is still linear. The next section
-    changes the rate instead, and that is worth far more.</p>
-    <p>Ask if anyone recognises \(\varphi\). Yes, the same number as the pentagram and
-    the Fibonacci ratios, and no, that is not why it is here: it drops out of the
-    self-similarity condition and nothing else.</p>
-  </aside>
-</section>
-
-<!-- 8 -->
 <section class="slide" data-where="II. Descent and line search">
   <h2>Where the derivative vanishes</h2>
   <p class="sub">The first thing a slope says about a lowest point.</p>
@@ -540,7 +490,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 9 -->
+<!-- 8 -->
 <section class="slide" data-where="II. Descent and line search">
   <h2>Descent directions</h2>
   <p class="sub">Which way is downhill, when there are many ways to go.</p>
@@ -590,7 +540,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 10 -->
+<!-- 9 -->
 <section class="slide" data-where="II. Descent and line search">
   <h2>Line search</h2>
   <p class="sub">Along a fixed direction, one number goes in and one comes out.</p>
@@ -644,7 +594,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 11 -->
+<!-- 10 -->
 <section class="slide" data-where="II. Descent and line search">
   <h2>The quadratic approximation</h2>
   <p class="sub">A parabola instead of a line.</p>
@@ -692,7 +642,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 12 -->
+<!-- 11 -->
 <section class="slide" data-where="II. Descent and line search">
   <h2>Newton's method in one dimension</h2>
   <p class="sub">Jump to the bottom of the parabola, and fit a new one there.</p>
@@ -745,7 +695,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 13 -->
+<!-- 12 -->
 <section class="slide" data-where="III. Several variables">
   <h2>Steepest descent</h2>
   <p class="sub">Take the direction the gradient forbids most strongly.</p>
@@ -791,7 +741,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 14 -->
+<!-- 13 -->
 <section class="slide" data-where="III. Several variables">
   <h2>Choosing a step length</h2>
   <p class="sub">One number between crawling and blowing up.</p>
@@ -835,7 +785,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 15 -->
+<!-- 14 -->
 <section class="slide" data-where="III. Several variables">
   <h2>The zig-zag</h2>
   <p class="sub">A narrow valley gets crossed rather than followed.</p>
@@ -888,7 +838,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 16 -->
+<!-- 15 -->
 <section class="slide" data-where="III. Several variables">
   <h2>Momentum</h2>
   <p class="sub">Keep some of the last step.</p>
@@ -934,7 +884,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 17 -->
+<!-- 16 -->
 <section class="slide" data-where="III. Several variables">
   <h2>A step length per coordinate</h2>
   <p class="sub">One \(\alpha\) cannot serve a stiff direction and a slack one.</p>
@@ -985,7 +935,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 18 -->
+<!-- 17 -->
 <section class="slide" data-where="III. Several variables">
   <h2>Newton's method in several variables</h2>
   <p class="sub">Fit a bowl, go to its bottom.</p>
@@ -1034,7 +984,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 19 -->
+<!-- 18 -->
 <section class="slide" data-where="IV. Least squares">
   <h2>Linear least squares</h2>
   <p class="sub">Eight measurements, two numbers to choose.</p>
@@ -1085,7 +1035,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 20 -->
+<!-- 19 -->
 <section class="slide" data-where="IV. Least squares">
   <h2>The normal equations</h2>
   <p class="sub">Set the gradient to zero and solve what is left.</p>
@@ -1133,7 +1083,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 21 -->
+<!-- 20 -->
 <section class="slide" data-where="IV. Least squares">
   <h2>Least squares as orthogonal projection</h2>
   <p class="sub">A perpendicular drop, onto a plane this time.</p>
@@ -1180,7 +1130,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 22 -->
+<!-- 21 -->
 <section class="slide" data-where="IV. Least squares">
   <h2>Nonlinear least squares</h2>
   <p class="sub">Same squared error, a model that bends.</p>
@@ -1231,7 +1181,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 23 -->
+<!-- 22 -->
 <section class="slide" data-where="IV. Least squares">
   <h2>Gauss&ndash;Newton</h2>
   <p class="sub">Linearize the residual, not the objective.</p>
@@ -1281,7 +1231,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 24 -->
+<!-- 23 -->
 <section class="slide" data-where="IV. Least squares">
   <h2>Levenberg&ndash;Marquardt</h2>
   <p class="sub">Believe the model only so far.</p>
@@ -1335,7 +1285,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 25 -->
+<!-- 24 -->
 <section class="slide" data-where="V. The wider landscape">
   <h2>Stationary points</h2>
   <p class="sub">Everything here stops where the gradient vanishes.</p>
@@ -1382,7 +1332,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 26 -->
+<!-- 25 -->
 <section class="slide" data-where="V. The wider landscape">
   <h2>The second-derivative test</h2>
   <p class="sub">The bends say which kind of point it is.</p>
@@ -1428,7 +1378,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 27 -->
+<!-- 26 -->
 <section class="slide" data-where="V. The wider landscape">
   <h2>Local minima</h2>
   <p class="sub">Where you start decides where you stop.</p>
@@ -1471,7 +1421,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 28 -->
+<!-- 27 -->
 <section class="slide" data-where="V. The wider landscape">
   <h2>Global methods</h2>
   <p class="sub">Ways to look in more than one basin.</p>
@@ -1510,7 +1460,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 29 -->
+<!-- 28 -->
 <section class="slide" data-where="V. The wider landscape">
   <h2>Constrained optimization</h2>
   <p class="sub">The answer need not have zero gradient.</p>
@@ -1552,7 +1502,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 30 -->
+<!-- 29 -->
 <section class="slide" data-where="V. The wider landscape">
   <h2>Stochastic gradient descent</h2>
   <p class="sub">Estimate the gradient from part of the sum.</p>
@@ -1604,7 +1554,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 31 -->
+<!-- 30 -->
 <section class="slide title" data-where="VI. Quiz">
   <h2>Quiz</h2>
   <p class="sub">Four questions, hands up.</p>
@@ -1615,7 +1565,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 32 -->
+<!-- 31 -->
 <section class="slide" data-where="VI. Quiz">
   <h2>At a point where \(\nabla f=(2,\;6)\), which direction goes downhill?</h2>
   <div class="body">
@@ -1642,7 +1592,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 33 -->
+<!-- 32 -->
 <section class="slide" data-where="VI. Quiz">
   <h2>Steepest descent on a quadratic whose Hessian has eigenvalues \(1\) and \(100\) will</h2>
   <div class="body">
@@ -1670,7 +1620,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 34 -->
+<!-- 33 -->
 <section class="slide" data-where="VI. Quiz">
   <h2>At the least-squares solution, the residual \(y-Ax\) is</h2>
   <div class="body">
@@ -1697,7 +1647,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 35 -->
+<!-- 34 -->
 <section class="slide" data-where="VI. Quiz">
   <h2>Newton's method converges to a point where \(\nabla f=0\). That point is</h2>
   <div class="body">
@@ -1725,7 +1675,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 36 -->
+<!-- 35 -->
 <section class="slide title" data-where="Questions">
   <h2>Questions?</h2>
   <aside class="notes"><h4>Speaker notes</h4>
@@ -1742,7 +1692,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 37 -->
+<!-- 36 -->
 <section class="slide title" data-where="Thank you">
   <div>
     <h1>Thank you</h1>
@@ -2235,8 +2185,6 @@ function setupBracket() {
   });
 }
 
-/* Halving and golden section differ only in where the next point goes, so
-   both figures draw the same thing: the bracket, and the points inside it. */
 const searchFig = (v, a, c, marks) => band(v, a, c)
   + axes(v, PLOT_X, PLOT_Y) + CURVE(v)
   + [[a, 'a'], [c, 'c']].map(([t, n]) =>
@@ -2260,27 +2208,6 @@ function setupBisect() {
     put('note-bisect', `width <b>${(c - a).toFixed(3)}</b>` +
       `   after <b>${2 * k}</b> evaluations` +
       `<br>next two probes at <b>${fmt(m)}</b> ± ${e.toFixed(3)}`);
-  });
-}
-
-function setupGolden() {
-  const svg = document.getElementById('fig-golden'), v = PLOT();
-  const g = (Math.sqrt(5) - 1) / 2;
-  sliders(['gs-k'], [whole], k => {
-    let [a, c] = BRACKET;
-    let x1 = a + (1 - g) * (c - a), x2 = a + g * (c - a), kept = null;
-    for (let i = 0; i < k; i++) {
-      if (F(x1) < F(x2)) { c = x2; x2 = x1; kept = x2; x1 = a + (1 - g) * (c - a); }
-      else { a = x1; x1 = x2; kept = x1; x2 = a + g * (c - a); }
-    }
-    const fresh = kept === x1 ? x2 : x1;
-    svg.innerHTML = searchFig(v, a, c, kept === null
-      ? [[x1, 'madder', 3.6], [x2, 'madder', 3.6]]
-      : [[kept, 'verdigris', 4], [fresh, 'madder', 3.6]]);
-    put('note-golden', `width <b>${(c - a).toFixed(3)}</b>` +
-      `   after <b>${2 + k}</b> evaluations` +
-      (kept === null ? '<br>two points to start with'
-        : `<br>green is reused, red is the one new value`));
   });
 }
 
@@ -2842,7 +2769,6 @@ Object.entries(figures).forEach(([id, f]) => {
 });
 setupBracket();
 setupBisect();
-setupGolden();
 setupVanish();
 setupDescent();
 setupLine();

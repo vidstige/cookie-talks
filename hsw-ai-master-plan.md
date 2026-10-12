@@ -238,7 +238,7 @@ what has been covered is visible.
 **Outline.**
 
 **I. One dimension, without derivatives** — the minimization problem; bracketing a
-minimum; bisection and golden-section search
+minimum; bisection
 
 **II. Descent directions and step lengths** — descent directions and line search;
 Newton's method in one dimension
