@@ -1498,26 +1498,29 @@ input[type=range]{
   <div class="two body">
     <div>
       <div class="eq">
-        $$z=\text{op}(a,b)\;\Longrightarrow\;
-        \dot z=\frac{\partial\,\text{op}}{\partial a}\,\dot a
-        +\frac{\partial\,\text{op}}{\partial b}\,\dot b$$
-        <p class="note">Every number is a pair \((v,\dot v)\): its value and its
-        slope \(\frac{dv}{dx}\). Each node computes both from its inputs.</p>
+        $$\begin{aligned}
+        \frac{d}{dx}f(a,b)&=\nabla f\begin{pmatrix}\frac{da}{dx}\\[2pt]
+          \frac{db}{dx}\end{pmatrix}\\[4pt]
+        &=\frac{\partial f}{\partial a}\,\frac{da}{dx}
+        +\frac{\partial f}{\partial b}\,\frac{db}{dx}
+        \end{aligned}$$
+        <p class="note">Every number \(a\) is a pair \(\bigl(a,\frac{da}{dx}\bigr)\).
+        The gradient belongs to \(f\); the column is the slopes its inputs carry.</p>
       </div>
       <div class="eq bare">
         $$\begin{aligned}
-        a+b&: & \dot a+\dot b\\[2pt]
-        a\cdot b&: & b\,\dot a+a\,\dot b\\[2pt]
-        a^{n}&: & n\,a^{n-1}\,\dot a
+        a+b&: & \tfrac{da}{dx}+\tfrac{db}{dx}\\[4pt]
+        a\cdot b&: & b\,\tfrac{da}{dx}+a\,\tfrac{db}{dx}\\[4pt]
+        a^{n}&: & n\,a^{n-1}\,\tfrac{da}{dx}
         \end{aligned}$$
       </div>
       <ul>
         <li>The input is \(x=(2,\,1)\); a constant has slope 0</li>
-        <li>Walk the tree bottom up; the root holds \(f\) and \(\frac{df}{dx}\)</li>
+        <li>Walk bottom up; the root holds the answer</li>
       </ul>
     </div>
     <div>
-      <pre>def f(x): return x**2 + 3 * x</pre>
+      <pre>x**2 + 3 * x</pre>
       <figure>
         <svg id="fig-ad" viewBox="0 0 400 250" role="img"
              aria-label="The expression tree of x squared plus three x, leaves at the bottom and the sum at the top, every node labelled with its value and its slope at x equals two"></svg>
@@ -1527,8 +1530,15 @@ input[type=range]{
   <aside class="notes"><h4>Speaker notes</h4>
     <p>The rule on the left is the whole algorithm, and it is the chain rule applied
     at one node. A node takes in pairs, computes its value from the values, and
-    computes its slope as: the operation's rate with respect to each input, at the
+    computes its slope as: the rate of \(f\) with respect to each input, at the
     input values, times that input's slope, summed. Nothing else is ever done.</p>
+    <p>Why a sum: when \(x\) nudges by \(\Delta x\), \(a\) and \(b\) both move,
+    and up close \(f\) is a tilted plane, so the two effects add:
+    \(\Delta f\approx\frac{\partial f}{\partial a}\Delta a
+    +\frac{\partial f}{\partial b}\Delta b\). Divide by \(\Delta x\). The
+    interaction is a product of two small changes, \(\Delta a\,\Delta b\), and
+    vanishes in the limit; for \(a\cdot b\) it is literally the leftover term in
+    \((a+\Delta a)(b+\Delta b)\).</p>
     <p>The three lines below it are that rule written out for the operations in the
     tree. A sum has rates 1 and 1. A product has rate \(b\) in \(a\) and \(a\) in
     \(b\) — the product rule, falling out of the general one. A power with a constant
