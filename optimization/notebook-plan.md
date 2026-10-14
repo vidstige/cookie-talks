@@ -26,32 +26,25 @@ Each Nazgûl senses its distance to the Ring, with noise. The Ring's
 position is the unknown. The objective is the sum of squared distance
 residuals over all readings. One function, every section acts on it.
 
-**I. One dimension, without derivatives.** The Ring is known to be on the
-East Road, so the unknown is one number: the distance along the road. One
-Nazgûl's reading gives a function of that number. Bracket a minimum, then
-bisection.
+**I. One dimension.** The Ring is known to be on a straight road, so the
+unknown is one number: the distance along the road. The cost along the road is
+bracketed, then narrowed by halving. Its derivative is written out by
+hand from the chain rule. Newton's method first solves an equation, where the
+road crosses one Nazgûl's circle, then the derivative equals zero.
 
-**II. Descent directions and step lengths.** Newton in one dimension on
-the same function, the derivative written out by hand from the chain
-rule.
+**II. Least squares.** Drop the road; the unknown is a point on the map.
+Differences of squared distance readings are linear in the position, the
+classic trilateration trick, so linear least squares gives an estimate in one
+solve, with its residual orthogonal to the columns. Gauss–Newton refines it,
+and also converges from a poor start.
 
-**III. Several variables.** Drop the road; the unknown is a point on the
-map. Steepest descent with a fixed step, then the zig-zag. The zig-zag
-appears for a real reason: with all the Nazgûl on one side of the Ring,
-the residuals pin down distance well and direction badly, so the bowl is
-long and thin. Momentum, per-coordinate step lengths and Newton run on
-the identical landscape, and one map shows all four paths.
+**III. Several variables.** Every map shows the cost as a heatmap under its
+contours. Gradient descent with a fixed step, too long a step, then the
+zig-zag. The zig-zag appears for a real reason: with all the Nazgûl on one side
+of the Ring, the residuals pin down distance well and direction badly, so the
+bowl is long and thin. The Hessian is introduced there, where its eigenvalues
+measure that. Adam runs on the identical landscape, and one map shows it with
+gradient descent and Gauss–Newton.
 
-**IV. Least squares.** Where the problem is at home. Differences of
-squared distance readings are linear in the position, the classic
-trilateration trick, so linear least squares gives a first estimate.
-Gauss–Newton refines it. With the Nazgûl nearly in a line the Jacobian
-is ill-conditioned, and Levenberg–Marquardt earns its cell.
-
-**V. The wider landscape.** With two Nazgûl there are two exact
-solutions, mirror images across the line joining them: two minima with a
-saddle between, on the same function. Multistart from several places on
-the map is the global-methods cell. Constrain the Ring to the road again
-and the Lagrange picture appears. Finally the readings arrive one at a
-time and the estimate moves after each: stochastic gradient descent, and
-the hand-off to lecture 4's training loop.
+The notebook stops there, to save time. Momentum, the wider landscape and
+stochastic gradient descent stay on the slides only.

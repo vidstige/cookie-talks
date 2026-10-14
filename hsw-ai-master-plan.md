@@ -227,44 +227,48 @@ the gradient, the Hessian and the Jacobian from lecture 2, whose derivatives it 
 now take as available.
 
 **Arc.** A sequence of algorithms of increasing sophistication for finding the argument
-that minimizes a function. It begins in one dimension with comparisons only and no
-derivatives, then introduces the descent-direction-plus-line-search pattern that every
-later method instantiates. First derivatives enter with Newton's method, second
-derivatives later. Least squares is treated twice, algebraically and geometrically. The
-lecture closes on the wider landscape: the pathologies that defeat local methods, and
-two directions — global search and constrained problems — named so that the boundary of
-what has been covered is visible.
+that minimizes a function. It opens on local minima, the trap every method shares, and
+stays in one dimension until Newton's method: comparisons first, then the slope, and
+Newton's method introduced as an equation solver before it is pointed at the derivative.
+Least squares opens the several-variable material: the linear problem a formula solves
+outright, then the nonlinear one, solved by applying that formula again at every step.
+The rest of that material walks downhill: descent directions, gradient descent, and the
+cheap repairs for the zig-zag that networks are trained with. The lecture closes
+on constraints and stochastic descent.
 
 **Outline.**
 
-**I. One dimension, without derivatives** — the minimization problem; bracketing a
-minimum; bisection
+**I. One dimension** — the minimization problem; local minima; bracketing a minimum;
+halving the bracket; the stationary condition; stationary points, with a peak, a pause
+and a dip; Newton's method for equations; Newton's method for a minimum
 
-**II. Descent directions and step lengths** — descent directions and line search;
-Newton's method in one dimension
+**II. Least squares** — linear least squares; the normal equations, which state the
+objective, then the condition that its gradient vanishes, then the solve; nonlinear
+least squares; Gauss–Newton
 
-**III. Several variables** — steepest descent; fixed step lengths; conditioning and the
-zig-zag; momentum; per-coordinate step lengths; Newton's method in several variables
+**III. Several variables** — descent directions; gradient descent; fixed step lengths;
+conditioning and the zig-zag; momentum; Adam
 
-**IV. Least squares** — linear least squares and the normal equations; least squares as
-orthogonal projection; nonlinear least squares and Gauss–Newton; Levenberg–Marquardt and
-trust regions
-
-**V. The wider landscape** — stationary points, local minima, saddle points, plateaus;
-global methods, in brief; constrained optimization, in brief; stochastic gradient
+**IV. The wider landscape** — constrained optimization, in brief; stochastic gradient
 descent
 
-**VI. Quiz**
+**V. Quiz**
 
-The two "in brief" topics are one slide each and stay that way: they exist to show where
-the subject continues, not to cover it.
+The quiz has five questions and stays easy: the problem statement, zero slope at a
+minimum, Gauss–Newton against Newton, the direction of gradient descent, and what Adam
+remembers. The "in brief" topic is one slide and stays that way: it exists to show where the
+subject continues, not to cover it. Updates are written as iterations, x_{n+1} from
+x_n, never as assignments.
 
-Two listed topics are covered inside another slide rather than on their own: trust regions
-on the Levenberg–Marquardt slide, whose damping is the same thing seen from the other side,
-and saddle points and plateaus on the second-derivative test, which is what classifies them.
-Section II also carries the three topics lecture 2 handed forward — the stationary
-condition, the directional derivative and the quadratic approximation — each where the
-method that needs it arrives.
+The pause on the stationary-points slide stands in for plateaus, and its speaker notes
+tell the three kinds apart by the second derivative. Saddle points are not covered. Of the topics lecture 2 handed forward, the quadratic
+approximation survives only as the second reading of Newton's step, in the speaker
+notes. Dropped to make room for the notebook: golden-section search, line search, the
+quadratic approximation as its own slide, Levenberg–Marquardt with trust regions, least
+squares as orthogonal projection, global methods, the second-derivative test with
+its saddle, and Newton's method in several variables, whose Hessian cost is now a
+paragraph in the Gauss–Newton notes. Lecture 1's projection is still paid off, in a
+line on the normal-equations slide: the residual is orthogonal to every column.
 
 **Carried forward:** stochastic gradient descent and step-length behaviour, which
 lecture 4 trains with.
@@ -497,7 +501,10 @@ and adds `.controls`, `.readout` and a `.hint` line under the svg.
 Fixed across the series, so a symbol means the same thing in every deck.
 
 Derivatives are \(\frac{df}{dx}\) throughout. The prime is named once, in lecture 2, and
-never used: it cannot say which variable it differentiates with respect to. Gradients are
+otherwise not used: it cannot say which variable it differentiates with respect to. The
+one exception is Newton's method in one dimension in lecture 3, written
+\(x_{n+1}=x_n-f'(x_n)/f''(x_n)\), because the ratio of a value and a slope at one point
+reads more clearly with primes. Gradients are
 rows, so \(\nabla f\,h\) is a matrix times a step and the gradient is visibly the one-row
 Jacobian. A Jacobian is \(m\times n\): one row per output, one column per input.
 
