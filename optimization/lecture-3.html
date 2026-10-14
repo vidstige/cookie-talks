@@ -114,9 +114,6 @@ svg .stroke{fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:roun
 svg .hair{fill:none;stroke-width:1;stroke-linecap:round}
 svg .dash{fill:none;stroke-width:1.3;stroke-dasharray:4 4;stroke-linecap:round}
 svg .cloud{fill:none;stroke-width:2.4;stroke-linecap:round}
-/* One patch of a 3d surface: nearly opaque, so what is behind it dims. */
-svg .face{fill:#fff;fill-opacity:.84;stroke:var(--construct);stroke-width:.9;
-  stroke-linejoin:round}
 svg .cloud.ghost{stroke-width:2}
 
 /* interactive figures */
@@ -256,7 +253,7 @@ input[type=range]{
       <li><span class="n">02</span><span><b>Basic calculus.</b>
         <small>derivatives, the chain rule, gradient, Jacobian, Hessian</small></span></li>
       <li class="here"><span class="n">03</span><span><b>Numerical optimization.</b>
-        <small>line search, steepest descent, Newton, least squares</small></span></li>
+        <small>gradient descent, Newton, Adam, least squares</small></span></li>
       <li><span class="n">04</span><span><b>The multilayer perceptron.</b>
         <small>affine layers, nonlinearities, backpropagation</small></span></li>
       <li><span class="n">05</span><span><b>The attention mechanism.</b>
@@ -279,35 +276,35 @@ input[type=range]{
   <p class="sub">Methods that ask for less, then methods that ask for more.</p>
   <div class="body">
     <ol class="outline">
-      <li><span class="n">I</span><span>One dimension, without derivatives
-        <small>bracketing, halving</small></span></li>
-      <li><span class="n">II</span><span>Descent directions and step lengths
-        <small>which way, how far, Newton in one dimension</small></span></li>
+      <li><span class="n">I</span><span>One dimension
+        <small>local minima, bracketing, halving, stationary points, Newton's method</small></span></li>
+      <li><span class="n">II</span><span>Least squares
+        <small>the normal equations, Gauss&ndash;Newton</small></span></li>
       <li><span class="n">III</span><span>Several variables
-        <small>steepest descent, the zig-zag, momentum, Newton</small></span></li>
-      <li><span class="n">IV</span><span>Least squares
-        <small>normal equations, projection, Gauss&ndash;Newton</small></span></li>
-      <li><span class="n">V</span><span>The wider landscape
-        <small>stationary points, local minima, constraints, stochastic descent</small></span></li>
-      <li><span class="n">VI</span><span>Quiz</span></li>
+        <small>gradient descent, the zig-zag, momentum, Adam</small></span></li>
+      <li><span class="n">IV</span><span>The wider landscape
+        <small>constraints, stochastic descent</small></span></li>
+      <li><span class="n">V</span><span>Quiz</span></li>
     </ol>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>The spine of the hour is how much the algorithm is allowed to know. Section I
-    may only compare values. Section II may ask for a first derivative, and then a
-    second. Section III does all of that with a vector going in. Section IV is one
-    problem shaped so well that the answer comes out of a single linear solve.
-    Section V is where the guarantees stop.</p>
-    <p>Say the pattern once, now, because every method after section I is an instance
-    of it: pick a direction that goes down, then decide how far along it to go. The
-    methods differ only in how they answer those two questions.</p>
+    <p>The spine of the hour is how much the algorithm is allowed to know. Section I has
+    one number going in. It starts by only comparing values, then asks for the slope,
+    then for the slope of the slope. Section II is least squares: the one problem with
+    several unknowns that a formula solves outright, and then its nonlinear cousin,
+    solved by applying that formula again and again. Section III is everything else
+    with several unknowns, where the algorithm walks downhill. Section IV is where the
+    guarantees stop.</p>
+    <p>Say the pattern of section III when it arrives, because every method there is an
+    instance of it: pick a direction that goes down, then decide how far along it to go.
+    The methods differ only in how they answer those two questions.</p>
     <p>Keys: &larr; &rarr; or PageUp/PageDown to navigate, <b>N</b> for the notes
     window, <b>O</b> for the overview, <b>F</b> for full screen.</p>
   </aside>
 </section>
 
 <!-- 4 -->
-<section class="slide" data-where="I. Without derivatives">
+<section class="slide" data-where="I. One dimension">
   <h2>The minimization problem</h2>
   <p class="sub">Find the input that makes the output smallest.</p>
   <div class="two wide-left body">
@@ -337,7 +334,7 @@ input[type=range]{
     <em>minimizer</em> is \(1\), a place on the horizontal axis. Optimization wants the
     place. In lecture 4 the value will be a loss nobody cares about and the place will
     be the weights of a network, which is the whole product.</p>
-    <p>The claim is the rule for the next three slides, and it is worth dwelling on.
+    <p>The claim is the rule for the next few slides, and it is worth dwelling on.
     The algorithm is handed a black box: it may name an \(x\) and be told \(f(x)\),
     and nothing else. It cannot see the shape on the screen. Every method in the hour
     is a strategy for choosing which \(x\) to ask about next.</p>
@@ -349,7 +346,56 @@ input[type=range]{
 </section>
 
 <!-- 5 -->
-<section class="slide" data-where="I. Without derivatives">
+<section class="slide" data-where="I. One dimension">
+  <h2>Local minima</h2>
+  <p class="sub">Where you start decides where you stop.</p>
+  <div class="two wide-left body">
+    <div>
+      <ul>
+        <li>Step downhill from a start: it ends in the dip below it</li>
+        <li>Global: lowest anywhere. Local: lowest nearby</li>
+        <li>Here the divide sits at the peak, \(x=0\)</li>
+      </ul>
+    </div>
+    <figure class="demo" data-demo="local">
+      <svg id="fig-local" viewBox="0 0 400 300" role="img"
+           aria-label="The quartic with a stepped descent path from a movable starting point, running into whichever of the two dips lies below it"></svg>
+      <div class="controls">
+        <div class="row"><label for="lo-x">start</label>
+          <input id="lo-x" type="range" min="-1.75" max="2.65" step="0.05" value="-1.6">
+          <output id="out-lo-x"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-local"></div></div>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Before any method, the trap every method in the hour shares. A new curve,
+    \(\tfrac14x^4-\tfrac13x^3-x^2+1\), with two dips of different depth: \(0.583\) at
+    \(-1\) and \(-1.667\) at \(2\), and a peak at \(0\) between them.</p>
+    <p>Two words worth having. The dip at \(2\) is the <em>global</em> minimum: no point
+    anywhere is lower. The dip at \(-1\) is a <em>local</em> minimum: no point nearby is
+    lower, and that is all.</p>
+    <p>The path on the figure is the simplest method there is: from a start, keep
+    stepping downhill. Sweep the start from left to right and let the room watch the
+    answer jump. From anywhere left of the peak the path runs into the shallow dip; from
+    anywhere right of it, into the deep one. Nothing gradual happens in between &mdash;
+    the answer flips as the start crosses \(x=0\).</p>
+    <p>Put the start almost exactly on the peak and let it sit for a moment: the slope is
+    nearly zero, the steps are tiny, and it takes a long time to make up its mind. Flat
+    regions are slow for exactly this reason.</p>
+    <p>Be blunt about it. A method that only knows \(f\) and its slope where it stands
+    cannot see the deeper dip from the shallow one at any distance. Every method in this
+    lecture is local in that sense, so keep this figure in mind for the rest of the
+    hour.</p>
+    <p>The practical note, because it matters for lecture 4: for a big network nobody
+    finds the global minimum and nobody tries. Training stops at a point that is good
+    enough, and the surprise of the last decade is that on these landscapes such points
+    are usually fine.</p>
+  </aside>
+</section>
+
+<!-- 6 -->
+<section class="slide" data-where="I. One dimension">
   <h2>Bracketing a minimum</h2>
   <p class="sub">Three points that trap it.</p>
   <div class="two wide-left body">
@@ -387,15 +433,15 @@ input[type=range]{
     <p>Name the assumption honestly while the slider is in hand: this finds <em>a</em>
     minimum in the bracket, not <em>the</em> lowest point of the function. If the curve
     wiggled several times between \(a\) and \(c\) the bracket would still be valid and
-    would still trap only one of the dips. That is the first appearance of a problem
-    the landscape section returns to.</p>
-    <p>Everything that follows in this section keeps the bracket property true and
-    makes the bracket narrower. That is the entire design.</p>
+    would still trap only one of the dips. That is the local minimum of the last
+    slide again.</p>
+    <p>The next slide keeps the bracket property true and makes the bracket narrower.
+    That is the entire design.</p>
   </aside>
 </section>
 
-<!-- 6 -->
-<section class="slide" data-where="I. Without derivatives">
+<!-- 7 -->
+<section class="slide" data-where="I. One dimension">
   <h2>Halving the bracket</h2>
   <p class="sub">Two probes, one either side of the middle.</p>
   <div class="two wide-left body">
@@ -407,22 +453,23 @@ input[type=range]{
       </ul>
       <div class="eq bare">$$\sqrt{0.5}\approx0.707\ \text{per evaluation}$$</div>
     </div>
-    <figure class="demo" data-demo="bisect">
-      <svg id="fig-bisect" viewBox="0 0 400 300" role="img"
+    <figure class="demo" data-demo="halve">
+      <svg id="fig-halve" viewBox="0 0 400 300" role="img"
            aria-label="The curve with the current bracket shaded and two probe points straddling its midpoint, redrawn for each completed step"></svg>
       <div class="controls">
-        <div class="row"><label for="bs-k">steps</label>
-          <input id="bs-k" type="range" min="0" max="7" step="1" value="0">
-          <output id="out-bs-k"></output></div>
+        <div class="row"><label for="hv-k">steps</label>
+          <input id="hv-k" type="range" min="0" max="7" step="1" value="0">
+          <output id="out-hv-k"></output></div>
       </div>
-      <div class="readout"><div class="note" id="note-bisect"></div></div>
+      <div class="readout"><div class="note" id="note-halve"></div></div>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
     <p>Walk the slider out one step at a time and say what each step does. Two fresh
     points are placed a hair apart around the middle of the bracket. Whichever is
     lower, the minimum is on that side, because the curve is already rising by the time
-    it reaches the other probe. Throw the far half away and repeat.</p>
+    it reaches the other probe. Throw the far half away and repeat. Textbooks call
+    this dichotomous search.</p>
     <p>The readout carries the argument: the width goes 3, 1.62, 0.875, 0.47, while
     the evaluation count goes 2, 4, 6, 8. It is a little over half each time rather
     than exactly half, and the excess is the gap between the probes, which shrinks
@@ -443,8 +490,8 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 7 -->
-<section class="slide" data-where="II. Descent and line search">
+<!-- 8 -->
+<section class="slide" data-where="I. One dimension">
   <h2>Where the derivative vanishes</h2>
   <p class="sub">The first thing a slope says about a lowest point.</p>
   <div class="two wide-left body">
@@ -486,185 +533,135 @@ input[type=range]{
     going in it becomes a system of equations, not one equation. Both are reasons to
     search rather than solve.</p>
     <p>Load-bearing: Newton's method is built directly on this slide, and so are the
-    normal equations.</p>
-  </aside>
-</section>
-
-<!-- 8 -->
-<section class="slide" data-where="II. Descent and line search">
-  <h2>Descent directions</h2>
-  <p class="sub">Which way is downhill, when there are many ways to go.</p>
-  <div class="two wide-left body">
-    <div>
-      <div class="eq">
-        $$\nabla f\,d<0$$
-        <p class="note">A row times a column: the rate of change of \(f\) along \(d\),
-        called the directional derivative.</p>
-      </div>
-      <ul>
-        <li>Zero along the level curve &mdash; neither up nor down</li>
-        <li>Most negative opposite the gradient</li>
-      </ul>
-      <p class="claim">A descent method picks a direction, then a distance.</p>
-    </div>
-    <figure class="demo" data-demo="descent">
-      <svg id="fig-descent" viewBox="0 0 400 300" role="img"
-           aria-label="Level curves of a stretched bowl seen from above, with a fan of candidate directions at one point coloured by whether the function rises or falls along them"></svg>
-      <div class="controls">
-        <div class="row"><label for="ds-t">angle</label>
-          <input id="ds-t" type="range" min="0" max="359" step="1" value="210">
-          <output id="out-ds-t"></output></div>
-      </div>
-      <div class="readout"><div class="note" id="note-descent"></div></div>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>The rings are the level curves of \(x^2+2y^2\) seen from above &mdash; last
-    week's bowl, flattened onto the page. Make that switch explicitly, because every
-    figure from here to the end of the lecture is drawn this way.</p>
-    <p>The gradient at \((1.5,\,0.8)\) is the row \((3,\;3.2)\), and the number in the
-    readout is \(3d_1+3.2d_2\). Sweep the angle all the way round and narrate it: over
-    half the circle the number is negative and \(f\) falls, over the other half it
-    rises, and at exactly two angles it is zero. Those two are the directions along the
-    ring, where a small step changes nothing &mdash; the fact the gradient sits at
-    right angles to its level curve, from lecture 2, now visible as a number passing
-    through zero.</p>
-    <p>Any direction in the falling half will do, and that freedom is what the rest of
-    the lecture spends. The most negative is \(d=-\nabla f^{\mathsf T}\), which is the
-    obvious choice and, as section III shows, often a poor one.</p>
-    <p>Worth saying once: this is the linear approximation from lecture 2 doing its
-    job. \(f(x+\alpha d)\approx f(x)+\alpha\,\nabla f\,d\), so for small enough
-    \(\alpha\) the sign of \(\nabla f\,d\) decides the sign of the change. The promise
-    is only for small \(\alpha\), and that is exactly what the next slide has to deal
-    with.</p>
+    normal equations, which are the first such system.</p>
   </aside>
 </section>
 
 <!-- 9 -->
-<section class="slide" data-where="II. Descent and line search">
-  <h2>Line search</h2>
-  <p class="sub">Along a fixed direction, one number goes in and one comes out.</p>
+<section class="slide" data-where="I. One dimension">
+  <h2>Stationary points</h2>
+  <p class="sub">Every place where the slope is zero.</p>
   <div class="two wide-left body">
     <div>
       <div class="eq">
-        $$\varphi(\alpha)=f(x+\alpha d)$$
-        <p class="note">Any method of the last section can minimize this.</p>
+        $$\frac{df}{dx}=0$$
+        <p class="note">A minimum, a maximum, or neither.</p>
       </div>
-      <div class="eq bare">$$\varphi(\alpha)\le\varphi(0)
-        +c\,\alpha\,\frac{d\varphi}{d\alpha}(0)$$</div>
       <ul>
-        <li>Halve \(\alpha\) until it holds</li>
-        <li>\(c=\tfrac14\): bank a quarter of the promised drop</li>
+        <li>\(3x^5-5x^3\) has three: a peak, a pause, a dip</li>
+        <li>Necessary for a minimum, and nothing more</li>
       </ul>
+      <p class="claim">Which one an algorithm stops at is decided by where it started.</p>
     </div>
-    <figure class="demo" data-demo="line">
-      <svg id="fig-line" viewBox="0 0 400 300" role="img"
-           aria-label="The function restricted to a ray, plotted against the step length, with the sufficient-decrease line from the starting value and the successive halved trial steps marked"></svg>
+    <figure class="demo" data-demo="stat">
+      <svg id="fig-stat" viewBox="0 0 400 300" role="img"
+           aria-label="A curve with a peak, a pause and a dip, above its derivative, which crosses zero at the peak and the dip and only touches zero at the pause"></svg>
       <div class="controls">
-        <div class="row"><label for="ls-a">start &alpha;</label>
-          <input id="ls-a" type="range" min="0.2" max="1.4" step="0.02" value="1">
-          <output id="out-ls-a"></output></div>
+        <div class="row"><label for="sn-x">x</label>
+          <input id="sn-x" type="range" min="-1.4" max="1.4" step="0.05" value="0.6">
+          <output id="out-sn-x"></output></div>
       </div>
-      <div class="readout"><div class="note" id="note-line"></div></div>
+      <div class="readout"><div class="note" id="note-stat"></div></div>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>Fix the direction and the several-variable problem collapses to a
-    one-dimensional one. The curve on screen is \(f\) along the ray from
-    \((1.5,\,0.8)\) in the steepest-descent direction; here it works out to
-    \(3.53-19.24\alpha+29.48\alpha^2\), a parabola whose bottom sits at
-    \(\alpha\approx0.326\), taking \(f\) from \(3.53\) down to \(0.39\).</p>
-    <p>But finding that bottom exactly costs evaluations, and it is not worth it: the
-    direction was a guess, so the perfect distance along a guessed direction is
-    wasted effort. What is wanted is a step that is cheap to find and definitely
-    helps.</p>
-    <p>That is the second line, the sufficient-decrease or Armijo condition. The
-    straight line on the figure starts at \(\varphi(0)\) and falls with a quarter of
-    the initial slope. A trial \(\alpha\) is accepted when the curve is under that
-    line. Read the trials out: at \(\alpha=1\) the curve is far above it, at
-    \(\tfrac12\) still above, at \(\tfrac14\) below &mdash; accepted, three
-    evaluations.</p>
-    <p>Why a fraction of the slope and not simply "any decrease": a rule that accepts
-    any decrease at all can be satisfied by an endless sequence of ever tinier steps
-    that converge somewhere harmless. Demanding a fixed share of what the slope
-    promised rules that out.</p>
-    <p>Almost every serious method is this: a rule for the direction, and a
-    backtracking line search for the distance. Say that, because sections III and IV
-    are then mostly about the direction.</p>
+    <p>A new curve, built to have one of each kind. Its slope is
+    \(15x^4-15x^2=15x^2(x-1)(x+1)\), which vanishes at \(-1\), \(0\) and \(1\). Drive
+    the marker through all three and watch the lower panel.</p>
+    <p>At \(-1\) the slope goes from positive to negative: a peak, of height \(2\). At
+    \(1\) it goes from negative to positive: a dip, at \(-2\). At \(0\) it touches zero
+    and turns back without changing sign. The curve was falling, pauses for an instant,
+    and keeps falling. That is neither a minimum nor a maximum.</p>
+    <p>Every method in this lecture halts at all three equally happily, because all
+    three satisfy the only condition any of them tests. The pause is the sneaky one. A
+    descent method arriving from the left slows to a crawl there, because the slope
+    near zero is tiny, and it creeps towards the pause without ever getting past.</p>
+    <p>The second derivative tells them apart. Here it is \(60x^3-30x\): \(-30\) at the peak, \(30\)
+    at the dip, and \(0\) at the pause, where the test says nothing.</p>
   </aside>
 </section>
 
 <!-- 10 -->
-<section class="slide" data-where="II. Descent and line search">
-  <h2>The quadratic approximation</h2>
-  <p class="sub">A parabola instead of a line.</p>
+<section class="slide" data-where="I. One dimension">
+  <h2>Newton's method for equations</h2>
+  <p class="sub">Follow the tangent down to zero, and start again from there.</p>
   <div class="two wide-left body">
     <div>
       <div class="eq">
-        $$f(x+h)\approx f(x)+\frac{df}{dx}h
-          +\tfrac12\frac{d^2f}{dx^2}h^2$$
-        <p class="note">The line, plus the bend.</p>
+        $$x_{n+1}=x_n-\frac{g(x_n)}{g'(x_n)}$$
+        <p class="note">Where the tangent line at \(x_n\) crosses zero. The prime is the
+        slope: \(g'=\frac{dg}{dx}\).</p>
       </div>
       <ul>
-        <li>A line has no lowest point; a parabola has one</li>
-        <li>It opens upward only where \(\frac{d^2f}{dx^2}>0\)</li>
+        <li>\(g(x)=x^2-2\), from \(1\): \(1.5\), \(1.4167\), \(1.414216\)</li>
+        <li>The correct digits double each step</li>
       </ul>
+      <p class="claim">Replace the curve by its tangent, and solve that instead.</p>
     </div>
-    <figure class="demo" data-demo="quad">
-      <svg id="fig-quad" viewBox="0 0 400 300" role="img"
-           aria-label="The curve with both its tangent line and its best-fitting parabola at a movable point, the parabola following the curve much further"></svg>
+    <figure class="demo" data-demo="root">
+      <svg id="fig-root" viewBox="0 0 400 300" role="img"
+           aria-label="The parabola x squared minus two, with the tangent at the current guess drawn down to where it crosses zero, which becomes the next guess"></svg>
       <div class="controls">
-        <div class="row"><label for="qd-x">x</label>
-          <input id="qd-x" type="range" min="-2.2" max="2.2" step="0.05" value="1.9">
-          <output id="out-qd-x"></output></div>
+        <div class="row"><label for="rt-x">start</label>
+          <input id="rt-x" type="range" min="0.2" max="3" step="0.05" value="1">
+          <output id="out-rt-x"></output></div>
+        <div class="row"><label for="rt-k">steps</label>
+          <input id="rt-k" type="range" min="0" max="4" step="1" value="0">
+          <output id="out-rt-k"></output></div>
       </div>
-      <div class="readout"><div class="note" id="note-quad"></div></div>
+      <div class="readout"><div class="note" id="note-root"></div></div>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>Lecture 2 replaced a curve by its tangent line. This is the same move with one
-    more term, and the extra term is where the second derivative earns its keep.</p>
-    <p>Drag the point and compare the two dashed curves against the solid one. The
-    line matches the height and the slope; the parabola matches the height, the slope
-    and the bend, and it hugs the curve over a stretch where the line has long since
-    left. For a cubic the model is wrong only by the cubic part, which is why it looks
-    this good.</p>
-    <p>Now the point of the slide, and say it while dragging. Minimizing a line is a
-    silly question &mdash; it runs off to infinity. Minimizing a parabola is a question
-    with an answer, and the answer is a formula. So if a model must be minimized, the
-    quadratic is the first one that is any use at all.</p>
-    <p>Push the point to the left of zero and stop there. The bend goes negative, the
-    model turns upside down, and its stationary point is a peak. Any method that jumps
-    to the model's stationary point will happily jump uphill here. Leave that hanging
-    for exactly one slide.</p>
-    <p>Load-bearing: this is the model behind Newton's method in one dimension and in
-    several, and behind Gauss&ndash;Newton.</p>
+    <p>A short detour into solving equations, because the fastest minimization method
+    of the hour is an equation solver in disguise. The problem: find where \(g(x)=0\),
+    starting from a guess.</p>
+    <p>The idea is lecture 2's tangent line. Near \(x_n\),
+    \(g(x_n+h)\approx g(x_n)+g'(x_n)\,h\). A line is easy to solve: it is zero at
+    \(h=-g(x_n)/g'(x_n)\), which is the step on the slide. The line is not the curve,
+    so that answer is not exact, but it is much closer, and from there the same step is
+    taken again.</p>
+    <p>Say once why the prime appears here and nowhere else in the hour: the step is a
+    ratio of a value and a slope at the same point, and the prime keeps that ratio
+    readable. It means exactly \(\frac{dg}{dx}\), as named in lecture 2.</p>
+    <p>Step the slider from \(1\) on \(x^2-2\), whose root is \(\sqrt2\), and read the
+    errors: \(0.41\), \(0.086\), \(0.0025\), \(0.0000021\). Each is roughly the square
+    of the one before, so the number of correct digits doubles every step. Four steps
+    give \(\sqrt2\) to eleven digits.</p>
+    <p>Then show how it fails. Drag the start towards zero, where the tangent is nearly
+    flat: the first step is thrown far out, and here it happens to recover. Exactly at
+    zero the step divides by zero. Newton's method is fast near an answer and promises
+    nothing far from one.</p>
+    <p>A footnote for anyone who wants it: here the step simplifies to
+    \(x_{n+1}=\tfrac12(x_n+2/x_n)\), the Babylonian method for square roots, some four
+    thousand years older than Newton.</p>
   </aside>
 </section>
 
 <!-- 11 -->
-<section class="slide" data-where="II. Descent and line search">
-  <h2>Newton's method in one dimension</h2>
-  <p class="sub">Jump to the bottom of the parabola, and fit a new one there.</p>
+<section class="slide" data-where="I. One dimension">
+  <h2>Newton's method for a minimum</h2>
+  <p class="sub">Solve \(f'(x)=0\) the same way.</p>
   <div class="two wide-left body">
     <div>
       <div class="eq">
-        $$x\;\leftarrow\;x-\frac{df/dx}{d^2f/dx^2}$$
-        <p class="note">The step that makes the model's slope zero.</p>
+        $$x_{n+1}=x_n-\frac{f'(x_n)}{f''(x_n)}$$
+        <p class="note">Newton's method with \(g=f'\): the second derivative \(f''\) is
+        the slope of the slope.</p>
       </div>
       <ul>
-        <li>From \(2.5\): \(1.45\), \(1.070\), \(1.0023\), \(1.0000026\)</li>
-        <li>The correct digits double each step</li>
+        <li>From \(2\): \(1.25\), \(1.025\), \(1.0003\), \(1.00000005\)</li>
+        <li>Two derivatives per step, and very few steps</li>
       </ul>
       <p class="claim">It finds where the slope is zero. It does not ask which way the
       curve bends.</p>
     </div>
     <figure class="demo" data-demo="newton">
       <svg id="fig-newton" viewBox="0 0 400 300" role="img"
-           aria-label="The curve with the fitted parabola at the current iterate and an arrow from the iterate to the parabola's lowest point, which becomes the next iterate"></svg>
+           aria-label="The cubic and, below it, its slope; the tangent to the slope at the current guess runs down to zero, and where it crosses is the next guess"></svg>
       <div class="controls">
         <div class="row"><label for="nw-x">start</label>
-          <input id="nw-x" type="range" min="-2.5" max="2.5" step="0.1" value="2.5">
+          <input id="nw-x" type="range" min="-2.5" max="2.5" step="0.1" value="2">
           <output id="out-nw-x"></output></div>
         <div class="row"><label for="nw-k">steps</label>
           <input id="nw-k" type="range" min="0" max="5" step="1" value="0">
@@ -674,330 +671,44 @@ input[type=range]{
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>Fit the parabola of the previous slide, then go straight to its lowest point.
-    Setting the model's slope to zero gives \(\frac{df}{dx}+\frac{d^2f}{dx^2}h=0\), so
-    \(h=-\frac{df/dx}{d^2f/dx^2}\). One line of algebra, and it is the whole method.</p>
-    <p>Step the slider from \(2.5\) and read the numbers out. The errors are
-    \(1.5\), \(0.45\), \(0.070\), \(0.0023\), \(0.0000026\): each is roughly the square
-    of the one before. That is what doubling the correct digits means, and it is why
-    Newton's method is the standard against which everything else is measured.</p>
-    <p>Now drag the start to the left of zero and let the room watch it converge
-    happily to \(x=-1\), which is the peak. The bend there is negative, the parabola
-    opens downward, and the method jumps to its top with no complaint. Nothing has
-    gone wrong in the arithmetic; the method simply solves \(\frac{df}{dx}=0\) and that
-    equation does not care.</p>
-    <p>A footnote for anyone who wants it: the iteration here simplifies to
-    \(x\leftarrow(x^2+1)/(2x)\), which is the ancient method for extracting a square
-    root, converging to \(\sqrt1\). The two are the same algorithm.</p>
-    <p>The practical fix, named now and used in section IV: when the bend is wrong or
-    the step is wild, shorten it &mdash; a line search along the Newton direction, or a
-    damping term.</p>
+    <p>Now point the method of the last slide at the equation from the derivative
+    slide. A minimum has \(f'(x)=0\), so take \(g=f'\). Its slope is the second
+    derivative \(f''\), and the step becomes the one on the slide. Nothing else is
+    new.</p>
+    <p>The figure has two curves: \(f\) in red and its slope in blue. The dashed tangent
+    is drawn on the slope, not on \(f\), and where it crosses zero is the next guess.
+    Step it from \(2\): the errors are \(1\), \(0.25\), \(0.025\), \(0.0003\),
+    \(0.00000005\), each roughly the square of the one before, as with the square
+    root.</p>
+    <p>Then drag the start to the left of zero and let the room watch it converge
+    happily to \(x=-1\), which is the peak. The slope is zero there too, and the method
+    only ever solves \(\frac{df}{dx}=0\): the sign of the bend never enters. At exactly
+    \(x=0\) the bend is zero and the step is undefined.</p>
+    <p>The same step has a second reading, for anyone who asks. It jumps to the bottom
+    of the parabola that matches \(f\) in value, slope and bend at \(x\). Same formula,
+    another picture.</p>
+    <p>The practical fix, named and not developed: when the bend is negative or the
+    step is wild, take a shorter step, or fall back to a plain downhill one.</p>
+    <p>Load-bearing: Gauss&ndash;Newton is this slide in several variables, with
+    \(J^{\mathsf T}\!J\) for the bend.</p>
   </aside>
 </section>
 
 <!-- 12 -->
-<section class="slide" data-where="III. Several variables">
-  <h2>Steepest descent</h2>
-  <p class="sub">Take the direction the gradient forbids most strongly.</p>
-  <div class="two wide-left body">
-    <div>
-      <div class="eq">
-        $$x\;\leftarrow\;x-\alpha\,\nabla f^{\mathsf T}$$
-        <p class="note">Transposed: the gradient is a row, the point is a column.</p>
-      </div>
-      <ul>
-        <li>Needs one gradient per step and nothing else</li>
-        <li>Each step lands where the ring it started on is steepest</li>
-      </ul>
-      <p class="claim">Steepest at a point is not quickest to the bottom.</p>
-    </div>
-    <figure class="demo" data-demo="steep">
-      <svg id="fig-steep" viewBox="0 0 400 300" role="img"
-           aria-label="Level curves of a bowl with a stepped path from a starting point towards the centre, each step at right angles to the ring it leaves"></svg>
-      <div class="controls">
-        <div class="row"><label for="st-k">steps</label>
-          <input id="st-k" type="range" min="0" max="12" step="1" value="6">
-          <output id="out-st-k"></output></div>
-      </div>
-      <div class="readout"><div class="note" id="note-steep"></div></div>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>The obvious method, and the one everything in machine learning is descended
-    from. Stand somewhere, ask the gradient which way is up, walk the other way, repeat.</p>
-    <p>Step it out and point at the right angles: every step leaves its ring
-    perpendicular, because that is what the gradient does. With a fixed \(\alpha\) the
-    steps also shrink as the path goes in, without anyone arranging it &mdash; the
-    gradient itself gets smaller near the bottom. That is a real convenience and worth
-    naming.</p>
-    <p>The claim is the seed of the next three slides. Steepest is a statement about
-    an infinitesimal step at one point. It says nothing about where the bottom is, and
-    on a stretched bowl the two directions disagree badly. This figure is mild; the
-    zig-zag slide turns the stretch up.</p>
-    <p>On the transpose, briefly, since lecture 2 made the choice deliberately:
-    \(\nabla f\) is a row so that \(\nabla f\,h\) is a matrix times a step. To move a
-    point we need a column, so it gets transposed. Anyone writing gradients as columns
-    will not see the transpose in their books; nothing else changes.</p>
-  </aside>
-</section>
-
-<!-- 13 -->
-<section class="slide" data-where="III. Several variables">
-  <h2>Choosing a step length</h2>
-  <p class="sub">One number between crawling and blowing up.</p>
-  <div class="two wide-left body">
-    <div>
-      <ul>
-        <li>Too small: many steps, little progress</li>
-        <li>Too large: the value climbs, and keeps climbing</li>
-        <li>On \(x^2+2y^2\), any \(\alpha\ge\tfrac12\) fails to converge</li>
-      </ul>
-      <div class="eq bare">$$y\;\leftarrow\;(1-4\alpha)\,y$$</div>
-    </div>
-    <figure class="demo" data-demo="step">
-      <svg id="fig-step" viewBox="0 0 400 300" role="img"
-           aria-label="Level curves with the whole twelve-step path drawn for an adjustable step length, from a creeping path through a direct one to a path spiralling outwards"></svg>
-      <div class="controls">
-        <div class="row"><label for="sp-a">&alpha;</label>
-          <input id="sp-a" type="range" min="0.02" max="0.6" step="0.005" value="0.1">
-          <output id="out-sp-a"></output></div>
-      </div>
-      <div class="readout"><div class="note" id="note-step"></div></div>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>Sweep \(\alpha\) slowly from the left and narrate three regimes. Small: the path
-    is a tidy curve that has barely started after twelve steps. Around a third: it
-    drops almost straight in. Past a half: the path throws itself across the bowl and
-    each throw is bigger than the last.</p>
-    <p>The algebra is one line, and the figure is its picture. On this bowl the update
-    is \(x\leftarrow(1-2\alpha)x\) and \(y\leftarrow(1-4\alpha)y\), so each coordinate
-    is multiplied by a fixed number every step. Convergence needs both multipliers
-    inside \((-1,1)\), and the \(y\) one leaves at \(\alpha=\tfrac12\). The threshold is
-    set by the largest bend, which is \(4\): the rule is \(\alpha<2/\lambda_{\max}\).</p>
-    <p>Note which coordinate breaks first, because it is the point of the next slide.
-    The steep direction blows up while the shallow one is still crawling. A single
-    \(\alpha\) has to keep the steepest direction stable, and that ceiling is then
-    imposed on every other direction too.</p>
-    <p>Where this shows up later: in lecture 4 this number is called the learning rate,
-    it is the first thing anyone tunes, and the failure on the right of this slider is
-    exactly what a diverging loss curve looks like.</p>
-  </aside>
-</section>
-
-<!-- 14 -->
-<section class="slide" data-where="III. Several variables">
-  <h2>The zig-zag</h2>
-  <p class="sub">A narrow valley gets crossed rather than followed.</p>
-  <div class="two wide-left body">
-    <div>
-      <div class="eq">
-        $$\kappa=\frac{\lambda_{\max}}{\lambda_{\min}},\qquad
-          \text{per step}\;\frac{\kappa-1}{\kappa+1}$$
-        <p class="note">Eigenvalues of the Hessian: the stiffest bend over the
-        slackest.</p>
-      </div>
-      <ul>
-        <li>\(\kappa=1\): one step. \(\kappa=100\): \(0.980\) of the error left</li>
-        <li>Even the best fixed \(\alpha\) zig-zags</li>
-      </ul>
-      <p class="claim">The gradient points across the valley, not along it.</p>
-    </div>
-    <figure class="demo" data-demo="cond">
-      <svg id="fig-cond" viewBox="0 0 400 300" role="img"
-           aria-label="Level curves of a bowl whose stretch can be increased, with the steepest-descent path bouncing between the two walls more sharply the narrower the valley"></svg>
-      <div class="controls">
-        <div class="row"><label for="cd-c">stretch</label>
-          <input id="cd-c" type="range" min="1" max="20" step="0.5" value="2">
-          <output id="out-cd-c"></output></div>
-      </div>
-      <div class="readout"><div class="note" id="note-cond"></div></div>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>Lecture 2 promised this slide on the Hessian, so pay it off by name. The
-    condition number is the ratio of the largest bend to the smallest, and the
-    eigenvalues of the Hessian are those bends &mdash; lecture 1's eigenvalues, doing
-    something useful.</p>
-    <p>Turn the stretch up slowly. At 1 the rings are circles, the gradient points
-    straight at the centre, and one step is enough. As the rings flatten the path
-    starts to bounce, and by 20 it is crossing the valley almost at right angles,
-    making almost no progress along it.</p>
-    <p>The figure uses the best fixed step there is, \(\alpha=2/(\lambda_{\min}+
-    \lambda_{\max})\), and that matters: this is not a badly tuned method, it is a
-    well-tuned one showing its ceiling. With that step both coordinates are multiplied
-    by \(\pm(\kappa-1)/(\kappa+1)\) each time, and the sign flip on the stiff
-    coordinate <em>is</em> the zig-zag. For \(\kappa=20\) the factor is \(0.905\), so
-    a hundredfold reduction needs about forty-six steps.</p>
-    <p>Why this is not a curiosity: real problems are far worse than 20. The
-    least-squares fit later in the hour has \(\kappa\approx63\) as written, and the
-    landscapes in lecture 4 are worse again. Every method on the next three slides is
-    an attempt to stop paying this price.</p>
-    <p>Load-bearing: momentum, per-coordinate steps and Newton's method are all
-    answers to this figure.</p>
-  </aside>
-</section>
-
-<!-- 15 -->
-<section class="slide" data-where="III. Several variables">
-  <h2>Momentum</h2>
-  <p class="sub">Keep some of the last step.</p>
-  <div class="two wide-left body">
-    <div>
-      <div class="eq">
-        $$v\leftarrow\beta v-\alpha\nabla f^{\mathsf T},\qquad
-          x\leftarrow x+v$$
-        <p class="note">A velocity that remembers, rather than a step that forgets.</p>
-      </div>
-      <ul>
-        <li>Crossing parts cancel, downhill parts add up</li>
-        <li>\(\beta=0\) is plain descent; close to 1 it overshoots</li>
-      </ul>
-    </div>
-    <figure class="demo" data-demo="mom">
-      <svg id="fig-mom" viewBox="0 0 400 300" role="img"
-           aria-label="A narrow valley in level curves with the plain zig-zag path in grey and the momentum path over it, straightening as the retained fraction grows and looping past the centre when it is too large"></svg>
-      <div class="controls">
-        <div class="row"><label for="mo-b">&beta;</label>
-          <input id="mo-b" type="range" min="0" max="0.92" step="0.01" value="0">
-          <output id="out-mo-b"></output></div>
-      </div>
-      <div class="readout"><div class="note" id="note-mom"></div></div>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>The zig-zag wastes work in a very specific way: the across-the-valley part of
-    each step is undone by the next one, while the along-the-valley part always points
-    the same way. So add the steps up instead of taking them one at a time. The
-    alternating parts cancel in the sum and the persistent part accumulates.</p>
-    <p>Run \(\beta\) up from zero on the narrow valley. At \(0\) the grey and coloured
-    paths are the same. By \(0.3\) the crossing collapses after the first step and the
-    path runs down the middle; after fourteen steps it is ten times closer to the
-    bottom than plain descent. Keep going and around \(0.85\) it sails past the centre
-    and loops back &mdash; too much memory, and the ball rolls up the far wall.</p>
-    <p>The rolling-ball picture is worth one sentence and no more: \(v\) is a velocity,
-    the gradient is a force, and \(\beta\) is what is left after friction. It is a good
-    picture and a bad explanation, so do not lean on it.</p>
-    <p>Say where it goes: this is the standard addition to gradient descent in lecture
-    4, under this name and with \(\beta\) usually around \(0.9\). It costs one extra
-    vector of memory and no extra gradients.</p>
-  </aside>
-</section>
-
-<!-- 16 -->
-<section class="slide" data-where="III. Several variables">
-  <h2>A step length per coordinate</h2>
-  <p class="sub">One \(\alpha\) cannot serve a stiff direction and a slack one.</p>
-  <div class="two wide-left body">
-    <div>
-      <div class="eq">
-        $$s_i\leftarrow s_i+g_i^2,\qquad
-          x_i\leftarrow x_i-\frac{\alpha}{\sqrt{s_i}}\,g_i$$
-        <p class="note">\(g=\nabla f^{\mathsf T}\). Large past gradients, small steps
-        now.</p>
-      </div>
-      <ul>
-        <li>The curvature is unknown; the gradients already seen are not</li>
-        <li>Adagrad, RMSProp and Adam vary what goes into \(s\)</li>
-      </ul>
-    </div>
-    <figure class="demo" data-demo="perco">
-      <svg id="fig-perco" viewBox="0 0 400 300" role="img"
-           aria-label="The narrow valley with the plain zig-zag path in grey and a path whose two coordinates have separate step lengths, which descends without crossing the valley at all"></svg>
-      <div class="controls">
-        <div class="row"><label for="pc-a">&alpha;</label>
-          <input id="pc-a" type="range" min="0.1" max="0.8" step="0.01" value="0.5">
-          <output id="out-pc-a"></output></div>
-      </div>
-      <div class="readout"><div class="note" id="note-perco"></div></div>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>The diagnosis first. The ceiling on \(\alpha\) is set by the stiffest direction,
-    and every other direction then gets a step far below what it could take. The
-    obvious repair is a separate step length per coordinate &mdash; small where the
-    function is steep, large where it is flat.</p>
-    <p>The right numbers would come from the Hessian, and the Hessian is exactly what
-    we are trying not to compute. So use what is already in hand: the gradients seen so
-    far. A coordinate whose gradient has been consistently large gets its step divided
-    by a large number, and a coordinate that has barely moved keeps a big one.</p>
-    <p>Compare the two paths on the figure and point at the sign. The grey path flips
-    across the valley on every step; the coloured one never crosses it at all, because
-    the stiff coordinate's step has been scaled down to fit. Same gradients, different
-    step lengths, and the zig-zag is simply gone.</p>
-    <p>Two honest caveats. The running sum \(s\) only grows, so the steps only shrink,
-    and a long run eventually crawls &mdash; RMSProp replaces the sum with a decaying
-    average precisely to fix that. And this is a diagonal repair: it scales each
-    coordinate separately and cannot straighten a valley running diagonally, where the
-    Hessian's off-diagonal entries are what matters.</p>
-    <p>Cut candidate: momentum matters more for lecture 4. If short, state the idea in
-    a sentence and skip the figure.</p>
-  </aside>
-</section>
-
-<!-- 17 -->
-<section class="slide" data-where="III. Several variables">
-  <h2>Newton's method in several variables</h2>
-  <p class="sub">Fit a bowl, go to its bottom.</p>
-  <div class="two wide-left body">
-    <div>
-      <div class="eq">
-        $$f(x+h)\approx f(x)+\nabla f\,h+\tfrac12h^{\mathsf T}Hh$$
-      </div>
-      <div class="eq bare">$$H\,h=-\nabla f^{\mathsf T}$$</div>
-      <ul>
-        <li>Exact in one step on a quadratic, at any stretch</li>
-        <li>An \(n\times n\) solve per step, and \(H\) has \(n^2\) entries</li>
-      </ul>
-    </div>
-    <figure class="demo" data-demo="newtN">
-      <svg id="fig-newtN" viewBox="0 0 400 300" role="img"
-           aria-label="A stretched bowl in level curves with the many-step steepest-descent path beside a single straight arrow from the same start to the centre"></svg>
-      <div class="controls">
-        <div class="row"><label for="nn-c">stretch</label>
-          <input id="nn-c" type="range" min="1" max="20" step="0.5" value="8">
-          <output id="out-nn-c"></output></div>
-      </div>
-      <div class="readout"><div class="note" id="note-newtN"></div></div>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>Same move as in one dimension, with the vector shapes from lecture 2. The
-    gradient is a row, so \(\nabla f\,h\) is a number; the Hessian is square, so
-    \(h^{\mathsf T}Hh\) is a number too. Differentiate the model in \(h\) and set it to
-    zero, and the minimizing step solves \(Hh=-\nabla f^{\mathsf T}\).</p>
-    <p>Note what is <em>not</em> written: \(h=-H^{-1}\nabla f^{\mathsf T}\). Lecture 1
-    said inverting is the slow and inaccurate way to solve a system, and that applies
-    here. Factor and solve.</p>
-    <p>Now turn the stretch up and watch the two paths. The grey one gets worse and
-    worse; the single arrow does not change at all, because on a quadratic the model is
-    not an approximation &mdash; it is the function, and its bottom is the answer. The
-    condition number simply does not appear in Newton's rate.</p>
-    <p>Then the bill, because it is what rules the method out later. \(H\) has \(n^2\)
-    entries and the solve costs about \(n^3\). At a million parameters that is a
-    million million entries, and lecture 4 has more parameters than that. This is the
-    reason the methods that actually train networks are the cheap ones from the last
-    three slides.</p>
-    <p>If someone asks about the middle ground: quasi-Newton methods build an
-    approximation to \(H\) out of the gradients they have already seen. BFGS and
-    L-BFGS are the names; not covered here.</p>
-  </aside>
-</section>
-
-<!-- 18 -->
-<section class="slide" data-where="IV. Least squares">
+<section class="slide" data-where="II. Least squares">
   <h2>Linear least squares</h2>
   <p class="sub">Eight measurements, two numbers to choose.</p>
   <div class="two wide-left body">
     <div>
       <div class="eq">
-        $$\min_x\;\lVert Ax-y\rVert^2,\qquad
-          A=\begin{bmatrix}1&t_1\\\vdots&\vdots\\1&t_m\end{bmatrix},\quad
-          x=\begin{pmatrix}a\\b\end{pmatrix}$$
-        <p class="note">Row \(i\) asks for \(a+bt_i=y_i\).</p>
+        $$\min_x\;\lVert Ax-y\rVert^2$$
+        <p class="note">More equations than unknowns, so no \(x\) solves \(Ax=y\)
+        exactly.</p>
       </div>
+      <div class="eq bare">$$A=\begin{bmatrix}1&t_1\\\vdots&\vdots\\1&t_8\end{bmatrix},
+        \qquad x=\begin{pmatrix}a\\b\end{pmatrix}$$</div>
       <ul>
-        <li>More equations than unknowns: no \(x\) satisfies them all</li>
+        <li>Row \(i\) asks for \(a+bt_i=y_i\)</li>
         <li>Squares, so either sign counts and large errors count more</li>
       </ul>
     </div>
@@ -1030,119 +741,88 @@ input[type=range]{
     the choice that makes the algebra work.</p>
     <p>Say that "linear" describes the parameters, not the picture. Fitting a parabola
     \(a+bt+ct^2\) is still linear least squares, because the unknowns still enter
-    linearly &mdash; only the columns of \(A\) change. Section IV goes nonlinear only
-    when the parameters themselves sit inside a nonlinear function.</p>
+    linearly &mdash; only the columns of \(A\) change. Two slides on, the fit goes
+    nonlinear, which happens only when the parameters themselves sit inside a nonlinear
+    function.</p>
   </aside>
 </section>
 
-<!-- 19 -->
-<section class="slide" data-where="IV. Least squares">
+<!-- 13 -->
+<section class="slide" data-where="II. Least squares">
   <h2>The normal equations</h2>
   <p class="sub">Set the gradient to zero and solve what is left.</p>
   <div class="two wide-left body">
     <div>
       <div class="eq">
-        $$\nabla f=2\,(Ax-y)^{\mathsf T}\!A=0
-          \;\Longrightarrow\;A^{\mathsf T}\!Ax=A^{\mathsf T}y$$
+        $$f(x)=\lVert Ax-y\rVert^2,\qquad \nabla f=0$$
+        <p class="note">At the lowest point the slope is zero along every coordinate at
+        once.</p>
       </div>
-      <div class="eq bare">
-        $$\begin{bmatrix}8&28\\28&140\end{bmatrix}x=\begin{pmatrix}22\\98\end{pmatrix}
-          \;\Longrightarrow\;x=\begin{pmatrix}1\\[2pt]\tfrac12\end{pmatrix}$$
-      </div>
+      <div class="eq bare">$$\nabla f=2\,(Ax-y)^{\mathsf T}\!A=0
+        \;\Longrightarrow\;A^{\mathsf T}\!Ax=A^{\mathsf T}y$$</div>
       <ul>
-        <li>\(A^{\mathsf T}\!A\) is square and symmetric, whatever \(m\) is</li>
+        <li>Rearranged: \(A^{\mathsf T}(y-Ax)=0\), so the residual is orthogonal to
+        every column</li>
       </ul>
       <p class="claim">The whole minimization, done by one linear solve.</p>
     </div>
-    <figure>
-      <svg id="fig-bowl" viewBox="0 0 400 300" role="img"
-           aria-label="Level curves of the sum of squares over the two parameters, a long narrow set of ellipses with the exact solution marked at their centre"></svg>
-      <figcaption>The sum of squares over \((a,\,b)\): a bowl, with one bottom.</figcaption>
+    <figure class="demo" data-demo="normal">
+      <svg id="fig-normal" viewBox="0 0 400 300" role="img"
+           aria-label="The eight data points with the least-squares line through them, which is solved again whenever a point is dragged up or down"></svg>
+      <div class="readout"><div class="mat m2" id="mat-ata"></div>
+        <div class="mat" id="mat-aty"></div><div class="note" id="note-normal"></div></div>
+      <p class="hint">Drag a point up or down.</p>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
+    <p>State the objective first, exactly as on the last slide, and say what is wanted:
+    its lowest point. In one dimension that meant \(\frac{df}{dx}=0\). With a vector
+    going in, the slope has to be zero along every coordinate at once, so every partial
+    derivative is zero, and together the partial derivatives are the gradient. Hence
+    \(\nabla f=0\): one equation per unknown, two here.</p>
     <p>The derivative of \(\lVert Ax-y\rVert^2\) is the one piece of matrix calculus in
     the lecture. Write it as \((Ax-y)^{\mathsf T}(Ax-y)\); a step \(h\) changes it by
     \(2(Ax-y)^{\mathsf T}\!Ah\) plus a term in \(h^2\), so the gradient is the row
     \(2(Ax-y)^{\mathsf T}\!A\). Setting it to zero and transposing gives
     \(A^{\mathsf T}\!Ax=A^{\mathsf T}y\).</p>
-    <p>Do the arithmetic aloud, because it is all small integers. \(A^{\mathsf T}\!A\)
-    holds \(m=8\), \(\sum t_i=28\) and \(\sum t_i^2=140\); \(A^{\mathsf T}y\) holds
-    \(\sum y_i=22\) and \(\sum t_iy_i=98\). Solving gives \(b=\tfrac12\) and \(a=1\)
-    exactly, and the sum of squares at that point is \(1.08\) &mdash; the number the
-    room was steering towards by hand.</p>
-    <p>The figure says why one solve is enough: the objective is quadratic in the
-    parameters, so its landscape is a bowl, with one stationary point and that point a
-    minimum. None of the pathologies of section V apply here.</p>
-    <p>One warning about this matrix. \(A^{\mathsf T}\!A\) here has
-    eigenvalues \(145.7\) and \(2.31\), a condition number of about \(63\), and forming
-    it squares whatever conditioning \(A\) had. Software solves least squares by a QR
-    or SVD factorization of \(A\) instead, and never builds
-    \(A^{\mathsf T}\!A\). Subtracting the mean of \(t\) first brings the number down to
-    \(5.25\) on its own.</p>
+    <p>The figure is the last slide's, with the line now always the solution: every
+    time a point moves, the two equations are solved again. Start from the readout.
+    \(A^{\mathsf T}\!A\) holds \(m=8\), \(\sum t_i=28\) and \(\sum t_i^2=140\), and it
+    never changes, because it only knows where the measurements were taken.
+    \(A^{\mathsf T}y\) holds \(\sum y_i=22\) and \(\sum t_iy_i=98\). Solving gives
+    \(a=1\) and \(b=\tfrac12\) exactly, and the sum of squares is \(1.08\), the number
+    the room was steering towards by hand. Then drag the last point up and watch the
+    line tilt towards it.</p>
+    <p>The bullet is lecture 1's projection, back as promised. The residual is at right
+    angles to every column of \(A\), so the best fit is the orthogonal projection of the
+    data onto what the model can reach. Named, not drawn.</p>
+    <p>Why one solve is enough: the objective is quadratic in the parameters, so its
+    landscape is a bowl, with one stationary point and that point a minimum. None of the
+    trouble from the local-minima slide applies here.</p>
+    <p>One warning about this matrix. \(A^{\mathsf T}\!A\) here has eigenvalues
+    \(145.7\) and \(2.31\), a condition number of about \(63\), and forming it squares
+    whatever conditioning \(A\) had. Software solves least squares by a QR or SVD
+    factorization of \(A\) instead, and never builds \(A^{\mathsf T}\!A\). Subtracting
+    the mean of \(t\) first brings the number down to \(5.25\) on its own.</p>
   </aside>
 </section>
 
-<!-- 20 -->
-<section class="slide" data-where="IV. Least squares">
-  <h2>Least squares as orthogonal projection</h2>
-  <p class="sub">A perpendicular drop, onto a plane this time.</p>
-  <div class="two wide-left body">
-    <div>
-      <ul>
-        <li>\(Ax\) sweeps out the plane spanned by the columns of \(A\)</li>
-        <li>\(y\) is off that plane</li>
-      </ul>
-      <div class="eq">
-        $$A^{\mathsf T}(y-Ax)=0$$
-        <p class="note">Orthogonal to every column &mdash; the normal equations,
-        rearranged.</p>
-      </div>
-      <p class="claim">The best fit is the projection of the data onto what the model
-      can reach.</p>
-    </div>
-    <figure class="demo" data-demo="project">
-      <svg id="fig-project" viewBox="0 0 400 320" role="img"
-           aria-label="A plane spanned by two column vectors in three dimensions, with the data vector reaching off it, its projection lying in the plane, and the residual joining them at a right angle"></svg>
-      <div class="readout"><div class="note" id="note-project"></div></div>
-      <p class="hint">Drag to rotate, scroll to zoom.</p>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>Lecture 1 ended its projection slide by saying the idea would come back as least
-    squares. This is that slide, paid off.</p>
-    <p>Three measurements this time, so the picture fits in three dimensions. The data
-    is the vector \(y=(2,\,1,\,3)\). The model can produce \(Ax=a\,c_1+b\,c_2\), any
-    combination of the two columns \(c_1=(1,1,1)\) and \(c_2=(0,1,2)\), and those sweep
-    out a plane through the origin. The plane is every fit the model is capable of;
-    \(y\) is off it, which is another way of saying the data is not exactly a straight
-    line.</p>
-    <p>So the question becomes geometric: which point of the plane is nearest \(y\)?
-    The perpendicular drop, exactly as in lecture 1 but onto a plane instead of a line.
-    Here it is \(Ax=(1.5,\,2,\,2.5)\) with \(x=(1.5,\,0.5)\), and the residual
-    \((0.5,\,-1,\,0.5)\) sticks straight out. Check it against both columns in the
-    room: \(0.5-1+0.5=0\), and \(0-1+1=0\).</p>
-    <p>Then the punchline. "Orthogonal to both columns" written as a matrix is
-    \(A^{\mathsf T}(y-Ax)=0\), which is the normal equations rearranged. The algebra
-    and the geometry are one statement, and neither was derived from the other here
-    &mdash; they were derived separately and met.</p>
-    <p>Rotate it until the residual is seen end-on and the right angle is obvious.</p>
-  </aside>
-</section>
-
-<!-- 21 -->
-<section class="slide" data-where="IV. Least squares">
+<!-- 14 -->
+<section class="slide" data-where="II. Least squares">
   <h2>Nonlinear least squares</h2>
   <p class="sub">Same squared error, a model that bends.</p>
   <div class="two wide-left body">
     <div>
       <div class="eq">
-        $$f(x)=\tfrac12\lVert r(x)\rVert^2,\qquad
-          r_i(x)=m(t_i;x)-y_i$$
-        <p class="note">Here \(m(t;a,b)=a\,e^{-bt}\), so \(x=(a,\,b)\).</p>
+        $$\min_x\;f(x)=\tfrac12\lVert r(x)\rVert^2$$
+        <p class="note">\(r\) is the vector of residuals, nonlinear in the unknowns
+        \(x\).</p>
       </div>
+      <div class="eq bare">$$r_i(a,b)=a\,e^{-bt_i}-y_i,\qquad
+        x=\begin{pmatrix}a\\b\end{pmatrix}$$</div>
       <ul>
-        <li>\(r\) takes a vector in and gives a vector out: it has a Jacobian \(J\)</li>
+        <li>\(t_i\) and \(y_i\): six measurements, fixed numbers</li>
+        <li>Vector in, vector out: \(r\) has a Jacobian \(J\)</li>
         <li>\(\nabla f=r^{\mathsf T}J\), and no linear solve finds its zero</li>
       </ul>
     </div>
@@ -1164,6 +844,9 @@ input[type=range]{
     <p>The change is small and consequential. \(a\) still enters linearly, but \(b\)
     sits in the exponent, so the residual is not a linear function of the parameters
     and \(A\) does not exist. Everything downstream of \(A\) goes with it.</p>
+    <p>Point at what varies. The \(t_i\) and \(y_i\) are the measurements, six pairs
+    of fixed numbers, so the residuals are functions of \(a\) and \(b\) alone. In code
+    they are constants the residual function reads, not arguments it takes.</p>
     <p>The factor of a half is bookkeeping: it cancels the 2 from differentiating a
     square, and it is conventional for exactly that reason.</p>
     <p>Read the shapes out, since they are all lecture 2's. Six residuals from two
@@ -1177,25 +860,31 @@ input[type=range]{
     the bent valley the next figure shows.</p>
     <p>Best they will do by hand is around \(0.015\). Do not dwell; the point is that
     setting \(r^{\mathsf T}J=0\) is now a pair of nonlinear equations with no formula
-    for their solution, so we are back to walking downhill.</p>
+    for their solution, so the answer has to be approached step by step.</p>
   </aside>
 </section>
 
-<!-- 22 -->
-<section class="slide" data-where="IV. Least squares">
+<!-- 15 -->
+<section class="slide" data-where="II. Least squares">
   <h2>Gauss&ndash;Newton</h2>
-  <p class="sub">Linearize the residual, not the objective.</p>
+  <p class="sub">Newton's method in several variables.</p>
   <div class="two wide-left body">
     <div>
       <div class="eq">
-        $$r(x+h)\approx r(x)+Jh
-          \;\Longrightarrow\;J^{\mathsf T}\!Jh=-J^{\mathsf T}r$$
-        <p class="note">The normal equations, with \(J\) for \(A\) and \(-r\) for
-        \(y\).</p>
+        $$x_{n+1}=x_n-\bigl(J^{\mathsf T}J\bigr)^{-1}J^{\mathsf T}\,r(x_n)$$
+        <p class="note">Newton's \(x_{n+1}=x_n-f'(x_n)/f''(x_n)\), with
+        \(J^{\mathsf T}r\) for \(f'\) and \(J^{\mathsf T}J\) for \(f''\). \(J\) is the
+        Jacobian of \(r\), evaluated at \(x_n\).</p>
       </div>
+<pre>x = np.array([1.0, 0.2])                <span class="c"># a, b</span>
+for n in range(4):
+    a, b = x
+    e = np.exp(-b * t)
+    r = a * e - y                       <span class="c"># 6 residuals</span>
+    J = np.stack([e, -a * t * e], 1)    <span class="c"># 6 × 2</span>
+    x = x - np.linalg.solve(J.T @ J, J.T @ r)</pre>
       <ul>
         <li>\(J^{\mathsf T}\!J\) stands in for the Hessian, from first derivatives only</li>
-        <li>Close to Newton when the residuals are small</li>
       </ul>
     </div>
     <figure class="demo" data-demo="gn">
@@ -1210,258 +899,354 @@ input[type=range]{
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>The trick is to approximate one level down. Rather than fitting a quadratic to
-    \(f\), fit a linear map to \(r\) &mdash; which is what a Jacobian is &mdash; and
+    <p>The trick is to approximate one level down. Rather than applying Newton's
+    method to \(\nabla f=0\), which needs the second derivatives of \(r\), fit a
+    linear map to \(r\) &mdash; which is what a Jacobian is &mdash; and
     then minimize the squared length of that. Substituting \(r+Jh\) into
     \(\tfrac12\lVert\cdot\rVert^2\) gives a linear least-squares problem in \(h\), and
-    its normal equations are \(J^{\mathsf T}\!Jh=-J^{\mathsf T}r\). Every step of
+    its normal equations are \(J^{\mathsf T}\!Jh=-J^{\mathsf T}r\). Solve for \(h\)
+    and add it, and that is the formula on the slide. Every step of
     Gauss&ndash;Newton is the line-fitting slide again, on a new \(J\).</p>
+    <p>Point at the pattern from one dimension: the slope divided by the bend,
+    subtracted. Here the slope is the gradient \(J^{\mathsf T}r\) and the bend is
+    \(J^{\mathsf T}\!J\), and dividing by a matrix means multiplying by its inverse.
+    The subtitle is honest only up to that bend. True Newton would use the full Hessian
+    of \(f\): with \(d\) unknowns it has \(d^2\) entries, needs second derivatives, and
+    costs about \(d^3\) to solve with. At a million parameters that is out of reach,
+    which is why the next section's methods use the gradient alone.
+    The inverse is notation: the code calls a solver instead, the fast and accurate way
+    lecture 1 recommended.</p>
+    <p>Then read the code, because it is the whole algorithm. Each pass evaluates the
+    six residuals and the \(6\times2\) Jacobian at the current point: the two columns
+    are the derivatives of \(a\,e^{-bt}\) with respect to \(a\) and to \(b\). It
+    solves one \(2\times2\) system and subtracts the result. Nothing is tuned: there is
+    no step length to choose, unlike the downhill methods of the next section.</p>
     <p>The payoff is that second derivatives never appear. The true Hessian of
     \(\tfrac12\lVert r\rVert^2\) is \(J^{\mathsf T}\!J\) plus a term containing the
     second derivatives of \(r\), each weighted by its own residual. Drop that term and
     \(J^{\mathsf T}\!J\) is left. The approximation is good when the residuals are
-    small &mdash; a good fit &mdash; or when the model is nearly linear, and it is
-    poor when the fit is bad, which is the honest caveat.</p>
+    small &mdash; a good fit &mdash; or when the model is nearly linear, and then the
+    step is close to Newton's. It is poor when the fit is bad, which is the honest
+    caveat.</p>
     <p>Step the slider from \((1,\,0.2)\) and read the objective out: \(2.11\),
     \(0.191\), \(0.041\), \(0.0135\), \(0.01343\). Four steps, essentially converged,
     and the fitted model is \(2.84\,e^{-0.556t}\).</p>
+    <p>The figure is the first landscape seen from above, and the next section draws
+    every figure this way. Each curve joins the points \((a,\,b)\) where \(f\) has
+    one value: last week's surfaces, flattened onto the page.</p>
     <p>Point at the level curves. They are bent, not elliptical, which is what the
     previous slide's interacting knobs look like from above. Each Gauss&ndash;Newton
     step pretends they are ellipses and jumps to the centre of the ones it imagines.</p>
   </aside>
 </section>
 
-<!-- 23 -->
-<section class="slide" data-where="IV. Least squares">
-  <h2>Levenberg&ndash;Marquardt</h2>
-  <p class="sub">Believe the model only so far.</p>
+<!-- 16 -->
+<section class="slide" data-where="III. Several variables">
+  <h2>Descent directions</h2>
+  <p class="sub">Which way is downhill, when there are many ways to go.</p>
   <div class="two wide-left body">
     <div>
       <div class="eq">
-        $$\bigl(J^{\mathsf T}\!J+\lambda I\bigr)h=-J^{\mathsf T}r$$
+        $$\nabla f\,d<0$$
+        <p class="note">A row times a column: the rate of change of \(f\) along \(d\),
+        called the directional derivative.</p>
       </div>
       <ul>
-        <li>\(\lambda\to0\): the Gauss&ndash;Newton step</li>
-        <li>\(\lambda\) large: a short step along \(-\nabla f^{\mathsf T}\)</li>
-        <li>Raise \(\lambda\) when a step makes \(f\) worse, lower it when it helps</li>
+        <li>Zero along the level curve &mdash; neither up nor down</li>
+        <li>Most negative opposite the gradient</li>
       </ul>
-      <p class="claim">\(\lambda\) is a trust region in disguise: it sets how far out
-      the model is believed.</p>
+      <p class="claim">A descent method picks a direction, then a distance.</p>
     </div>
-    <figure class="demo" data-demo="lm">
-      <svg id="fig-lm" viewBox="0 0 400 300" role="img"
-           aria-label="Bent level curves with the damped step drawn from one point, swinging from a long arrow out of the frame towards a short arrow down the gradient as the damping grows"></svg>
+    <figure class="demo" data-demo="descent">
+      <svg id="fig-descent" viewBox="0 0 400 300" role="img"
+           aria-label="Level curves of a stretched bowl seen from above, with a fan of candidate directions at one point coloured by whether the function rises or falls along them"></svg>
       <div class="controls">
-        <div class="row"><label for="lm-l">&lambda;</label>
-          <input id="lm-l" type="range" min="-3" max="2" step="0.05" value="-3">
-          <output id="out-lm-l"></output></div>
+        <div class="row"><label for="ds-t">angle</label>
+          <input id="ds-t" type="range" min="0" max="359" step="1" value="210">
+          <output id="out-ds-t"></output></div>
       </div>
-      <div class="readout"><div class="note" id="note-lm"></div></div>
+      <div class="readout"><div class="note" id="note-descent"></div></div>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>Start with the failure, at \((1,\,0.95)\) where \(f=2.96\). The undamped
-    Gauss&ndash;Newton step is long, leaves the frame, and drives \(b\) negative &mdash;
-    at which point \(e^{-bt}\) grows instead of decaying and the objective reaches
-    \(10^4\). The step was not wrong; the linear model was simply trusted far outside
-    the region where it holds.</p>
-    <p>Now push \(\lambda\) up and watch the arrow. It shortens and swings round, and
-    by \(\lambda=1\) it lands at \(f=0.35\) &mdash; an excellent step. Push further and
-    it lines up with the negative gradient, at \(19^\circ\), and becomes so short that
-    it achieves almost nothing. The two ends of the slider are Gauss&ndash;Newton and
-    steepest descent, and the useful steps are in the middle.</p>
-    <p>Why adding \(\lambda I\) does that: as \(\lambda\) grows it swamps
-    \(J^{\mathsf T}\!J\), the solve tends to \(h\approx-J^{\mathsf T}r/\lambda\), and
-    \(J^{\mathsf T}r\) is the gradient transposed. It also makes the matrix invertible
-    when \(J^{\mathsf T}\!J\) is not, which is a second reason it is there.</p>
-    <p>The trust-region reading, since the claim asserts it. Restricting the step to
-    \(\lVert h\rVert\le\Delta\) and minimizing the model inside that ball gives exactly
-    this equation, with \(\lambda\) the multiplier of the constraint: every \(\lambda\)
-    corresponds to a radius, and the adaptive rule &mdash; grow \(\Delta\) when the
-    model predicted the drop well, shrink it when it did not &mdash; is the same rule
-    as the third bullet, upside down.</p>
-    <p>This is the standard curve-fitting algorithm, and what most software means by
-    "fit".</p>
+    <p>The rings are the level curves of \(x^2+2y^2\), seen from above like the
+    curve fit on the Gauss&ndash;Newton slide.</p>
+    <p>The gradient at \((1.5,\,0.8)\) is the row \((3,\;3.2)\), and the number in the
+    readout is \(3d_1+3.2d_2\). Sweep the angle all the way round and narrate it: over
+    half the circle the number is negative and \(f\) falls, over the other half it
+    rises, and at exactly two angles it is zero. Those two are the directions along the
+    ring, where a small step changes nothing &mdash; the fact the gradient sits at
+    right angles to its level curve, from lecture 2, now visible as a number passing
+    through zero.</p>
+    <p>Any direction in the falling half will do, and that freedom is what the rest of
+    the lecture spends. The most negative is \(d=-\nabla f^{\mathsf T}\), which is the
+    obvious choice and, as this section shows, often a poor one.</p>
+    <p>Worth saying once: this is the linear approximation from lecture 2 doing its
+    job. \(f(x+\alpha d)\approx f(x)+\alpha\,\nabla f\,d\), so for small enough
+    \(\alpha\) the sign of \(\nabla f\,d\) decides the sign of the change. The promise
+    is only for small \(\alpha\), and the step-length slide deals with that.</p>
   </aside>
 </section>
 
-<!-- 24 -->
-<section class="slide" data-where="V. The wider landscape">
-  <h2>Stationary points</h2>
-  <p class="sub">Everything here stops where the gradient vanishes.</p>
+<!-- 17 -->
+<section class="slide" data-where="III. Several variables">
+  <h2>Gradient descent</h2>
+  <p class="sub">Take the direction the gradient forbids most strongly.</p>
   <div class="two wide-left body">
     <div>
       <div class="eq">
-        $$\nabla f=0$$
-        <p class="note">A minimum, a maximum, a saddle, or a flat stretch.</p>
+        $$x_{n+1}=x_n-\alpha\,\nabla f(x_n)^{\mathsf T}$$
+        <p class="note">Transposed: the gradient is a row, the point is a column.</p>
       </div>
       <ul>
-        <li>\(\tfrac14x^4-\tfrac13x^3-x^2+1\) has three</li>
-        <li>Necessary for a minimum, and nothing more</li>
+        <li>Needs one gradient per step and nothing else</li>
+        <li>Each step lands where the ring it started on is steepest</li>
       </ul>
-      <p class="claim">Which one an algorithm stops at is decided by where it started.</p>
+      <p class="claim">Steepest at a point is not quickest to the bottom.</p>
     </div>
-    <figure class="demo" data-demo="stat">
-      <svg id="fig-stat" viewBox="0 0 400 300" role="img"
-           aria-label="A quartic with two dips of different depth above its derivative, which crosses zero three times"></svg>
+    <figure class="demo" data-demo="steep">
+      <svg id="fig-steep" viewBox="0 0 400 300" role="img"
+           aria-label="Level curves of a bowl with a stepped path from a starting point towards the centre, each step at right angles to the ring it leaves"></svg>
       <div class="controls">
-        <div class="row"><label for="sn-x">x</label>
-          <input id="sn-x" type="range" min="-1.75" max="2.65" step="0.05" value="1.2">
-          <output id="out-sn-x"></output></div>
+        <div class="row"><label for="st-k">steps</label>
+          <input id="st-k" type="range" min="0" max="12" step="1" value="6">
+          <output id="out-st-k"></output></div>
       </div>
-      <div class="readout"><div class="note" id="note-stat"></div></div>
+      <div class="readout"><div class="note" id="note-steep"></div></div>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>A new curve, because the old one only had one dip. Its derivative is
-    \(x^3-x^2-2x=x(x-2)(x+1)\), which factors by inspection and vanishes at \(-1\),
-    \(0\) and \(2\). Drive the marker through all three and let the lower panel cross
-    zero each time.</p>
-    <p>They are three different things. At \(-1\) there is a dip of depth \(0.583\);
-    at \(2\) a deeper one at \(-1.667\); at \(0\) a peak of \(1\). Every method in
-    this lecture halts at all three equally happily, because all three satisfy the
-    only condition any of them tests.</p>
-    <p>Two words worth having. The dip at \(2\) is the <em>global</em> minimum: no
-    point anywhere is lower. The dip at \(-1\) is a <em>local</em> minimum: no point
-    nearby is lower, and that is all. Nothing in the hour finds the first except by
-    luck.</p>
-    <p>The fourth case has no picture here because this curve has none: a flat stretch,
-    where the derivative is zero over an interval or touches zero without crossing, as
-    \(x^3\) does at the origin. The classification on the next slide says nothing at
-    all about those.</p>
+    <p>The obvious method, and the one everything in machine learning is descended
+    from. Stand somewhere, ask the gradient which way is up, walk the other way, repeat.</p>
+    <p>Step it out and point at the right angles: every step leaves its ring
+    perpendicular, because that is what the gradient does. With a fixed \(\alpha\) the
+    steps also shrink as the path goes in, without anyone arranging it &mdash; the
+    gradient itself gets smaller near the bottom. That is a real convenience and worth
+    naming.</p>
+    <p>The name: gradient descent, and in older books steepest descent, because the
+    step goes the way the function falls fastest. With a fixed \(\alpha\) it is
+    exactly what lecture 4 trains networks with.</p>
+    <p>The claim is the seed of the rest of this section. Steepest is a statement
+    about an infinitesimal step at one point. It says nothing about where the bottom
+    is, and on a stretched bowl the two directions disagree badly. This figure is mild;
+    the zig-zag slide turns the stretch up.</p>
+    <p>On the transpose, briefly, since lecture 2 made the choice deliberately:
+    \(\nabla f\) is a row so that \(\nabla f\,h\) is a matrix times a step. To move a
+    point we need a column, so it gets transposed. Anyone writing gradients as columns
+    will not see the transpose in their books; nothing else changes.</p>
   </aside>
 </section>
 
-<!-- 25 -->
-<section class="slide" data-where="V. The wider landscape">
-  <h2>The second-derivative test</h2>
-  <p class="sub">The bends say which kind of point it is.</p>
+<!-- 18 -->
+<section class="slide" data-where="III. Several variables">
+  <h2>Choosing a step length</h2>
+  <p class="sub">One number between crawling and blowing up.</p>
+  <div class="two wide-left body">
+    <div>
+      <ul>
+        <li>Too small: many steps, little progress</li>
+        <li>Too large: the value climbs, and keeps climbing</li>
+        <li>On \(x^2+2y^2\), any \(\alpha\ge\tfrac12\) fails to converge</li>
+      </ul>
+      <div class="eq bare">$$y_{n+1}=(1-4\alpha)\,y_n$$</div>
+    </div>
+    <figure class="demo" data-demo="step">
+      <svg id="fig-step" viewBox="0 0 400 300" role="img"
+           aria-label="Level curves with the whole twelve-step path drawn for an adjustable step length, from a creeping path through a direct one to a path spiralling outwards"></svg>
+      <div class="controls">
+        <div class="row"><label for="sp-a">&alpha;</label>
+          <input id="sp-a" type="range" min="0.02" max="0.6" step="0.005" value="0.1">
+          <output id="out-sp-a"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-step"></div></div>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>Sweep \(\alpha\) slowly from the left and narrate three regimes. Small: the path
+    is a tidy curve that has barely started after twelve steps. Around a third: it
+    drops almost straight in. Past a half: the path throws itself across the bowl and
+    each throw is bigger than the last.</p>
+    <p>The algebra is one line, and the figure is its picture. On this bowl the update
+    is \(x_{n+1}=(1-2\alpha)x_n\) and \(y_{n+1}=(1-4\alpha)y_n\), so each coordinate
+    is multiplied by a fixed number every step. Convergence needs both multipliers
+    inside \((-1,1)\), and the \(y\) one leaves at \(\alpha=\tfrac12\). The threshold is
+    set by the largest bend, which is \(4\): the rule is \(\alpha<2/\lambda_{\max}\).</p>
+    <p>Note which coordinate breaks first, because it is the point of the next slide.
+    The steep direction blows up while the shallow one is still crawling. A single
+    \(\alpha\) has to keep the steepest direction stable, and that ceiling is then
+    imposed on every other direction too.</p>
+    <p>Where this shows up later: in lecture 4 this number is called the learning rate,
+    it is the first thing anyone tunes, and the failure on the right of this slider is
+    exactly what a diverging loss curve looks like.</p>
+  </aside>
+</section>
+
+<!-- 19 -->
+<section class="slide" data-where="III. Several variables">
+  <h2>The zig-zag</h2>
+  <p class="sub">A narrow valley gets crossed rather than followed.</p>
   <div class="two wide-left body">
     <div>
       <div class="eq">
-        $$\text{eigenvalues of }H:\quad
-          \text{all}>0\;\Rightarrow\;\text{minimum}$$
-        <p class="note">All negative, a maximum. Mixed signs, a saddle. A zero, and
-        the test is silent.</p>
+        $$\kappa=\frac{\lambda_{\max}}{\lambda_{\min}},\qquad
+          \text{per step}\;\frac{\kappa-1}{\kappa+1}$$
+        <p class="note">Eigenvalues of the Hessian: the stiffest bend over the
+        slackest.</p>
       </div>
       <ul>
-        <li>\(x^2-y^2\) bends \(+2\) along one axis and \(-2\) along the other</li>
-        <li>In one dimension \(H\) is one number, and this is its sign</li>
+        <li>\(\kappa=1\): one step. \(\kappa=100\): \(0.980\) of the error left</li>
+        <li>Even the best fixed \(\alpha\) zig-zags</li>
       </ul>
+      <p class="claim">The gradient points across the valley, not along it.</p>
     </div>
-    <figure class="demo" data-demo="saddle">
-      <svg id="fig-saddle" viewBox="0 0 400 320" role="img"
-           aria-label="A saddle surface with its two principal cuts drawn, one curving upward and one downward through the same flat point at the centre"></svg>
-      <div class="readout"><div class="note" id="note-saddle"></div></div>
-      <p class="hint">Drag to rotate, scroll to zoom.</p>
-    </figure>
-  </div>
-  <aside class="notes"><h4>Speaker notes</h4>
-    <p>The Hessian was introduced last week as the bend of the landscape in every
-    direction at once, and its eigenvalues as the bends along its own axes. This is
-    what they are for.</p>
-    <p>Rotate the saddle and take the two cuts one at a time. Along \(x\) the surface
-    is \(x^2\), a valley, and the centre is its lowest point. Along \(y\) it is
-    \(-y^2\), a ridge, and the same centre is its highest point. Both partial
-    derivatives are zero there, so the gradient vanishes, and the point is neither a
-    minimum nor a maximum. \(H=\operatorname{diag}(2,\,-2)\), and the mixed signs are
-    the whole diagnosis.</p>
-    <p>Say plainly what the test costs. It needs \(H\), and section III already
-    explained why nobody computes \(H\) when there are a million parameters. In
-    practice it is a piece of understanding rather than a step that gets run.</p>
-    <p>A remark for lecture 4, worth half a minute. In high dimensions a stationary
-    point is a minimum only if every one of the millions of eigenvalues is positive,
-    and that is a lot of coin flips to win at once. Saddle points hugely outnumber
-    local minima there. The good news is that a saddle has a downhill direction and
-    gradient descent, especially with noise, tends to slide off one.</p>
-    <p>Cut candidate: the figure carries the idea; the high-dimensional remark can go.</p>
-  </aside>
-</section>
-
-<!-- 26 -->
-<section class="slide" data-where="V. The wider landscape">
-  <h2>Local minima</h2>
-  <p class="sub">Where you start decides where you stop.</p>
-  <div class="two wide-left body">
-    <div>
-      <ul>
-        <li>A descent method only ever goes down</li>
-        <li>The basin it starts in is the basin it ends in</li>
-        <li>Here the divide sits at the peak, \(x=0\)</li>
-      </ul>
-      <p class="claim">Nothing local can see over the hill.</p>
-    </div>
-    <figure class="demo" data-demo="local">
-      <svg id="fig-local" viewBox="0 0 400 300" role="img"
-           aria-label="The quartic with a stepped descent path from a movable starting point, running into whichever of the two dips lies below it"></svg>
+    <figure class="demo" data-demo="cond">
+      <svg id="fig-cond" viewBox="0 0 400 300" role="img"
+           aria-label="Level curves of a bowl whose stretch can be increased, with the gradient-descent path bouncing between the two walls more sharply the narrower the valley"></svg>
       <div class="controls">
-        <div class="row"><label for="lo-x">start</label>
-          <input id="lo-x" type="range" min="-1.75" max="2.65" step="0.05" value="-1.6">
-          <output id="out-lo-x"></output></div>
+        <div class="row"><label for="cd-c">stretch</label>
+          <input id="cd-c" type="range" min="1" max="20" step="0.5" value="2">
+          <output id="out-cd-c"></output></div>
       </div>
-      <div class="readout"><div class="note" id="note-local"></div></div>
+      <div class="readout"><div class="note" id="note-cond"></div></div>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>Sweep the start from left to right and let the room watch the answer jump. From
-    anywhere left of the peak the path runs into the shallow dip at \(-1\); from
-    anywhere right of it, into the deep one at \(2\). Nothing gradual happens in
-    between &mdash; the answer flips as the start crosses \(x=0\).</p>
-    <p>Put the start almost exactly on the peak and let it sit for a moment: the
-    gradient is nearly zero, the steps are tiny, and it takes a long time to make up
-    its mind. Flat regions are slow for exactly this reason.</p>
-    <p>There is no repair inside this framework, and it is worth being blunt about it.
-    The method only knows \(f\) and \(\nabla f\) where it stands; the deeper dip is not
-    visible from the shallow one at any distance. Finding the global minimum of a
-    general function needs a fundamentally different kind of search.</p>
-    <p>End on the practical note, because it is the one that matters for lecture 4:
-    for a big network nobody finds the global minimum and nobody tries. Training stops
-    at a point that is good enough, and the surprise of the last decade is that on
-    these landscapes such points are usually fine.</p>
+    <p>Lecture 2 promised this slide on the Hessian, so pay it off by name. The
+    condition number is the ratio of the largest bend to the smallest, and the
+    eigenvalues of the Hessian are those bends &mdash; lecture 1's eigenvalues, doing
+    something useful.</p>
+    <p>Turn the stretch up slowly. At 1 the rings are circles, the gradient points
+    straight at the centre, and one step is enough. As the rings flatten the path
+    starts to bounce, and by 20 it is crossing the valley almost at right angles,
+    making almost no progress along it.</p>
+    <p>The figure uses the best fixed step there is, \(\alpha=2/(\lambda_{\min}+
+    \lambda_{\max})\), and that matters: this is not a badly tuned method, it is a
+    well-tuned one showing its ceiling. With that step both coordinates are multiplied
+    by \(\pm(\kappa-1)/(\kappa+1)\) each time, and the sign flip on the stiff
+    coordinate <em>is</em> the zig-zag. For \(\kappa=20\) the factor is \(0.905\), so
+    a hundredfold reduction needs about forty-six steps.</p>
+    <p>Why this is not a curiosity: real problems are far worse than 20. The
+    line fit of section II has \(\kappa\approx63\) as written, and the landscapes in
+    lecture 4 are worse again. The next two slides stop paying this price without
+    paying for the Hessian instead.</p>
+    <p>Load-bearing: momentum and Adam are both answers to this figure.</p>
   </aside>
 </section>
 
-<!-- 27 -->
-<section class="slide" data-where="V. The wider landscape">
-  <h2>Global methods</h2>
-  <p class="sub">Ways to look in more than one basin.</p>
+<!-- 20 -->
+<section class="slide" data-where="III. Several variables">
+  <h2>Momentum</h2>
+  <p class="sub">Keep some of the last step.</p>
   <div class="two wide-left body">
     <div>
+      <div class="eq">
+        $$v_{n+1}=\beta v_n-\alpha\nabla f(x_n)^{\mathsf T},\qquad
+          x_{n+1}=x_n+v_{n+1}$$
+        <p class="note">A velocity that remembers, rather than a step that forgets.</p>
+      </div>
       <ul>
-        <li>Many random starts; keep the best</li>
-        <li>Accept an uphill step now and then, less often as time passes</li>
-        <li>Keep a population of guesses; combine and disturb them</li>
+        <li>Crossing parts cancel, downhill parts add up</li>
+        <li>\(\beta=0\) is plain descent; close to 1 it overshoots</li>
       </ul>
-      <div class="eq bare">$$\text{no guarantee, and no free lunch}$$</div>
     </div>
-    <figure>
-      <svg id="fig-global" viewBox="0 0 400 300" role="img"
-           aria-label="The quartic with a dozen starting points scattered along it, each coloured by which of the two dips its descent path reaches"></svg>
-      <figcaption>Twelve starts, two answers. Nine find the deeper dip.</figcaption>
+    <figure class="demo" data-demo="mom">
+      <svg id="fig-mom" viewBox="0 0 400 300" role="img"
+           aria-label="A narrow valley in level curves with the plain zig-zag path in grey and the momentum path over it, straightening as the retained fraction grows and looping past the centre when it is too large"></svg>
+      <div class="controls">
+        <div class="row"><label for="mo-a">&alpha;</label>
+          <input id="mo-a" type="range" min="0.01" max="0.13" step="0.001" value="0.091">
+          <output id="out-mo-a"></output></div>
+        <div class="row"><label for="mo-b">&beta;</label>
+          <input id="mo-b" type="range" min="0" max="0.92" step="0.01" value="0">
+          <output id="out-mo-b"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-mom"></div></div>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p>One slide, deliberately, on a subject with whole books. The point is to mark the
-    edge of what has been covered, not to cross it.</p>
-    <p>The first line is the only one anyone should reach for first: run a local method
-    from many starting points and keep the best answer. It is trivial to implement, it
-    parallelizes perfectly, and on the figure nine of twelve starts land in the deeper
-    dip. The basins here happen to be roughly the size they look; in high dimensions
-    they need not be, and random starts can miss a narrow one every time.</p>
-    <p>The second is simulated annealing: allow steps that make \(f\) worse, with a
-    probability that falls as the run goes on, so the search wanders early and settles
-    late. The third covers genetic and evolutionary algorithms and particle swarms.</p>
-    <p>Say the caveat plainly. None of these guarantees the global minimum on a general
-    function &mdash; no method can, without assumptions, since the minimum may sit in a
-    dip too narrow ever to be sampled. What they buy is a better chance for the
-    evaluations spent.</p>
-    <p>Cut candidate: this slide and the constraints slide are the two to drop if the
-    hour is short. Say the first bullet and move on.</p>
+    <p>The zig-zag wastes work in a very specific way: the across-the-valley part of
+    each step is undone by the next one, while the along-the-valley part always points
+    the same way. So add the steps up instead of taking them one at a time. The
+    alternating parts cancel in the sum and the persistent part accumulates.</p>
+    <p>Run \(\beta\) up from zero on the narrow valley. At \(0\) the grey and coloured
+    paths are the same. By \(0.3\) the crossing collapses after the first step and the
+    path runs down the middle; after fourteen steps it is ten times closer to the
+    bottom than plain descent. Keep going and around \(0.85\) it sails past the centre
+    and loops back &mdash; too much memory, and the ball rolls up the far wall.</p>
+    <p>Then set \(\beta\) back to \(0.3\) and move \(\alpha\). It opens at
+    \(0.091\), the best fixed step for plain descent here. Push it past \(0.1\) and the
+    grey path blows up, as on the step-length slide, while the momentum path still
+    converges: with momentum the ceiling rises from \(2/\lambda_{\max}\) to
+    \(2(1+\beta)/\lambda_{\max}\). Pull it down towards \(0.01\) and both paths crawl,
+    since memory cannot make up for steps that are too short.</p>
+    <p>The rolling-ball picture is worth one sentence and no more: \(v\) is a velocity,
+    the gradient is a force, and \(\beta\) is what is left after friction. It is a good
+    picture and a bad explanation, so do not lean on it.</p>
+    <p>Say where it goes: this is the standard addition to gradient descent in lecture
+    4, under this name and with \(\beta\) usually around \(0.9\). It costs one extra
+    vector of memory and no extra gradients.</p>
   </aside>
 </section>
 
-<!-- 28 -->
-<section class="slide" data-where="V. The wider landscape">
+<!-- 21 -->
+<section class="slide" data-where="III. Several variables">
+  <h2>Adam</h2>
+  <p class="sub">Momentum, and a step length for each coordinate.</p>
+  <div class="two wide-left body">
+    <div>
+      <div class="eq">
+        $$m_{n+1}=\beta_1m_n+(1-\beta_1)\,g_n$$
+        $$s_{n+1}=\beta_2s_n+(1-\beta_2)\,g_n^2$$
+        $$x_{n+1}=x_n-\alpha\,\frac{m_{n+1}}{\sqrt{s_{n+1}}+\varepsilon}$$
+        <p class="note">\(g_n=\nabla f(x_n)^{\mathsf T}\). Square, root and division per
+        coordinate.</p>
+      </div>
+      <ul>
+        <li>\(\beta_1=0.9\), \(\beta_2=0.999\), \(\varepsilon=10^{-8}\)</li>
+        <li>\(m\) averages the gradient, \(s\) its square</li>
+      </ul>
+      <p class="claim">Each coordinate moves about \(\alpha\) per step, however steep it
+      is.</p>
+    </div>
+    <figure class="demo" data-demo="adam">
+      <svg id="fig-adam" viewBox="0 0 400 300" role="img"
+           aria-label="The narrow valley with the plain zig-zag path in grey and the Adam path, which moves diagonally, crosses the valley once and then hovers near the bottom"></svg>
+      <div class="controls">
+        <div class="row"><label for="ad-a">&alpha;</label>
+          <input id="ad-a" type="range" min="0.02" max="0.3" step="0.01" value="0.1">
+          <output id="out-ad-a"></output></div>
+      </div>
+      <div class="readout"><div class="note" id="note-adam"></div></div>
+    </figure>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p>The diagnosis from the zig-zag: one \(\alpha\) has to suit the stiffest
+    direction, and every other direction then crawls. Adam gives each coordinate its
+    own step length, and builds it from gradients it has already seen, so the Hessian
+    is never needed.</p>
+    <p>Read the update one line at a time. \(m\) is momentum from the last slide,
+    written as an average: nine parts old, one part new. \(s\) does the same for the
+    squared gradient, per coordinate, with a much longer memory. The step divides one by
+    the root of the other. For a coordinate whose gradient holds steady, \(m/\sqrt s\)
+    is close to \(\pm1\) whatever its size, so every coordinate moves about \(\alpha\).
+    A steep coordinate's large gradient is divided by its own size.</p>
+    <p>Run the figure at the default. The first step goes exactly \(\alpha\) in each
+    coordinate, at 45 degrees, and the path crosses the valley once where plain descent
+    crossed it on every step. Then point at the end: the path does not settle at the
+    bottom, it hovers within about \(\alpha\) of it, because the step no longer shrinks
+    with the gradient. In practice \(\alpha\) is lowered over the run for this
+    reason.</p>
+    <p>One detail the slide leaves out. \(m\) and \(s\) start at zero, so early on they
+    are too small. The published method divides them by \(1-\beta_1^n\) and
+    \(1-\beta_2^n\) after \(n\) steps to correct for that, and the figure does too.</p>
+    <p>Where it goes: Adam is the usual default for training networks, and lecture 4
+    can use it as it stands. Cut candidate: if short, give the update and the claim and
+    skip the slider.</p>
+  </aside>
+</section>
+
+<!-- 22 -->
+<section class="slide" data-where="IV. The wider landscape">
   <h2>Constrained optimization</h2>
   <p class="sub">The answer need not have zero gradient.</p>
   <div class="two wide-left body">
@@ -1502,16 +1287,17 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 29 -->
-<section class="slide" data-where="V. The wider landscape">
+<!-- 23 -->
+<section class="slide" data-where="IV. The wider landscape">
   <h2>Stochastic gradient descent</h2>
   <p class="sub">Estimate the gradient from part of the sum.</p>
   <div class="two wide-left body">
     <div>
       <div class="eq">
-        $$\nabla f=\sum_{i=1}^{m}\nabla f_i
+        $$f=\sum_{i=1}^{m}f_i,\qquad \nabla f=\sum_{i=1}^{m}\nabla f_i
           \;\approx\;\frac{m}{\lvert B\rvert}\sum_{i\in B}\nabla f_i$$
-        <p class="note">\(B\) is a handful of terms, drawn afresh each step.</p>
+        <p class="note">One term per data point, \(m\) of them. The batch \(B\) is a few
+        of the terms, a different few each step.</p>
       </div>
       <ul>
         <li>Each step costs \(\lvert B\rvert\) terms instead of \(m\)</li>
@@ -1520,25 +1306,34 @@ input[type=range]{
       <p class="claim">A worse gradient, taken often enough, gets there first.</p>
     </div>
     <figure class="demo" data-demo="sgd">
-      <svg id="fig-sgd" viewBox="0 0 400 300" role="img"
-           aria-label="Level curves over the two parameters of the line fit, with a descent path that is jittery and long for small batches and smooth but short for the full sum"></svg>
+      <svg id="fig-sgd" viewBox="0 0 400 340" role="img"
+           aria-label="The eight terms of the sum as a row of blocks, with the batch of the current step highlighted, above level curves of the line fit and the descent path up to the current step"></svg>
       <div class="controls">
         <div class="row"><label for="sg-b">batch</label>
           <input id="sg-b" type="range" min="0" max="3" step="1" value="0">
           <output id="out-sg-b"></output></div>
+        <div class="row"><label for="sg-k">step</label>
+          <input id="sg-k" type="range" min="0" max="64" step="1" value="64">
+          <output id="out-sg-k"></output></div>
       </div>
       <div class="readout"><div class="note" id="note-sgd"></div></div>
     </figure>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
     <p>The last slide of the hour, and the one lecture 4 starts from. Every objective
-    fitted today was a sum over data points, and so is the loss of a network. A full
+    fitted today was a sum over data points, one term each, and so is the loss of a
+    network. The figure is the line fit again: \(m=8\) points, and term \(i\) is
+    \(\tfrac12(a+bu_i-y_i)^2\), with \(u\) measured from the middle of the data. A full
     gradient touches every term; with a million terms that is a million evaluations for
     one step.</p>
     <p>But the sum has structure worth exploiting: each term contributes a vector, and
     a handful of terms, scaled up, estimates the total. The estimate is unbiased and
     noisy, and it costs a fraction as much.</p>
-    <p>The slider fixes the budget rather than the step count &mdash; sixty-four single
+    <p>The row of blocks is the eight terms. Pull the step slider back to zero and walk
+    it forward: each step lights up the terms its batch used, and the path moves by
+    their estimate alone. At batch 1 one block lights at a time; at batch 8 all of them
+    do, and that is plain gradient descent.</p>
+    <p>The batch slider fixes the budget rather than the step count &mdash; sixty-four single
     terms every time &mdash; which is the comparison that matters, because terms are
     what gets paid for. At batch 8 the path is smooth and beautiful and only gets eight
     steps, ending far from the answer at \(f=5.4\). At batch 1 it is a drunkard's walk
@@ -1554,137 +1349,143 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 30 -->
-<section class="slide title" data-where="VI. Quiz">
+<!-- 24 -->
+<section class="slide title" data-where="V. Quiz">
   <h2>Quiz</h2>
-  <p class="sub">Four questions, hands up.</p>
+  <p class="sub">Five questions, hands up.</p>
   <aside class="notes"><h4>Speaker notes</h4>
     <p>Multiple choice, answered from the room. Read each one out, count hands for each
-    letter, then give the answer. If time is short, ask 1 and 2: the descent condition
-    and the zig-zag are what lecture 4 leans on hardest.</p>
+    letter, then give the answer. If time is short, ask 4 and 5: gradient descent and
+    Adam are what lecture 4 trains with.</p>
   </aside>
 </section>
 
-<!-- 31 -->
-<section class="slide" data-where="VI. Quiz">
-  <h2>At a point where \(\nabla f=(2,\;6)\), which direction goes downhill?</h2>
+<!-- 25 -->
+<section class="slide" data-where="V. Quiz">
+  <h2>\(x^\star=\underset{x}{\arg\min}\;f(x)\) is</h2>
   <div class="body">
     <div>
       <ol class="mc">
-      <li><span class="k">A</span><span>\((1,\;1)\)</span></li>
-      <li><span class="k">B</span><span>\((3,\;-1)\)</span></li>
-      <li><span class="k">C</span><span>\((-1,\;1)\)</span></li>
-      <li><span class="k">D</span><span>\((1,\;-1)\)</span></li>
+      <li><span class="k">A</span><span>The smallest value \(f\) takes</span></li>
+      <li><span class="k">B</span><span>The input where \(f\) is smallest</span></li>
+      <li><span class="k">C</span><span>The slope of \(f\) at its lowest point</span></li>
+      <li><span class="k">D</span><span>The largest value \(f\) takes</span></li>
       </ol>
     </div>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p><b>Answer: D.</b> The test is \(\nabla f\,d<0\), one multiplication and one
-    addition per option. A gives \(2+6=8\), C gives \(-2+6=4\); both go uphill. D gives
-    \(2-6=-4\), the only negative one.</p>
-    <p>B is the trap and worth the time: \(6-6=0\), so \(f\) does not change at all to
-    first order. That direction runs along the level curve through the point, at right
-    angles to the gradient. Anyone who picked it was thinking "perpendicular to the
-    gradient must be a good idea" &mdash; it is the one direction that achieves
-    nothing.</p>
-    <p>Follow-up if the room is quick: which is the steepest descent direction? None of
-    them; it is \(-(2,6)=(-2,-6)\).</p>
+    <p><b>Answer: B.</b> The place, not the value: \(x^\star\) is an input. On the cubic of
+    the minimization-problem slide, \(x^\star=1\), where \(f\) reaches \(0.5\).</p>
+    <p>A is the trap that slide warned about: \(0.5\) is the minimum, \(1\) is the
+    minimizer, and optimization wants the place. C is always zero there, so it says
+    nothing about where. D is a maximum, which is the same problem with \(-f\).</p>
   </aside>
 </section>
 
-<!-- 32 -->
-<section class="slide" data-where="VI. Quiz">
-  <h2>Steepest descent on a quadratic whose Hessian has eigenvalues \(1\) and \(100\) will</h2>
+<!-- 26 -->
+<section class="slide" data-where="V. Quiz">
+  <h2>At the lowest point of a smooth curve, its slope is</h2>
   <div class="body">
     <div>
       <ol class="mc">
-      <li><span class="k">A</span><span>Reach the minimum in one step</span></li>
-      <li><span class="k">B</span><span>Zig-zag across a narrow valley</span></li>
-      <li><span class="k">C</span><span>Diverge, whatever the step length</span></li>
-      <li><span class="k">D</span><span>Follow the same path as Newton's method</span></li>
+      <li><span class="k">A</span><span>Positive</span></li>
+      <li><span class="k">B</span><span>Negative</span></li>
+      <li><span class="k">C</span><span>Zero</span></li>
+      <li><span class="k">D</span><span>As steep as anywhere on the curve</span></li>
       </ol>
     </div>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p><b>Answer: B.</b> The condition number is \(100\), so the bowl is a hundred
-    times stiffer one way than the other, and even the best fixed step leaves
-    \((\kappa-1)/(\kappa+1)=99/101\approx0.980\) of the error behind each time. That is
-    about \(230\) steps for a hundredfold reduction.</p>
-    <p>A is what happens when \(\kappa=1\) and the contours are circles. C is wrong but
-    tempting: it diverges only for \(\alpha\ge2/\lambda_{\max}=0.02\), and below that
-    it converges &mdash; slowly. D is exactly backwards: Newton's method is the one
-    that ignores the conditioning, because on a quadratic its model is the function
-    itself and one step lands at the bottom.</p>
-    <p>If someone asks how big \(\kappa\) gets in practice: the eight-point line fit
-    earlier in the hour was already \(63\).</p>
+    <p><b>Answer: C.</b> If the slope were positive, a small step left would go
+    lower; if negative, a small step right would. Only a zero slope survives, which is
+    why every method in the hour looks for \(f'(x)=0\).</p>
+    <p>A and B each name a direction that still goes down. D mixes up the slope with the
+    curve's height. Follow-up worth asking: is every point with zero slope a lowest
+    point? No: peaks and pauses have one too, as the stationary-points slide showed.</p>
   </aside>
 </section>
 
-<!-- 33 -->
-<section class="slide" data-where="VI. Quiz">
-  <h2>At the least-squares solution, the residual \(y-Ax\) is</h2>
+<!-- 27 -->
+<section class="slide" data-where="V. Quiz">
+  <h2>Compared with Newton's method, Gauss&ndash;Newton</h2>
   <div class="body">
     <div>
       <ol class="mc">
-      <li><span class="k">A</span><span>Zero</span></li>
-      <li><span class="k">B</span><span>Orthogonal to every column of \(A\)</span></li>
-      <li><span class="k">C</span><span>Orthogonal to \(y\)</span></li>
-      <li><span class="k">D</span><span>Parallel to the columns of \(A\)</span></li>
+      <li><span class="k">A</span><span>Needs no second derivatives</span></li>
+      <li><span class="k">B</span><span>Needs no derivatives at all</span></li>
+      <li><span class="k">C</span><span>Takes the same step, but slower</span></li>
+      <li><span class="k">D</span><span>Works only in one dimension</span></li>
       </ol>
     </div>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p><b>Answer: B.</b> That is \(A^{\mathsf T}(y-Ax)=0\) read out in words, and it is
-    the normal equations rearranged. Geometrically: \(Ax\) is the projection of \(y\)
-    onto the plane the columns span, and what is left over sticks out of that plane.</p>
-    <p>A is the trap for anyone still thinking of \(Ax=y\) as a system to be solved
-    exactly. With more equations than unknowns there is usually no such \(x\), and the
-    residual is zero only in the lucky case where the data already lies on the model.
-    D is the opposite of the answer: anything parallel to the columns is reachable by
-    the model, so it would be folded into \(Ax\) rather than left over. C confuses the
-    data with the model's reach; the residual is orthogonal to the plane, not to \(y\),
-    and in the three-point example \((0.5,-1,0.5)\cdot(2,1,3)=1.5\neq0\).</p>
+    <p><b>Answer: A.</b> It replaces the Hessian by \(J^{\mathsf T}\!J\), which is built
+    from the Jacobian alone, first derivatives of the residuals. That is the whole
+    point of linearizing the residual rather than the objective.</p>
+    <p>B goes too far: the Jacobian is still needed, and the code on the slide computes
+    it. C has it backwards: the steps differ, because \(J^{\mathsf T}\!J\) is only part of
+    the Hessian, and each one is cheaper. D is wrong on the slide itself, which fitted
+    two parameters.</p>
   </aside>
 </section>
 
-<!-- 34 -->
-<section class="slide" data-where="VI. Quiz">
-  <h2>Newton's method converges to a point where \(\nabla f=0\). That point is</h2>
+<!-- 28 -->
+<section class="slide" data-where="V. Quiz">
+  <h2>Each step of gradient descent moves in the direction of</h2>
   <div class="body">
     <div>
       <ol class="mc">
-      <li><span class="k">A</span><span>Always the global minimum</span></li>
-      <li><span class="k">B</span><span>Always a local minimum</span></li>
-      <li><span class="k">C</span><span>A minimum, a maximum or a saddle</span></li>
-      <li><span class="k">D</span><span>A local minimum, unless \(f\) is quadratic</span></li>
+      <li><span class="k">A</span><span>The gradient</span></li>
+      <li><span class="k">B</span><span>The level curve through the point</span></li>
+      <li><span class="k">C</span><span>A straight line to the minimum</span></li>
+      <li><span class="k">D</span><span>Minus the gradient</span></li>
       </ol>
     </div>
   </div>
   <aside class="notes"><h4>Speaker notes</h4>
-    <p><b>Answer: C.</b> The method solves \(\nabla f=0\), and that equation is
-    satisfied by all three kinds of point. The figure earlier showed it: started to the
-    left of the origin on the cubic, it converged neatly onto the peak at \(x=-1\).</p>
-    <p>A ignores everything the landscape section said &mdash; the method is local and
-    cannot see another basin. B and D both assume the method checks which kind of point
-    it found, and it does not; nothing in \(Hh=-\nabla f^{\mathsf T}\) tests the sign of
-    anything. D has it backwards as well: a quadratic is the one case that is safe,
-    because a bowl has exactly one stationary point.</p>
-    <p>Follow-up: what would make it safe in general? Check that \(H\) is positive
-    definite and, when it is not, fall back to a damped step &mdash; which is
-    Levenberg&ndash;Marquardt's \(\lambda\), doing that job.</p>
+    <p><b>Answer: D.</b> The gradient points the way \(f\) rises fastest, so the step
+    goes the opposite way: \(x_{n+1}=x_n-\alpha\,\nabla f(x_n)^{\mathsf T}\).</p>
+    <p>A is uphill, the classic sign slip. B goes nowhere to first order: along the level
+    curve \(f\) does not change, which was the point of the descent-directions slide. C
+    is what one would like, and it is true only on a perfectly round bowl; on a
+    stretched one the gradient points across the valley, which is the zig-zag.</p>
   </aside>
 </section>
 
-<!-- 35 -->
+<!-- 29 -->
+<section class="slide" data-where="V. Quiz">
+  <h2>What does Adam remember from earlier steps?</h2>
+  <div class="body">
+    <div>
+      <ol class="mc">
+      <li><span class="k">A</span><span>Nothing: each step uses only the current gradient</span></li>
+      <li><span class="k">B</span><span>Running averages of the gradient and of its square</span></li>
+      <li><span class="k">C</span><span>Every point it has visited</span></li>
+      <li><span class="k">D</span><span>The Hessian</span></li>
+      </ol>
+    </div>
+  </div>
+  <aside class="notes"><h4>Speaker notes</h4>
+    <p><b>Answer: B.</b> \(m\) is the running average of the gradient, which is
+    momentum, and \(s\) the running average of its square, which sets a step length per
+    coordinate. Two vectors of memory, updated every step.</p>
+    <p>A is plain gradient descent, which forgets everything. C is far more than it
+    keeps: it remembers no positions at all. D is what Adam is built to avoid; the
+    squared gradients stand in for curvature it never computes.</p>
+  </aside>
+</section>
+
+<!-- 30 -->
 <section class="slide title" data-where="Questions">
   <h2>Questions?</h2>
   <aside class="notes"><h4>Speaker notes</h4>
     <p>Open the floor. If nothing comes, offer the three figures people usually want to
     poke at: turning the step length up until the path explodes, turning the stretch up
-    until the zig-zag is absurd, and damping the Gauss&ndash;Newton step.</p>
+    until the zig-zag is absurd, and starting Newton's method on the wrong side of
+    the peak.</p>
     <p>Things deliberately left out, if asked: conjugate gradients, which fixes the
     zig-zag properly and deserves its own half hour; quasi-Newton methods such as BFGS,
-    named on the Newton slide; linear programming and the simplex method; convexity as
+    which build an approximate Hessian from the gradients seen so far; linear programming and the simplex method; convexity as
     a theory, though every well-behaved example today was convex; and anything
     quantitative about rates of convergence beyond the contraction factor.</p>
     <p>Reverse-mode differentiation is not missing by accident &mdash; it is lecture
@@ -1692,7 +1493,7 @@ input[type=range]{
   </aside>
 </section>
 
-<!-- 36 -->
+<!-- 31 -->
 <section class="slide title" data-where="Thank you">
   <div>
     <h1>Thank you</h1>
@@ -1871,80 +1672,10 @@ const contour = (v, f, [x0, x1], [y0, y1], levels, cls, n = 64) => {
   return out.join('');
 };
 
-/* --- three dimensions -------------------------------------------------- */
-
-/* Orthographic camera on the origin, z upward, at azimuth a and elevation
-   e. It maps a world point to the plane, where a 2d view takes over. */
-const cam = (a, e) => ([x, y, z]) =>
-  [y * Math.cos(a) - x * Math.sin(a),
-   z * Math.cos(e) - (x * Math.cos(a) + y * Math.sin(a)) * Math.sin(e)];
-
-/* Distance towards the camera, for sorting what is drawn over what. */
-const depth = (a, e) => ([x, y, z]) =>
-  (x * Math.cos(a) + y * Math.sin(a)) * Math.cos(e) + z * Math.sin(e);
-
-const seg3 = (v, c, a, b, cls) => seg(v, c(a), c(b), cls);
-const arrow3 = (v, c, a, b, colour, w, dashed) =>
-  arrow(v, c(a), c(b), colour, w, dashed);
-const comb = (s, u, t, w) => u.map((_, i) => s * u[i] + t * w[i]);
-
-/* Scale and centre the camera's picture to the frame it is drawn in.
-   Worked out once, at the camera a figure opens on, and then held: turning
-   the scene does not rescale it. Returns the numbers `view` wants. */
-const fitted = (c, pts, w, h, pad = 12) => {
-  const ps = pts.map(c);
-  const [x0, x1] = [Math.min(...ps.map(p => p[0])), Math.max(...ps.map(p => p[0]))];
-  const [y0, y1] = [Math.min(...ps.map(p => p[1])), Math.max(...ps.map(p => p[1]))];
-  const s = Math.min((w - 2 * pad) / (x1 - x0), (h - 2 * pad) / (y1 - y0));
-  return [w / 2 - s * (x0 + x1) / 2, h / 2 + s * (y0 + y1) / 2, s];
-};
-
-/* A surface as quads, drawn far to near and filled almost opaquely, so
-   that whatever lies behind it shows through dimmed. The quad edges are
-   the wireframe. */
-const surface = (v, c, dep, h, [rx, ry], n = 10) => {
-  const at = (i, j) => {
-    const x = -rx + 2 * rx * i / n, y = -ry + 2 * ry * j / n;
-    return [x, y, h(x, y)];
-  };
-  const quads = [];
-  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
-    const ps = [at(i, j), at(i + 1, j), at(i + 1, j + 1), at(i, j + 1)];
-    quads.push([ps.reduce((s, p) => s + dep(p), 0), ps]);
-  }
-  quads.sort((a, b) => a[0] - b[0]);
-  return quads.map(([, ps]) => el('polygon', {class: 'face',
-    points: ps.map(p => v.to(c(p)).map(r2).join(',')).join(' ')})).join('');
-};
-
-/* A flat patch of the plane spanned by two vectors. Its quads never
-   overlap, so they need no sorting. */
-const planePatch = (v, c, u, w, [s0, s1], [t0, t1], n = 5) => {
-  const at = (i, j) => comb(s0 + (s1 - s0) * i / n, u, t0 + (t1 - t0) * j / n, w);
-  const quads = [];
-  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++)
-    quads.push([at(i, j), at(i + 1, j), at(i + 1, j + 1), at(i, j + 1)]);
-  return quads.map(ps => el('polygon', {class: 'face',
-    points: ps.map(p => v.to(c(p)).map(r2).join(',')).join(' ')})).join('');
-};
-
-const curve3 = (v, c, p, t0, t1, cls, n = 48) =>
-  poly(v, Array.from({length: n + 1},
-    (_, i) => c(p(t0 + (t1 - t0) * i / n))), cls);
-
-/* A curve lying on a surface, split at its midpoint into the half that is
-   behind and the half in front, for the caller to draw either side of the
-   surface itself. */
-const onSurface = (v, c, dep, p, t0, t1, cls) => {
-  const m = (t0 + t1) / 2;
-  const halves = [curve3(v, c, p, t0, m, cls), curve3(v, c, p, m, t1, cls)];
-  return dep(p(t1)) > dep(p(t0)) ? halves : halves.reverse();
-};
-
 /* --- the functions under discussion ------------------------------------ */
 
-/* Sections I and II minimize the cubic of lecture 2 over the stretch where
-   it falls and rises again: df/dx = 3(x²-1)/4, d²f/dx² = 3x/2, and the
+/* Section I minimizes the cubic of lecture 2 over the stretch where it falls
+   and rises again: df/dx = 3(x²-1)/4, d²f/dx² = 3x/2, and the
    lowest point is at x = 1. */
 const F = x => (x ** 3 - 3 * x) / 4 + 1;
 const dF = x => (3 * x * x - 3) / 4;
@@ -1985,8 +1716,13 @@ const descent = (c, p, a, n) => {
   return out;
 };
 
-/* Section V has two dips of different depth: dW = x(x-2)(x+1), so the
-   stationary points are -1, 0 and 2. */
+/* The stationary-points slide has one of each kind: dQ = 15x²(x-1)(x+1),
+   a peak at -1, a pause at 0 and a dip at 1. */
+const Q = x => 3 * x ** 5 - 5 * x ** 3;
+const dQ = x => 15 * x ** 4 - 15 * x * x;
+
+/* The local-minima slide has two dips of different depth:
+   dW = x(x-2)(x+1), so the stationary points are -1, 0 and 2. */
 const W = x => x ** 4 / 4 - x ** 3 / 3 - x * x + 1;
 const dW = x => x * (x - 2) * (x + 1);
 const W_X = [-1.8, 2.7];
@@ -1996,7 +1732,7 @@ const wDescent = (x, n = 90, a = 0.06) => {
   return out;
 };
 
-/* The eight measurements of section IV. Their least-squares line comes out
+/* The eight measurements of section II. Their least-squares line comes out
    exactly as y = 1 + t/2, with a squared error of 1.08. */
 const TS = [0, 1, 2, 3, 4, 5, 6, 7];
 const YS = [0.6, 2.0, 1.7, 2.7, 3.4, 3.0, 4.3, 4.3];
@@ -2011,22 +1747,19 @@ const nobj = p => nresid(p).reduce((s, r) => s + r * r, 0) / 2;
 const NWIN_A = [0.6, 3.4], NWIN_B = [0.05, 1.05];
 const NLEVELS = [0.05, 0.15, 0.4, 1, 2.5, 6];
 
-/* One damped Gauss-Newton step: (JᵀJ + λI) h = -Jᵀr, solved by hand
-   because the matrix is 2×2. */
-const lmStep = (p, lam) => {
+/* One Gauss-Newton step: JᵀJ h = -Jᵀr, solved by hand because the matrix
+   is 2×2. */
+const gnStep = p => {
   const r = nresid(p), J = njac(p);
-  const m = [0, 0, 0, 0], g = [0, 0];
+  const m = [0, 0, 0], g = [0, 0];
   for (let i = 0; i < NT.length; i++) {
     m[0] += J[i][0] * J[i][0]; m[1] += J[i][0] * J[i][1];
-    m[3] += J[i][1] * J[i][1];
+    m[2] += J[i][1] * J[i][1];
     g[0] += J[i][0] * r[i]; g[1] += J[i][1] * r[i];
   }
-  m[2] = m[1];
-  m[0] += lam; m[3] += lam;
-  const det = m[0] * m[3] - m[1] * m[2];
-  return [-(m[3] * g[0] - m[1] * g[1]) / det, -(-m[2] * g[0] + m[0] * g[1]) / det];
+  const det = m[0] * m[2] - m[1] * m[1];
+  return [-(m[2] * g[0] - m[1] * g[1]) / det, -(m[0] * g[1] - m[1] * g[0]) / det];
 };
-
 /* --- static figures ---------------------------------------------------- */
 
 const figures = {
@@ -2043,42 +1776,13 @@ const figures = {
   },
 
   'fig-problem': () => {
-    const v = PLOT(), [a, c] = BRACKET, y = 0.5;
-    const tick = t => seg(v, [t, -1.34], [t, -1.06], 'hair s-prussian');
+    const v = PLOT(), y = 0.5;
     return axes(v, PLOT_X, PLOT_Y) + CURVE(v)
       + seg(v, [1, 0], [1, y], 'dash s-construct')
       + seg(v, [0, y], [1, y], 'dash s-construct')
       + dot(v, [1, y], 'f-madder', 4.4)
-      + seg(v, [a, -1.2], [c, -1.2], 'hair s-prussian') + tick(a) + tick(c)
-      + text(v, [(a + c) / 2, -1.2], 'the stretch searched', 'f-prussian', 0, -8)
       + text(v, [1, 0], '1', 'f-dim', 0, 16)
       + text(v, [0, y], '0.5', 'f-dim', -9, 4, 'end');
-  },
-
-  'fig-bowl': () => {
-    const v = view(120, 298.4, 74, 300);
-    const f = ([a, b]) => ssq(a, b);
-    return contour(v, f, [-1.2, 3.2], [0.05, 0.95],
-        [2, 5, 12, 25, 45], 'hair s-construct')
-      + cornerAxes(v, [-1.2, 3.2], [0.05, 0.95], 'a', 'b')
-      + dot(v, [1, 0.5], 'f-madder', 4.4)
-      + text(v, [1, 0.5], '(1, ½)', 'f-madder', 11, 4, 'start');
-  },
-
-  'fig-global': () => {
-    const v = view(163, 185, 82, 50);
-    const starts = [-1.62, -0.94, -0.28, 0.19, 0.55, 0.96,
-      1.33, 1.7, 2.05, 2.34, 2.5, 2.62];
-    const marks = starts.map(x => {
-      const hue = x < 0 ? 'prussian' : 'verdigris';
-      return dot(v, [x, W(x)], `f-${hue}`, 3);
-    }).join('');
-    return paxes(v, W_X, [-2.1, 3.9])
-      + graph(v, W, W_X[0], W_X[1], 'stroke s-construct') + marks
-      + dot(v, [-1, W(-1)], 'f-prussian', 4.4)
-      + dot(v, [2, W(2)], 'f-verdigris', 4.4)
-      + text(v, [-1, W(-1)], '0.58', 'f-prussian', 0, -11)
-      + text(v, [2, W(2)], '−1.67', 'f-verdigris', 0, 17);
   },
 
   'fig-constr': () => {
@@ -2120,43 +1824,6 @@ const sliders = (ids, units, draw) => {
 
 const whole = x => String(Math.round(x));
 
-/* Drag anywhere in an svg, in client pixels. */
-const drags = (svg, move) => {
-  let last = null;
-  svg.addEventListener('pointerdown', ev => {
-    last = [ev.clientX, ev.clientY];
-    svg.setPointerCapture(ev.pointerId);
-    ev.preventDefault();
-  });
-  svg.addEventListener('pointermove', ev => {
-    if (!last) return;
-    move(ev.clientX - last[0], ev.clientY - last[1]);
-    last = [ev.clientX, ev.clientY];
-  });
-  svg.addEventListener('pointerup', () => { last = null; });
-};
-
-/* A rotatable 3d scene, framed once on the points it is given. */
-const rotatable = (svg, pts, draw, {az = 0.75, el = 0.55, w = 400, h = 300} = {}) => {
-  const at = {az, el, k: 1};
-  const [cx, cy, s] = fitted(cam(az, el), pts, w, h);
-  const redraw = () => draw(cam(at.az, at.el), at, view(cx, cy, s * at.k));
-  drags(svg, (dx, dy) => {
-    at.az += dx * 0.012;
-    at.el = Math.max(0.1, Math.min(1.35, at.el + dy * 0.008));
-    redraw();
-  });
-  svg.addEventListener('wheel', ev => {
-    ev.preventDefault();
-    at.k = Math.max(0.5, Math.min(3.5, at.k * Math.exp(-ev.deltaY * 0.0015)));
-    redraw();
-  }, {passive: false});
-  return redraw;
-};
-
-const viewNote = at => `view: azimuth <b>${(Math.round(at.az * 180 / Math.PI)
-  % 360 + 360) % 360}°</b>   tilt <b>${Math.round(at.el * 180 / Math.PI)}°</b>`;
-
 /* The stretch of the plot between two inputs, shaded. */
 const band = (v, x0, x1) => {
   const [px] = v.to([x0, 0]), [qx] = v.to([x1, 0]);
@@ -2192,9 +1859,9 @@ const searchFig = (v, a, c, marks) => band(v, a, c)
     + text(v, [t, PLOT_Y[0] + 0.25], n, 'f-prussian', 0, 14)).join('')
   + marks.map(([t, hue, r]) => dot(v, [t, F(t)], `f-${hue}`, r)).join('');
 
-function setupBisect() {
-  const svg = document.getElementById('fig-bisect'), v = PLOT();
-  sliders(['bs-k'], [whole], k => {
+function setupHalve() {
+  const svg = document.getElementById('fig-halve'), v = PLOT();
+  sliders(['hv-k'], [whole], k => {
     let [a, c] = BRACKET;
     for (let i = 0; i < k; i++) {
       const e = 0.04 * (c - a), m = (a + c) / 2;
@@ -2205,7 +1872,7 @@ function setupBisect() {
         [[m - e, 'madder', 3.6], [m + e, 'madder', 3.6]])
       + seg(v, [m, PLOT_Y[0] + 0.25], [m, F(m)], 'dash s-construct')
       + text(v, [m, PLOT_Y[0] + 0.25], 'm', 'f-madder', 0, 14);
-    put('note-bisect', `width <b>${(c - a).toFixed(3)}</b>` +
+    put('note-halve', `width <b>${(c - a).toFixed(3)}</b>` +
       `   after <b>${2 * k}</b> evaluations` +
       `<br>next two probes at <b>${fmt(m)}</b> ± ${e.toFixed(3)}`);
   });
@@ -2250,46 +1917,28 @@ function setupDescent() {
   });
 }
 
-function setupLine() {
-  const svg = document.getElementById('fig-line'), v = view(36, 272, 238, 16.8);
-  const f = bowl(2), p = [1.5, 0.8], g = bowlGrad(2)(p), d = sc(-1, g);
-  const phi = a => f(add(p, sc(a, d)));
-  const slope0 = -(g[0] * g[0] + g[1] * g[1]), C = 0.25;
-  const target = a => phi(0) + C * a * slope0;
-  sliders(['ls-a'], [''], a0 => {
-    const all = [0, 1, 2, 3].map(i => a0 / 2 ** i);
-    const first = all.find(a => phi(a) <= target(a));
-    const trials = all.slice(0, all.indexOf(first) + 1 || all.length);
-    svg.innerHTML = paxes(v, [0, 1.5], [0, 15])
-      + clipped('clip-ls', 0, 0, 400, 300,
-        graph(v, phi, 0, 1.5, 'stroke s-madder')
-        + seg(v, [0, target(0)], [1.5, target(1.5)], 'stroke s-prussian')
-        + trials.map(a => dot(v, [a, phi(a)], a === first ? 'f-verdigris' : 'f-construct',
-          a === first ? 4.4 : 3.2)).join(''))
-      + dot(v, [0, phi(0)], 'f-madder', 3.6)
-      + text(v, [1.45, target(1.45)], 'enough', 'f-prussian', 0, 14, 'end')
-      + text(v, [1.5, 0], 'α', 'f-dim', -4, -8, 'end')
-      + text(v, [0, 15], 'φ', 'f-dim', 8, 8, 'start');
-    put('note-line', trials.map(a =>
-      `α = <b>${fmt(a)}</b>: φ = ${phi(a).toFixed(2)} vs ${target(a).toFixed(2)}` +
-      (a === first ? ' <b>✓</b>' : ' ✗')).join('<br>'));
-  });
-}
+/* Section I's equation: g(x) = x² - 2, whose positive root is √2. */
+const G = x => x * x - 2;
+const dG = x => 2 * x;
 
-function setupQuad() {
-  const svg = document.getElementById('fig-quad'), v = PLOT();
-  sliders(['qd-x'], [''], x => {
-    const f0 = F(x), m = dF(x), k = d2F(x);
-    const model = t => f0 + m * (t - x) + 0.5 * k * (t - x) ** 2;
-    svg.innerHTML = axes(v, PLOT_X, PLOT_Y)
-      + clipped('clip-qd', 0, 0, 400, 300,
-        graph(v, F, -2.85, 2.85, 'stroke s-madder', 140)
-        + tanline(v, [x, f0], m, 2.6, 'dash s-prussian')
-        + graph(v, model, x - 2.4, x + 2.4, 'dash s-verdigris'))
-      + dot(v, [x, f0], 'f-madder', 4.2)
-      + text(v, [x, f0], 'x', 'f-madder', -11, 4, 'end');
-    put('note-quad', `df/dx = <b>${fmt(m)}</b>   d²f/dx² = <b>${fmt(k)}</b>` +
-      `<br>the model ${k > 0 ? 'opens <b>upward</b>' : 'opens <b>downward</b>'}`);
+function setupRoot() {
+  const svg = document.getElementById('fig-root'), v = view(60, 200, 100, 40);
+  sliders(['rt-x', 'rt-k'], ['', whole], (x0, k) => {
+    const xs = [x0];
+    for (let i = 0; i < k; i++) xs.push(xs[i] - G(xs[i]) / dG(xs[i]));
+    const x = xs[k], next = x - G(x) / dG(x);
+    svg.innerHTML = axes(v, [-0.4, 3.3], [-2.2, 4.8])
+      + clipped('clip-rt', 0, 0, 400, 300,
+        graph(v, G, -0.3, 3.3, 'stroke s-madder')
+        + seg(v, [x, G(x)], [next, 0], 'dash s-prussian')
+        + seg(v, [next, 0], [next, G(next)], 'dash s-construct')
+        + xs.slice(0, k).map(t => dot(v, [t, G(t)], 'f-construct', 3)).join('')
+        + dot(v, [next, 0], 'f-verdigris', 4))
+      + dot(v, [x, G(x)], 'f-madder', 4.4)
+      + text(v, [3.3, G(3.3)], 'g', 'f-madder', -12, 14);
+    put('note-root', `x = <b>${x.toFixed(6)}</b>   g(x) = <b>${G(x).toFixed(6)}</b>` +
+      `<br>next: x − g(x) / g′(x) = <b>${next.toFixed(6)}</b>` +
+      `   √2 = 1.414214`);
   });
 }
 
@@ -2297,29 +1946,25 @@ function setupNewton() {
   const svg = document.getElementById('fig-newton'), v = PLOT();
   sliders(['nw-x', 'nw-k'], ['', whole], (x0, k) => {
     const xs = [x0];
-    for (let i = 0; i < k; i++) {
-      const x = xs[i];
-      if (Math.abs(d2F(x)) < 1e-3) break;
-      xs.push(x - dF(x) / d2F(x));
-    }
-    const x = xs[xs.length - 1], f0 = F(x), m = dF(x), c = d2F(x);
-    const stuck = Math.abs(c) < 1e-3;
-    const next = stuck ? x : x - m / c;
-    const model = t => f0 + m * (t - x) + 0.5 * c * (t - x) ** 2;
+    for (let i = 0; i < k && Math.abs(d2F(xs[i])) > 1e-3; i++)
+      xs.push(xs[i] - dF(xs[i]) / d2F(xs[i]));
+    const x = xs[xs.length - 1], m = dF(x), c = d2F(x);
+    const stuck = Math.abs(c) < 1e-3, next = stuck ? x : x - m / c;
     svg.innerHTML = axes(v, PLOT_X, PLOT_Y)
       + clipped('clip-nw', 0, 0, 400, 300,
         graph(v, F, -2.85, 2.85, 'stroke s-madder', 140)
-        + (stuck ? '' : graph(v, model, x - 2.4, x + 2.4, 'dash s-prussian')))
-      + (stuck ? '' : seg(v, [next, model(next)], [next, F(next)], 'dash s-construct')
-        + dot(v, [next, model(next)], 'f-prussian', 4))
-      + (Math.abs(next - x) < 0.01 ? ''
-        : arrow(v, [x, -0.5], [next, -0.5], 'verdigris', 1.8))
-      + dot(v, [x, f0], 'f-madder', 4.4)
-      + text(v, [x, f0], fmt(x), 'f-madder', 0, -11);
+        + graph(v, dF, -2.85, 2.85, 'stroke s-prussian', 140)
+        + (stuck ? '' : seg(v, [x, m], [next, 0], 'dash s-prussian')
+          + seg(v, [next, 0], [next, F(next)], 'dash s-construct')
+          + dot(v, [next, 0], 'f-verdigris', 4)))
+      + dot(v, [x, m], 'f-prussian', 3.6)
+      + dot(v, [x, F(x)], 'f-madder', 4.4)
+      + text(v, [-2.3, F(-2.3)], 'f', 'f-madder', -8, 4, 'end')
+      + text(v, [-2.3, dF(-2.3)], 'f′', 'f-prussian', 8, 4, 'start');
     put('note-newton', stuck
       ? `x = <b>${fmt(x)}</b>: the bend is zero, and the step is undefined`
-      : `x = <b>${x.toFixed(5)}</b>   df/dx = <b>${m.toFixed(5)}</b>` +
-        `<br>next: x − (${fmt(m)}) / (${fmt(c)}) = <b>${next.toFixed(5)}</b>`);
+      : `x = <b>${x.toFixed(5)}</b>   f′(x) = <b>${m.toFixed(5)}</b>` +
+        `<br>next: x − f′(x) / f″(x) = x − (${fmt(m)}) / (${fmt(c)}) = <b>${next.toFixed(5)}</b>`);
   });
 }
 
@@ -2334,14 +1979,17 @@ const momentum = (c, p, a, beta, n) => {
   return out;
 };
 
-/* Adagrad: each coordinate divided by the root of its own gradients so far. */
-const adagrad = (c, p, a, n) => {
-  const grad = bowlGrad(c), out = [p], s = [0, 0];
-  for (let k = 0; k < n; k++) {
-    const q = out[k], d = grad(q);
-    s[0] += d[0] * d[0]; s[1] += d[1] * d[1];
-    out.push([q[0] - a * d[0] / (Math.sqrt(s[0]) + 1e-9),
-      q[1] - a * d[1] / (Math.sqrt(s[1]) + 1e-9)]);
+/* Adam, with the bias correction of the published method. */
+const adam = (c, p, a, n, b1 = 0.9, b2 = 0.999) => {
+  const grad = bowlGrad(c), out = [p], m = [0, 0], s = [0, 0];
+  for (let k = 1; k <= n; k++) {
+    const q = out[k - 1], g = grad(q);
+    out.push(q.map((x, i) => {
+      m[i] = b1 * m[i] + (1 - b1) * g[i];
+      s[i] = b2 * s[i] + (1 - b2) * g[i] * g[i];
+      const mh = m[i] / (1 - b1 ** k), sh = s[i] / (1 - b2 ** k);
+      return x - a * mh / (Math.sqrt(sh) + 1e-8);
+    }));
   }
   return out;
 };
@@ -2396,100 +2044,95 @@ function setupCond() {
 
 function setupMom() {
   const svg = document.getElementById('fig-mom'), v = MAP();
-  const c = 10, a = 1 / (1 + c), p = START(c), n = 14;
-  const plain = descent(c, p, a, n);
-  sliders(['mo-b'], [''], beta => {
-    const path = momentum(c, p, a, beta, n);
+  const c = 10, p = START(c), n = 14;
+  const far = q => norm(q) < 1e3 ? norm(q).toFixed(4) : norm(q).toExponential(1);
+  sliders(['mo-a', 'mo-b'], [x => x.toFixed(3), ''], (a, beta) => {
+    const plain = descent(c, p, a, n), path = momentum(c, p, a, beta, n);
     svg.innerHTML = mapFrame('clip-mo', v, c,
         trail(v, plain, 'construct', 2.2) + trail(v, path, 'madder', 2.6))
       + dot(v, [0, 0], 'f-prussian', 3.4);
     put('note-mom', `after ${n} steps, distance from the bottom` +
-      `<br>β = 0: <b>${norm(plain[n]).toFixed(4)}</b>` +
-      `   β = ${fmt(beta)}: <b>${norm(path[n]).toFixed(4)}</b>`);
+      `<br>β = 0: <b>${far(plain[n])}</b>   β = ${fmt(beta)}: <b>${far(path[n])}</b>`);
   });
 }
 
-function setupPerco() {
-  const svg = document.getElementById('fig-perco'), v = MAP();
+function setupAdam() {
+  const svg = document.getElementById('fig-adam'), v = MAP();
   const c = 10, p = START(c), n = 14;
   const plain = descent(c, p, 1 / (1 + c), n);
-  sliders(['pc-a'], [''], a => {
-    const path = adagrad(c, p, a, n);
-    const flips = p => p.filter((q, i) => i && q[1] * p[i - 1][1] < 0).length;
-    svg.innerHTML = mapFrame('clip-pc', v, c,
+  const flips = ps => ps.filter((q, i) => i && q[1] * ps[i - 1][1] < 0).length;
+  sliders(['ad-a'], [''], a => {
+    const path = adam(c, p, a, n);
+    svg.innerHTML = mapFrame('clip-ad', v, c,
         trail(v, plain, 'construct', 2.2) + trail(v, path, 'madder', 2.6))
       + dot(v, [0, 0], 'f-prussian', 3.4);
-    put('note-perco', `after ${n} steps, distance from the bottom` +
-      `<br>one α: <b>${norm(plain[n]).toFixed(4)}</b>` +
-      `   one each: <b>${norm(path[n]).toFixed(4)}</b>` +
+    put('note-adam', `after ${n} steps, distance from the bottom` +
+      `<br>plain: <b>${norm(plain[n]).toFixed(4)}</b>` +
+      `   Adam: <b>${norm(path[n]).toFixed(4)}</b>` +
       `<br>crossings of the valley: grey ${flips(plain)}, ` +
       `red <b>${flips(path)}</b>`);
   });
 }
 
-function setupNewtN() {
-  const svg = document.getElementById('fig-newtN'), v = MAP();
-  sliders(['nn-c'], [''], c => {
-    const p = START(c), rho = (c - 1) / (c + 1);
-    const path = descent(c, p, 1 / (1 + c), 14);
-    const n = c === 1 ? 1 : Math.ceil(Math.log(0.01) / Math.log(rho));
-    svg.innerHTML = mapFrame('clip-nn', v, c, trail(v, path, 'construct', 2.2)
-        + arrow(v, p, [0, 0], 'madder', 2.2))
-      + dot(v, p, 'f-ink', 3.8) + dot(v, [0, 0], 'f-prussian', 3.4);
-    put('note-newtN', `κ = <b>${fmt(c)}</b>` +
-      `<br>to cut the distance a hundredfold: steepest descent <b>${n}</b> steps` +
-      `<br>Newton <b>1</b> step, at every κ`);
-  });
-}
+/* The line fit: the data, a line, and a stick from each point to it. */
+const fitFig = (id, v, pts, line) => paxes(v, [-0.4, 7.7], [0, 5.2])
+  + clipped(id, 0, 0, 400, 300,
+    seg(v, [-0.3, line(-0.3)], [7.6, line(7.6)], 'stroke s-prussian')
+    + pts.map(([t, y]) => seg(v, [t, y], [t, line(t)], 'stroke s-verdigris')).join('')
+    + pts.map(q => dot(v, q, 'f-madder', 3.6)).join(''))
+  + text(v, [7.7, 0], 't', 'f-dim', -4, -8, 'end')
+  + text(v, [0, 5.2], 'y', 'f-dim', 8, 8, 'start');
+const FIT_VIEW = () => view(30, 282, 48, 52);
 
 function setupFit() {
-  const svg = document.getElementById('fig-fit'), v = view(30, 282, 48, 52);
+  const svg = document.getElementById('fig-fit'), v = FIT_VIEW();
   const pts = TS.map((t, i) => [t, YS[i]]);
   sliders(['ft-a', 'ft-b'], ['', ''], (a, b) => {
-    const line = t => a + b * t;
-    svg.innerHTML = paxes(v, [-0.4, 7.7], [0, 5.2])
-      + clipped('clip-ft', 0, 0, 400, 300,
-        seg(v, [-0.3, line(-0.3)], [7.6, line(7.6)], 'stroke s-prussian')
-        + pts.map(([t, y]) => seg(v, [t, y], [t, line(t)], 'stroke s-verdigris')).join('')
-        + pts.map(q => dot(v, q, 'f-madder', 3.6)).join(''))
-      + text(v, [7.7, 0], 't', 'f-dim', -4, -8, 'end')
-      + text(v, [0, 5.2], 'y', 'f-dim', 8, 8, 'start');
+    svg.innerHTML = fitFig('clip-ft', v, pts, t => a + b * t);
     put('note-fit', `y = <b>${fmt(a)}</b> + <b>${fmt(b)}</b> t` +
       `<br>Σr² = <b>${ssq(a, b).toFixed(3)}</b>   best possible <b>1.080</b>`);
   });
 }
 
-function setupProject() {
-  const svg = document.getElementById('fig-project');
-  const c1 = [1, 1, 1], c2 = [0, 1, 2], Y = [2, 1, 3], p = [1.5, 2, 2.5];
-  const S = [-0.5, 2.5], T = [-0.9, 1.4];
-  const corners = [[S[0], T[0]], [S[1], T[0]], [S[0], T[1]], [S[1], T[1]]]
-    .map(([s, t]) => comb(s, c1, t, c2));
-  rotatable(svg, [...corners, Y, [0, 0, 0], [2.8, 0, 0], [0, 2.8, 0], [0, 0, 2.8]],
-    (c, at, v) => {
-      const dep = depth(at.az, at.el);
-      const data = arrow3(v, c, [0, 0, 0], Y, 'madder', 2)
-        + arrow3(v, c, p, Y, 'verdigris', 1.8, true)
-        + text(v, c(Y), 'y', 'f-madder', 4, -11);
-      const axes3 = [[2.8, 0, 0], [0, 2.8, 0], [0, 0, 2.8]].map((q, i) =>
-        seg3(v, c, [0, 0, 0], q, 'hair s-construct')
-        + text(v, c(q), String(i + 1), 'f-dim', 8, 4)).join('');
-      const behind = dep(Y) < dep(p);
-      svg.innerHTML = tile(400, 320) + axes3
-        + (behind ? data : '')
-        + planePatch(v, c, c1, c2, S, T)
-        + arrow3(v, c, [0, 0, 0], c1, 'prussian', 1.6)
-        + arrow3(v, c, [0, 0, 0], c2, 'prussian', 1.6)
-        + arrow3(v, c, [0, 0, 0], p, 'verdigris', 2)
-        + (behind ? '' : data)
-        + dot(v, c(p), 'f-verdigris', 3.6)
-        + text(v, c(c1), 'c₁', 'f-prussian', 10, 10, 'start')
-        + text(v, c(c2), 'c₂', 'f-prussian', -12, 6, 'end')
-        + text(v, c(p), 'Ax', 'f-verdigris', 12, 10, 'start');
-      put('note-project', `y = (2, 1, 3)   Ax = (1.5, 2, 2.5)` +
-        `<br>r = y − Ax = (0.5, −1, 0.5)   ‖r‖² = <b>1.5</b>` +
-        `<br>r·c₁ = <b>0</b>   r·c₂ = <b>0</b><br>${viewNote(at)}`);
-    }, {az: -0.21, el: 0.72, h: 320})();
+/* Drag the nearest point up or down, in the world coordinates of a view. */
+const dragHeights = (svg, v, pts, moved) => {
+  let i = -1;
+  const at = ev => {
+    const q = new DOMPoint(ev.clientX, ev.clientY)
+      .matrixTransform(svg.getScreenCTM().inverse());
+    return v.from([q.x, q.y]);
+  };
+  svg.addEventListener('pointerdown', ev => {
+    const [t, y] = at(ev), d = pts.map(q => Math.hypot(q[0] - t, q[1] - y));
+    if (Math.min(...d) > 0.6) return;
+    i = d.indexOf(Math.min(...d));
+    svg.setPointerCapture(ev.pointerId);
+    ev.preventDefault();
+  });
+  svg.addEventListener('pointermove', ev => {
+    if (i < 0) return;
+    pts[i][1] = Math.max(0, Math.min(5.2, at(ev)[1]));
+    moved();
+  });
+  svg.addEventListener('pointerup', () => { i = -1; });
+};
+
+function setupNormal() {
+  const svg = document.getElementById('fig-normal'), v = FIT_VIEW();
+  const pts = TS.map((t, i) => [t, YS[i]]);
+  const sum = f => pts.reduce((s, [t, y]) => s + f(t, y), 0);
+  const draw = () => {
+    const [n, st, stt] = [sum(() => 1), sum(t => t), sum(t => t * t)];
+    const [sy, sty] = [sum((t, y) => y), sum((t, y) => t * y)];
+    const b = (n * sty - st * sy) / (n * stt - st * st), a = (sy - b * st) / n;
+    svg.innerHTML = fitFig('clip-nm', v, pts, t => a + b * t);
+    put('mat-ata', [n, st, st, stt].map(x => `<span>${x}</span>`).join(''));
+    put('mat-aty', [sy, sty].map(x => `<span>${x.toFixed(2)}</span>`).join(''));
+    put('note-normal', `AᵀA x = Aᵀy<br>a = <b>${fmt(a)}</b>   b = <b>${fmt(b)}</b>` +
+      `<br>Σr² = <b>${sum((t, y) => (a + b * t - y) ** 2).toFixed(3)}</b>`);
+  };
+  dragHeights(svg, v, pts, draw);
+  draw();
 }
 
 function setupNlfit() {
@@ -2504,7 +2147,7 @@ function setupNlfit() {
         + pts.map(q => dot(v, q, 'f-madder', 3.6)).join(''))
       + text(v, [5.7, 0], 't', 'f-dim', -4, -8, 'end')
       + text(v, [0, 3.3], 'y', 'f-dim', 8, 8, 'start');
-    put('note-nlfit', `m(t) = <b>${fmt(a)}</b> e^(−<b>${fmt(b)}</b> t)` +
+    put('note-nlfit', `curve <b>${fmt(a)}</b> e^(−<b>${fmt(b)}</b> t)` +
       `<br>f = ½‖r‖² = <b>${nobj([a, b]).toFixed(4)}</b>` +
       `   best possible <b>0.0134</b>`);
   });
@@ -2518,7 +2161,7 @@ function setupGN() {
   const svg = document.getElementById('fig-gn'), v = NVIEW(), frame = nFrame(v);
   sliders(['gn-k'], [whole], k => {
     const path = [[1, 0.2]];
-    for (let i = 0; i < k; i++) path.push(add(path[i], lmStep(path[i], 0)));
+    for (let i = 0; i < k; i++) path.push(add(path[i], gnStep(path[i])));
     const here = path[k];
     svg.innerHTML = clipped('clip-gn', 0, 0, 400, 300,
         frame + trail(v, path, 'madder', 3))
@@ -2530,60 +2173,18 @@ function setupGN() {
   });
 }
 
-function setupLM() {
-  const svg = document.getElementById('fig-lm'), v = NVIEW(), frame = nFrame(v);
-  const p = [1, 0.95], g = lmStep(p, 1e9);
-  sliders(['lm-l'], [e => (10 ** e).toPrecision(2)], e => {
-    const lam = 10 ** e, h = lmStep(p, lam), q = add(p, h);
-    const f = nobj(q);
-    svg.innerHTML = clipped('clip-lm', 0, 0, 400, 300, frame
-        + seg(v, p, add(p, sc(1 / norm(g), g)), 'dash s-prussian')
-        + arrow(v, p, q, 'madder', 2.2))
-      + dot(v, p, 'f-ink', 4)
-      + dot(v, [2.839, 0.556], 'f-prussian', 3.6)
-      + text(v, [2.839, 0.556], 'best fit', 'f-prussian', 0, -10);
-    put('note-lm', `λ = <b>${lam.toPrecision(2)}</b>   ‖h‖ = <b>${norm(h).toFixed(3)}</b>` +
-      `<br>lands at (<b>${fmt(q[0])}</b>, <b>${fmt(q[1])}</b>)` +
-      `   f = <b>${f < 1e3 ? f.toFixed(3) : f.toExponential(1)}</b>` +
-      `<br>f here <b>2.956</b>   dashed: −∇f`);
-  });
-}
-
 function setupStat() {
   const svg = document.getElementById('fig-stat');
+  const kind = {'-1': 'a peak', 0: 'a pause: the slope touches zero and keeps its sign',
+    1: 'a dip'};
   sliders(['sn-x'], [''], x => {
-    svg.innerHTML = stackFig('sn', {x, xr: W_X, rows: [
-      {g: W, r: [-2.1, 3.3], hue: 'madder', name: 'f'},
-      {g: dW, r: [-6.2, 7.7], hue: 'prussian', name: 'df/dx',
-        zeros: [-1, 0, 2]}]});
-    const near = [-1, 0, 2].find(z => Math.abs(x - z) < 0.06);
-    put('note-stat', `f = <b>${fmt(W(x))}</b>   df/dx = <b>${fmt(dW(x))}</b>` +
-      (near === undefined ? ''
-        : `<br><b>${near === 0 ? 'a peak' : near === -1 ? 'the shallow dip'
-          : 'the deep dip'}</b>, and the slope is zero`));
+    svg.innerHTML = stackFig('sn', {x, xr: [-1.4, 1.4], rows: [
+      {g: Q, r: [-2.6, 2.6], hue: 'madder', name: 'f'},
+      {g: dQ, r: [-5, 9], hue: 'prussian', name: 'df/dx', zeros: [-1, 0, 1]}]});
+    const near = [-1, 0, 1].find(z => Math.abs(x - z) < 0.06);
+    put('note-stat', `f = <b>${fmt(Q(x))}</b>   df/dx = <b>${fmt(dQ(x))}</b>` +
+      (near === undefined ? '' : `<br><b>${kind[near]}</b>`));
   });
-}
-
-/* The saddle: up along x, down along y, flat at the middle of both. */
-function setupSaddle() {
-  const svg = document.getElementById('fig-saddle');
-  const R = 1.6, ZK = 0.5, h = (x, y) => ZK * (x * x - y * y);
-  const grid = [-R, -R / 2, 0, R / 2, R];
-  const pts = grid.flatMap(x => grid.map(y => [x, y, h(x, y)]));
-  rotatable(svg, pts, (c, at, v) => {
-    const dep = depth(at.az, at.el);
-    const up = onSurface(v, c, dep, t => [t, 0, h(t, 0)], -R, R, 'stroke s-madder');
-    const dn = onSurface(v, c, dep, t => [0, t, h(0, t)], -R, R, 'stroke s-verdigris');
-    svg.innerHTML = tile(400, 320)
-      + seg3(v, c, [0, 0, -1.3], [0, 0, 1.3], 'hair s-construct')
-      + up[0] + dn[0] + surface(v, c, dep, h, [R, R]) + up[1] + dn[1]
-      + dot(v, c([0, 0, 0]), 'f-ink', 4)
-      + text(v, c([R, 0, h(R, 0)]), 'bend +2', 'f-madder', 0, -9)
-      + text(v, c([0, R, h(0, R)]), 'bend −2', 'f-verdigris', 6, 14, 'start');
-    put('note-saddle', `f = x² − y²   ∇f = (0, 0) at the middle` +
-      `<br>eigenvalues of H: <b>+2</b> and <b>−2</b> — a saddle` +
-      `<br>${viewNote(at)}`);
-  }, {az: 0.6, el: 0.5, h: 320})();
 }
 
 function setupLocal() {
@@ -2628,20 +2229,37 @@ const sgd = (bs, a, budget) => {
   return out;
 };
 
+const SUB = '₁₂₃₄₅₆₇₈';
+
+/* The terms step k used: the batch after the k - 1 batches before it. */
+const batchOf = (k, bs) => Array.from({length: bs},
+  (_, j) => ORDER[((k - 1) * bs + j) % 8]).sort();
+
 function setupSgd() {
-  const svg = document.getElementById('fig-sgd'), v = view(-31.24, 297.8, 115.6, 196);
-  sliders(['sg-b'], [e => String(2 ** e)], e => {
-    const bs = 2 ** e, path = sgd(bs, 0.01, 64), end = path[path.length - 1];
-    svg.innerHTML = clipped('clip-sg', 0, 0, 400, 300,
-        [0.5, 2, 5, 10, 18].map(k =>
-          ellipse(v, [2.75, 0.5], [4, 21], k, 'hair s-construct')).join('')
+  const svg = document.getElementById('fig-sgd'), v = view(-31.24, 337.8, 115.6, 196);
+  const steps = document.getElementById('sg-k');
+  const block = (i, on) => el('rect', {x: 22 + 45 * i, y: 6, width: 38, height: 24,
+      class: on ? 'f-madder' : 'f-construct', opacity: on ? 1 : 0.35})
+    + el('text', {x: 41 + 45 * i, y: 22, 'text-anchor': 'middle',
+      class: on ? '' : 'f-ink', fill: on ? '#fff' : ''}, `f${SUB[i]}`);
+  sliders(['sg-b', 'sg-k'], [e => String(2 ** e), whole], (e, k0) => {
+    const bs = 2 ** e, n = 64 / bs, k = Math.min(k0, n);
+    steps.max = n;
+    steps.value = k;
+    document.getElementById('out-sg-k').textContent = k;
+    const path = sgd(bs, 0.01, 64).slice(0, k + 1), used = k ? batchOf(k, bs) : [];
+    svg.innerHTML = [0, 1, 2, 3, 4, 5, 6, 7].map(i => block(i, used.includes(i))).join('')
+      + clipped('clip-sg', 0, 40, 400, 300,
+        [0.5, 2, 5, 10, 18].map(q =>
+          ellipse(v, [2.75, 0.5], [4, 21], q, 'hair s-construct')).join('')
         + trail(v, path, 'madder', 2.2))
       + cornerAxes(v, [0.4, 3.6], [0.05, 1.45], 'a', 'b')
       + dot(v, [2.75, 0.5], 'f-prussian', 3.6)
       + text(v, [2.75, 0.5], 'best fit', 'f-prussian', 26, 4, 'start');
-    put('note-sgd', `batch <b>${bs}</b> of 8   ` +
-      `<b>${64 / bs}</b> steps for 64 terms` +
-      `<br>f = <b>${lsq(end).toFixed(3)}</b>   best possible <b>0.540</b>`);
+    put('note-sgd', `batch <b>${bs}</b> of 8   step <b>${k}</b> of ${n}` +
+      `   terms paid for <b>${k * bs}</b> of 64` +
+      `<br>this step used <b>${used.map(i => 'f' + SUB[i]).join(' ') || 'nothing yet'}</b>` +
+      `<br>f = <b>${lsq(path[k]).toFixed(3)}</b>   best possible <b>0.540</b>`);
   });
 }
 /* --- speaker notes window --------------------------------------------- */
@@ -2768,25 +2386,21 @@ Object.entries(figures).forEach(([id, f]) => {
   document.getElementById(id).innerHTML = f();
 });
 setupBracket();
-setupBisect();
+setupHalve();
 setupVanish();
-setupDescent();
-setupLine();
-setupQuad();
+setupStat();
+setupRoot();
 setupNewton();
+setupFit();
+setupNormal();
+setupDescent();
 setupSteep();
 setupStep();
 setupCond();
 setupMom();
-setupPerco();
-setupNewtN();
-setupFit();
-setupProject();
+setupAdam();
 setupNlfit();
 setupGN();
-setupLM();
-setupStat();
-setupSaddle();
 setupLocal();
 setupSgd();
 
