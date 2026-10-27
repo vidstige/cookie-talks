@@ -1,15 +1,15 @@
 # Notebook plan
 
 The decks stay abstract and dry. Each lecture from 3 onwards gets a
-companion notebook that works one Middle-earth toy problem, told from
-Sauron's side, in the same order as the slides. Switch from deck to
+companion notebook that works one Middle-earth toy problem, in the
+same order as the slides. Switch from deck to
 notebook at section boundaries only, a few times per hour.
 
 | Lecture | Toy problem | Status |
 |---|---|---|
 | 3, optimization | The Eye searches for the Ring | decided |
-| 4, the perceptron | Something with the Palantíri, perhaps screen time | open |
-| 5, attention | Tolkien names, or words of the Black Speech | open |
+| 4, the perceptron | The Doors of Durin: when the letters shine, where the silver is, what it says | built |
+| 5, attention | What's in a name: Elvish names and their meaning | open |
 
 **On the Palantíri.** The mechanics of the stones — their fixed
 orientation, the bearing a stone must be turned to, who is looking at
